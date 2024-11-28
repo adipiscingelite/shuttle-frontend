@@ -1,0 +1,30 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://unpkg.com/ag-grid-community@28.2.0/styles/ag-grid.css');
+@import url('https://unpkg.com/ag-grid-community@28.2.0/styles/ag-theme-alpine.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgb(128, 128, 128);
+  border-radius: 20px;
+  border: none;
+}
+
+/* *{
+  font-family: "Montserrat", sans-serif;
+} */
+
+/* *{
+  outline: 1px solid red;
+} */

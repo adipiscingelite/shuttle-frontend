@@ -1,0 +1,56 @@
+<nav
+  class="font-sans flex flex-row md:bg-red-100 text-left justify-between py-2 px-6 bg-gradient-to-r from-white to-indigo-100 shadow items-center md:items-end w-full z-10">
+
+  <div class="md:mb-0 mx-auto md:mx-0 md:flex md:flex-row">
+    <div>
+      <a routerLink="dashboard">
+        <h1 class="h-9 border bg-red-100 md:h-12 items-center">WOILAH CIK</h1>
+      </a>
+    </div>
+  </div>
+
+  <div class="md:mb-0 flex items-center md:space-x-4 ">
+
+
+    <span class="md:border-l-[.5px] md:border-black md:pl-3 flex items-center space-x-3">
+      <!-- <p>|</p> -->
+      <p class="hidden md:block font-medium">Super Admin</p>
+      <button
+        class="text-white font-medium rounded-lg text-sm text-center inline-flex items-center" type="button">
+        <img alt="Foto Profil" src="https://i.pinimg.com/474x/6d/c1/76/6dc1761826520b89a423745eba6fae62.jpg"
+          class="relative inline-block h-10 w-10 cursor-pointer rounded-full object-cover object-center select-none" />
+        <!-- <img alt="tania andrew" src="https://picsum.photos/200" -->
+      </button>
+
+      <!-- dropdown -->
+      <div *ngIf="isProfileDropdownOpen"
+        class=" absolute top-16 md:top-20 right-0 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-40 border group-hover:block">
+        <ul class="py-2 text-sm text-gray-700 dark:bg-red-900" aria-labelledby="dropdownHoverButton">
+          <li>
+            <a routerLink="user/profile" class="block px-4 py-2 hover:bg-gray-100 ">Profile</a>
+          </li>
+          <li class="block md:hidden">
+            <a routerLink="first-component" class="block px-4 py-2 hover:bg-gray-100 ">Mail</a>
+          </li>
+          <li class="block md:hidden">
+            <a routerLink="/notification" class="block px-4 py-2 hover:bg-gray-100 ">Notification</a>
+          </li>
+          <li>
+            <a routerLink="/user/change-password" class="block px-4 py-2 hover:bg-gray-100 ">Change
+              Password</a>
+          </li>
+          <li class="w-full">
+            <button type="button"
+              class="w-full block px-4 py-2 text-red-500 hover:bg-gray-100 text-left ">Sign
+              out</button>
+          </li>
+        </ul>
+      </div>
+
+    </span>
+    <!-- </div> -->
+
+  </div>
+</nav>
+<!-- <app-sidebar></app-sidebar> -->
+<marquee class="z-1 text-sky-700">#Marquee</marquee>
