@@ -3,7 +3,7 @@ export const environment = {
   apiUrl: 'http://192.168.110.84:8080',
   // apiUrl2: 'http://192.168.110.84:1234',
 
-  ws: '192.168.110.84:8080/ws'
+  ws: 'ws://192.168.110.84:8080/ws'
   // apiUrl: 'http://192.168.10.230:8080',
   // apiUrl2: 'http://192.168.10.230:1234',
   // apiUrl: 'http://localhost:8080',

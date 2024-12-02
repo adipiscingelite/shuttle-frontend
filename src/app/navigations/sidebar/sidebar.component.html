@@ -13,6 +13,13 @@
           </div>
         </div>
 
+        <div class="w-full h-auto flex items-center gap-x-4 rounded-lg shadow-md bg-white px-4 py-3 font-medium">
+          <div>
+            <img src="https://cdn.iconscout.com/icon/premium/png-512-thumb/indonesia-51-657957.png?f=webp&w=512" class="w-5 aspect-square" alt="">
+          </div>
+          <p>Bahasa Indonesia</p>
+        </div>
+
         <form class="form relative">
           <button class="absolute left-2 -translate-y-1/2 top-1/2 p-1">
             <svg class="w-5" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="search"
@@ -22,8 +29,8 @@
             </svg>
           </button>
           <input
-            class="input w-full rounded-full px-8 py-2 border-2 border-transparent focus:outline-none focus:border-blue-500 placeholder-gray-400 transition-all duration-300 shadow-md"
-            placeholder="Search..." required="" type="text" id="table-search" [(ngModel)]="searchText"
+            class="input w-full rounded-full px-8 py-2 border-2 text-sm border-transparent focus:outline-none focus:border-blue-500 placeholder-gray-400 transition-all duration-300 shadow-md"
+            placeholder="Search Menu" required="" type="text" id="table-search" [(ngModel)]="searchText"
             name="searchText" />
           <button type="reset" class="absolute right-3 -translate-y-1/2 top-1/2 p-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-700" fill="none" viewBox="0 0 24 24"
@@ -36,18 +43,18 @@
 
       <ng-container *ngFor="let section of sections">
         <div *ngIf="sectionMatchesSearch(section)" class="px-2 py-1 select-none">
-          <h2 class="text-xs font-semibold my-2">
+          <h2 class="text-xs font-semibold my-2 uppercase">
             {{ section.title }}
           </h2>
           <nav class="space-y-1">
-            <div *ngFor="let item of section.items" class="px-2 py-1 rounded-md text-sm text-neutral-500"
-              routerLinkActive="woilah">
+            <div *ngFor="let item of section.items" class="px-2 py-1 rounded-md text-sm text-black font-medium hover:bg-stone-50 hover:rounded-full"
+              routerLinkActive="sidebarActive">
               <!-- Menampilkan item jika cocok dengan pencarian -->
               <div *ngIf="matchesSearch(item)">
                 <a [routerLink]="item.path">
                   <div class="flex items-center space-x-1 px-2">
                     <span class="material-icons" [innerHTML]="getSvgIcon(item.icon)"></span>
-                    <p class="block px-2 py-1 rounded-md">
+                    <p class="block px-3 py-2 rounded-md capitalize">
                       {{ item.name }}
                     </p>
                   </div>

@@ -1,0 +1,24 @@
+<nav aria-label="breadcrumb" class="w-full">
+  <ol class="flex w-fit flex-wrap items-center rounded-md bg-slate-50 px-4 py-2">
+    <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
+      <ng-container *ngIf="!last">
+        <li
+          class="flex cursor-pointer items-center text-xs text-slate-500 transition-colors duration-300 hover:text-slate-800">
+          <a [routerLink]="breadcrumb.url">{{ breadcrumb.label }}</a>
+          <span class="flex items-center pointer-events-none mx-2 text-slate-800">
+            <svg class="w-3 h-3" fill="#484747" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.41 6 5 7.41 9.58 12 5 16.59 6.41 18l6-6-6-6Z"></path>
+              <path d="m13 6-1.41 1.41L16.17 12l-4.58 4.59L13 18l6-6-6-6Z"></path>
+            </svg></span>
+        </li>
+      </ng-container>
+
+      <ng-container *ngIf="last">
+        <li
+          class="flex cursor-pointer items-center text-xs text-slate-500 transition-colors duration-300 hover:text-slate-800">
+          {{ breadcrumb.label }}
+        </li>
+      </ng-container>
+    </ng-container>
+  </ol>
+</nav>

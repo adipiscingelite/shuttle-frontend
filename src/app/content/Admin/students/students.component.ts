@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnInit, ViewChild, inject } from '@angular/co
 import { AgGridAngular } from 'ag-grid-angular'; // Angular Data Grid Component
 import { ColDef } from 'ag-grid-community';
 import axios from 'axios';
+
 interface IRow {
   body: string;
   email: string;
@@ -9,7 +10,6 @@ interface IRow {
   name: string;
   postId: number;
 }
-
 
 
 @Component({

@@ -1,0 +1,214 @@
+<div>
+  <app-header></app-header>
+
+
+  <h1 class="my-6 text-xl font-semibold uppercase">
+    Superadmin list
+  </h1>
+
+  <div class="flex items-center my-4">
+    <form class="form relative">
+      <input
+        class="input w-72 rounded-full pr-8 px-4 py-2 text-sm bg-gray-100 border-2 border-transparent focus:outline-none focus:border-blue-500 placeholder-gray-500 transition-all duration-300 shadow-md"
+        placeholder="Search Item" required="" type="text" id="table-search" name="searchText" />
+      <button type="reset" class="absolute right-3 -translate-y-1/2 top-1/2 p-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-700" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </form>
+
+    <button (click)="openAddModal()"
+      class="flex items-center gap-x-1 ml-auto bg-[#3A3A3A] hover:bg-neutral-600 text-white font-medium px-4 py-2 rounded-md border shadow hover:shadow-md">
+      <div>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+          stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="m12.03 5-.018 14"></path>
+          <path d="M5 12h14"></path>
+        </svg>
+      </div>
+      <p>Add Superadmin</p>
+    </button>
+  </div>
+
+
+  <div class="w-fit bg-gray-50 px-4 py-2 text-sm font-medium border rounded-lg shadow-md">
+    {{ startRow }} - {{ endRow }} of {{ totalRows }} item(s)
+  </div>
+
+  <div class="w-full h-[80vh] my-4">
+    <ag-grid-angular style="width: 100%; height: 100%; overflow-x: scroll;" [class]="themeClass"
+      [rowData]="rowListAllUser" [columnDefs]="colHeaderListAllUser" [defaultColDef]="defaultColDef"
+      [gridOptions]="gridOptions" [pagination]="true" [paginationPageSize]="10"
+      (firstDataRendered)="totalRowCount($event)"></ag-grid-angular>
+  </div>
+
+
+  <div *ngIf="isModalAddOpen" tabindex="-1" (click)="closeAddModal()"
+    class="fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
+    <div (click)="$event.stopPropagation()"
+      class="relative p w-full max-w-xl md:max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
+      <!-- Modal header -->
+      <div class="sticky top-0 flex items-center justify-between p-4 border-b rounded-t bg-white dark:border-gray-600">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          Tambah
+        </h3>
+        <button (click)="closeAddModal()"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
+          <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <!-- Modal body -->
+      <form class="p-6" #addSuperadminForm="ngForm" (ngSubmit)="addSuperadmin()">
+        <h3 class="text-2xl text-gray-900 font-semibold">Superadmin</h3>
+        <p class="mb-4 text-gray-600">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
+
+        <div class="mt-4">
+          <label for="first_name" class="text-sm md:text-[0.875rem] mb-1">First Name</label>
+          <input type="text" id="first_name" name="first_name" placeholder="e.g. John" [(ngModel)]="first_name" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+          focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+        </div>
+
+        <div class="mt-4">
+          <label for="last_name" class="text-sm md:text-[0.875rem] mb-1">Last Name</label>
+          <input type="text" id="last_name" name="last_name" placeholder="e.g. Doe" [(ngModel)]="last_name" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+          focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+        </div>
+
+        <div class="mt-4">
+          <label for="gender" class="text-sm md:text-[0.875rem] mb-1">Gender</label>
+          <select id="gender" [(ngModel)]="gender" name="gender"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <option value="" disabled selected>Choose the gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+
+        <div class="mt-4">
+          <label for="email" class="text-sm md:text-[0.875rem] mb-1">Email</label>
+          <input type="text" id="email" name="email" placeholder="e.g. email@gmail.com" [(ngModel)]="email" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+          focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+        </div>
+
+        <div class="mt-4">
+          <label for="password" class="text-sm md:text-[0.875rem] mb-1">Password</label>
+          <input type="password" id="password" name="password" placeholder="e.g. secure123" [(ngModel)]="password" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+          focus:invalid:border-pink-500 focus:invalid:ring-pink-500" autocomplete="new-password">
+        </div>
+
+        <!-- <div class="mt-4 hidden">
+          <label for="role" class="text-sm md:text-[0.875rem] mb-1">Role</label>
+          <input type="text" id="role" name="role" value="superadmin" [(ngModel)]="role" class=" border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+          focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+        </div> -->
+
+        <div class="mt-4">
+          <label for="phone" class="text-sm md:text-[0.875rem] mb-1">Phone</label>
+          <input type="text" id="phone" name="phone" placeholder="e.g. 0813 1234 5678" [(ngModel)]="phone" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+          focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+        </div>
+
+        <div class="mt-4">
+          <label for="address" class="text-sm md:text-[0.875rem] mb-1">Address</label>
+          <input type="text" id="address" name="address" placeholder="e.g. Jl. Sm. Km (o゜▽゜)o☆" [(ngModel)]="address" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+          focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+        </div>
+
+
+      </form>
+
+      <!-- Modal footer -->
+      <div class="flex items-center p-4 border-t border-gray-200 rounded-b dark:border-gray-600">
+        <button (click)="addSuperadmin()" type="button"
+          class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Draft</button>
+        <button (click)="closeAddModal()" type="button"
+          class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div *ngIf="isModalEditOpen" tabindex="-1" (click)="closeEditModal()"
+  class="fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
+  <div (click)="$event.stopPropagation()"
+    class="relative p w-full max-w-xl md:max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
+    <!-- Modal header -->
+    <div class="sticky top-0 flex items-center justify-between p-4 border-b rounded-t bg-white dark:border-gray-600">
+      <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+        Edit
+      </h3>
+      <button (click)="closeAddModal()"
+        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
+        <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+        </svg>
+        <span class="sr-only">Close modal</span>
+      </button>
+    </div>
+    <!-- Modal body -->
+    <form class="p-6" #addSuperadminForm="ngForm" (ngSubmit)="addSuperadmin()">
+      <h3 class="text-2xl text-gray-900 font-semibold">Superadmin</h3>
+      <p class="mb-4 text-gray-600">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
+
+      <div class="mt-4">
+        <label for="first_name" class="text-sm md:text-[0.875rem] mb-1">First Name</label>
+        <input type="text" id="first_name" name="first_name" placeholder="e.g. John" [(ngModel)]="first_name" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+        focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+      </div>
+
+      <div class="mt-4">
+        <label for="last_name" class="text-sm md:text-[0.875rem] mb-1">Last Name</label>
+        <input type="text" id="last_name" name="last_name" placeholder="e.g. Doe" [(ngModel)]="last_name" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+        focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+      </div>
+
+      <div class="mt-4">
+        <label for="gender" class="text-sm md:text-[0.875rem] mb-1">Gender</label>
+        <select id="gender" [(ngModel)]="gender" name="gender"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+          <option value="" disabled selected>Choose the gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
+
+      <div class="mt-4">
+        <label for="email" class="text-sm md:text-[0.875rem] mb-1">Email</label>
+        <input type="text" id="email" name="email" placeholder="e.g. email@gmail.com" [(ngModel)]="email" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+        focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+      </div>
+
+      <div class="mt-4">
+        <label for="phone" class="text-sm md:text-[0.875rem] mb-1">Phone</label>
+        <input type="text" id="phone" name="phone" placeholder="e.g. 0813 1234 5678" [(ngModel)]="phone" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+        focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+      </div>
+
+      <div class="mt-4">
+        <label for="address" class="text-sm md:text-[0.875rem] mb-1">Address</label>
+        <input type="text" id="address" name="address" placeholder="e.g. Jl. Sm. Km (o゜▽゜)o☆" [(ngModel)]="address" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+        focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+      </div>
+
+
+    </form>
+
+    <!-- Modal footer -->
+    <div class="flex items-center p-4 border-t border-gray-200 rounded-b dark:border-gray-600">
+      <button (click)="updateSuperadmin()" type="button"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Draft</button>
+      <button  type="button"
+        class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700">Cancel</button>
+    </div>
+  </div>
+</div>
+  
+
+</div>

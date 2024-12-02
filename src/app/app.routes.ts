@@ -15,6 +15,8 @@ import { VehiclesComponent } from './content/SuperAdmin/vehicles/vehicles.compon
 import { RoutesComponent } from './content/SuperAdmin/routes/routes.component';
 import { DashboardParentComponent } from './content/Parent/dashboard/dashboard.component';
 import { ProfileParentComponent } from './content/Parent/profile/profile.component';
+import { UsersComponent } from './content/SuperAdmin/superadmin/users.component';
+import { AdminsComponent } from './content/SuperAdmin/admins/admins.component';
 
 const superAdminChildrenRoutes: Route[] = [
   {
@@ -25,6 +27,12 @@ const superAdminChildrenRoutes: Route[] = [
   {
     path: 'dashboard',
     component: DashboardSuperAdminComponent,
+    data: { breadcrumb: 'Dashboard' },
+  },
+  {
+    path: 'users',
+    component: UsersComponent,
+    data: { breadcrumb: 'Users' },
   },
   {
     path: 'profile',
@@ -33,6 +41,12 @@ const superAdminChildrenRoutes: Route[] = [
   {
     path: 'schools',
     component: SchoolsComponent,
+    data: { breadcrumb: 'Schools' },
+  },
+  {
+    path: 'admins',
+    component: AdminsComponent,
+    data: { breadcrumb: 'Admin' },
   },
   {
     path: 'drivers',
@@ -85,11 +99,6 @@ const parentChildrenRoutes: Route[] = [
 ];
 
 export const routes: Routes = [
-  // {
-  //   path: '',
-  //   redirectTo: 'dashboard',
-  //   pathMatch: 'full',
-  // },
   {
     path: 'login',
     component: LoginComponent,
@@ -102,19 +111,19 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: FullComponent,
-    // canActivate: [AuthGuard,],
+    canActivate: [AuthGuard],
     children: adminChildrenRoutes,
   },
   {
     path: 'superadmin',
     component: FullComponent,
-    // canActivate: [AuthGuard,],
+    canActivate: [AuthGuard],
     children: superAdminChildrenRoutes,
   },
   {
     path: 'parent',
     component: FullComponent,
-    // canActivate: [AuthGuard,],
+    canActivate: [AuthGuard],
     children: parentChildrenRoutes,
   },
   {

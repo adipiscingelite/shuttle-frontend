@@ -1,12 +1,11 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Import CommonModule if standalone
-import { Router, RouterModule } from '@angular/router'; // Import RouterModule for routing
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { CookieService } from 'ngx-cookie-service';
-// Define the type for svgIcons
 interface SvgIcons {
   [key: string]: string;
 }
@@ -37,9 +36,9 @@ export class SidebarComponent implements OnInit {
   last_name: string = '';
   password: string = '';
   status: string = '';
-  role_code: string = 'P';
+  role_code: string = 'SA';
   role: string = '';
-  picture: string = ''
+  picture: string = '';
 
   searchText: string = '';
   sections: {
@@ -51,10 +50,9 @@ export class SidebarComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private cookieService: CookieService,
     private router: Router,
-    @Inject('apiUrl') apiUrl: string
+    @Inject('apiUrl') apiUrl: string,
   ) {
     this.apiUrl = apiUrl;
-  
   }
 
   svgIcons: SvgIcons = {
@@ -82,15 +80,13 @@ export class SidebarComponent implements OnInit {
   sectionMatchesSearch(section: Section): boolean {
     return section.items.some(this.matchesSearch.bind(this));
   }
-  
 
   async ngOnInit(): Promise<void> {
     await this.fetchProfileData();
 
     this.loadMenuByRole(this.role_code);
-    const timezone =Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     console.log('jawir', timezone);
-    
   }
 
   async fetchProfileData(): Promise<void> {
@@ -111,7 +107,7 @@ export class SidebarComponent implements OnInit {
       this.password = response.data.password;
       this.status = response.data.status;
       this.role_code = response.data.role_code;
-      this.picture = response.data.picture
+      this.picture = response.data.picture;
 
       console.log(this.role_code);
     } catch (error: unknown) {
@@ -142,17 +138,27 @@ export class SidebarComponent implements OnInit {
           ],
         },
         {
+          title: 'SA MANAGEMENT',
+          items: [
+            {
+              name: 'Superadmin Lists',
+              icon: 'studentList',
+              path: '/superadmin/users',
+            },
+          ],
+        },
+        {
           title: 'SCHOOL MANAGEMENT',
           items: [
+            {
+              name: 'School Admin Lists',
+              icon: 'adminList',
+              path: '/superadmin/admins',
+            },
             {
               name: 'School Lists',
               icon: 'schoolList',
               path: '/superadmin/schools',
-            },
-            {
-              name: 'Admin Lists',
-              icon: 'adminList',
-              path: '/superadmin/admins',
             },
           ],
         },
@@ -285,7 +291,7 @@ export class SidebarComponent implements OnInit {
           headers: {
             Authorization: `${token}`,
           },
-        }
+        },
       )
       .then((response) => {
         console.log(response.data.message);

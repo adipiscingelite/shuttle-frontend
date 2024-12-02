@@ -1,23 +1,18 @@
 <div>
-  <div class="flex items-center my-2">
-    <h1 class="text-md font-medium text-neutral-800">Dashboard</h1>
-    <!-- <div class=""> -->
-    <!-- <button class="flex items-center ml-auto bg-gray-100 font-medium px-4 py-1 rounded-md border shadow">
-      <div>+</div>
-      <p>Add Student</p>
-    </button> -->
-    <!-- </div> -->
-  </div>
 
-  <h1 class="my-6 text-xl font-semibold">
-    Hi, Admin Sekolah
-  </h1>
+  <app-header></app-header>
 
+  <!-- <h1 class="my-6 text-xl font-semibold">
+    Hi, Bro
+  </h1> -->
+
+  <app-hello-and-date></app-hello-and-date>
   <hr>
 
-  <div class="grid grid-cols-4 my-8 px-2 gap-x-12">
+  <h1 class="mt-4 text-xl font-bold">User Overview</h1>
+  <div class="grid grid-cols-4 my-4 px-2 gap-x-8">
     <a routerLink="/admin/students"
-      class="w-auto aspect-square p-6 border shadow-md rounded-lg hover:bg-gray-50 hover:scale-95 hover:shadow-lg transform transition-transform cursor-pointer">
+      class="w-auto aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
       <div>
         <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
           stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -35,11 +30,55 @@
           </path>
         </svg>
       </div>
-      <h1 class="text-[2.5rem] font-semibold text-blue-500 ">258</h1>
-      <p>Total Siswa</p>
+      <h1 class="text-[2.5rem] font-bold ">{{totalAdmin}}</h1>
+      <p>Total Admin</p>
+    </a>
+    <a routerLink="/admin/"
+      class="w-auto aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
+      <div>
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+          stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M18.844 7.875c-.138 1.906-1.552 3.375-3.094 3.375-1.542 0-2.959-1.468-3.094-3.375-.14-1.983 1.236-3.375 3.094-3.375 1.858 0 3.235 1.428 3.094 3.375Z">
+          </path>
+          <path
+            d="M15.75 14.25c-3.055 0-5.993 1.517-6.729 4.472-.097.391.148.778.55.778h12.358c.402 0 .646-.387.55-.778-.736-3.002-3.674-4.472-6.73-4.472Z">
+          </path>
+          <path
+            d="M9.375 8.716c-.11 1.522-1.253 2.722-2.484 2.722-1.232 0-2.377-1.2-2.485-2.722C4.294 7.132 5.406 6 6.891 6c1.484 0 2.596 1.161 2.484 2.716Z">
+          </path>
+          <path
+            d="M9.657 14.341c-.846-.387-1.778-.536-2.766-.536-2.437 0-4.786 1.211-5.374 3.572-.077.312.118.62.44.62h5.262">
+          </path>
+        </svg>
+      </div>
+      <h1 class="text-[2.5rem] font-bold ">258</h1>
+      <p>Total Sekolah</p>
+    </a>
+    <a routerLink="/admin/"
+      class="w-auto aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
+      <div>
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+          stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M18.844 7.875c-.138 1.906-1.552 3.375-3.094 3.375-1.542 0-2.959-1.468-3.094-3.375-.14-1.983 1.236-3.375 3.094-3.375 1.858 0 3.235 1.428 3.094 3.375Z">
+          </path>
+          <path
+            d="M15.75 14.25c-3.055 0-5.993 1.517-6.729 4.472-.097.391.148.778.55.778h12.358c.402 0 .646-.387.55-.778-.736-3.002-3.674-4.472-6.73-4.472Z">
+          </path>
+          <path
+            d="M9.375 8.716c-.11 1.522-1.253 2.722-2.484 2.722-1.232 0-2.377-1.2-2.485-2.722C4.294 7.132 5.406 6 6.891 6c1.484 0 2.596 1.161 2.484 2.716Z">
+          </path>
+          <path
+            d="M9.657 14.341c-.846-.387-1.778-.536-2.766-.536-2.437 0-4.786 1.211-5.374 3.572-.077.312.118.62.44.62h5.262">
+          </path>
+        </svg>
+      </div>
+      <h1 class="text-[2.5rem] font-bold ">258</h1>
+      <p>Total Driver</p>
     </a>
     <div
-      class="w-auto aspect-square p-6 border shadow-md rounded-lg hover:bg-gray-50 hover:scale-95 hover:shadow-lg transform transition-transform cursor-pointer">
+      class="w-auto aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
       <div>
         <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
           stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -50,11 +89,15 @@
           <path d="M15 14h3"></path>
         </svg>
       </div>
-      <h1 class="text-[2.5rem] font-semibold text-green-500 ">25</h1>
-      <p>Driver Aktif</p>
+      <h1 class="text-[2.5rem] font-bold ">25</h1>
+      <p>Total Kendaraan</p>
     </div>
+  </div>
+
+  <h1 class="mt-4 text-xl font-bold">Overview</h1>
+  <div class="grid grid-cols-4 my-4 px-2 gap-x-8">
     <div
-      class="w-auto aspect-square p-6 border shadow-md rounded-lg hover:bg-gray-50 hover:scale-95 hover:shadow-lg transform transition-transform cursor-pointer">
+      class="w-auto aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
       <div>
         <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
           stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -65,11 +108,11 @@
           <path d="M19 7v10"></path>
         </svg>
       </div>
-      <h1 class="text-[2.5rem] font-semibold text-yellow-500 ">95%</h1>
+      <h1 class="text-[2.5rem] font-bold  ">95%</h1>
       <p>Ketepatan Waktu</p>
     </div>
     <div
-      class="w-auto aspect-square p-6 border shadow-md rounded-lg hover:bg-gray-50 hover:scale-95 hover:shadow-lg transform transition-transform cursor-pointer">
+      class="w-auto aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
       <div>
         <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
           stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -77,9 +120,8 @@
           <path d="M12.004 6v6.004l4.24 4.24"></path>
         </svg>
       </div>
-      <h1 class="text-[2.5rem] font-semibold text-red-500 ">06:45</h1>
+      <h1 class="text-[2.5rem] font-bold  ">06:45</h1>
       <p>Rata Rata Waktu Jemput</p>
     </div>
-
   </div>
 </div>

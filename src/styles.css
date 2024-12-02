@@ -21,6 +21,10 @@
   border: none;
 }
 
+.ag-theme-quartz .ag-paging-row-summary-panel  {
+  display: none;
+}
+
 /* *{
   font-family: "Montserrat", sans-serif;
 } */
