@@ -34,7 +34,6 @@
               }
             ],
             "styles": [
-              "src/custom-theme.scss",
               "src/styles.css",
               "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css",
               "node_modules/ag-grid-community/styles/ag-grid.css",

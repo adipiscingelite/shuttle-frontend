@@ -1,4 +1,12 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Inject,
+  Input,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -6,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { CookieService } from 'ngx-cookie-service';
+import { ProfileService } from '../../Services/profile/profile.service';
 interface SvgIcons {
   [key: string]: string;
 }
@@ -29,6 +38,8 @@ interface Section {
 })
 export class SidebarComponent implements OnInit {
   private apiUrl: string;
+  @Input() isSidebarVisible!: boolean;
+  @Output() close = new EventEmitter<void>();
 
   user_id: string = '';
   email: string = '';
@@ -36,9 +47,11 @@ export class SidebarComponent implements OnInit {
   last_name: string = '';
   password: string = '';
   status: string = '';
-  role_code: string = 'SA';
+  role_code: string = '';
   role: string = '';
   picture: string = '';
+
+  initialAvatar: string = '';
 
   searchText: string = '';
   sections: {
@@ -47,6 +60,7 @@ export class SidebarComponent implements OnInit {
   }[] = [];
 
   constructor(
+    private profileService: ProfileService,
     private sanitizer: DomSanitizer,
     private cookieService: CookieService,
     private router: Router,
@@ -86,41 +100,46 @@ export class SidebarComponent implements OnInit {
 
     this.loadMenuByRole(this.role_code);
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    console.log('jawir', timezone);
+    console.log('sidebar timezone', timezone);
   }
 
   async fetchProfileData(): Promise<void> {
-    const token = this.cookieService.get('accessToken');
     try {
-      const response = await axios.get(`${this.apiUrl}/api/my/profile`, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
+      await this.profileService.fetchProfileData();
+      this.profileService.profileData$.subscribe((data) => {
+        if (data) {
+          this.user_id = data.user_id;
+          this.email = data.email;
+          this.first_name = data.first_name;
+          this.last_name = data.last_name;
+          this.password = data.password;
+          this.status = data.status;
+          this.role_code = data.role_code;
+          this.role = data.role;
+          this.picture = data.picture;
 
-      console.log('profil ', response);
-
-      this.user_id = response.data.user_id;
-      this.email = response.data.email;
-      this.first_name = response.data.first_name;
-      this.last_name = response.data.last_name;
-      this.password = response.data.password;
-      this.status = response.data.status;
-      this.role_code = response.data.role_code;
-      this.picture = response.data.picture;
-
-      console.log(this.role_code);
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 500) {
-          console.log(error.response.data.message);
-        } else {
-          console.log('Axios error:', error.message);
+          this.initialAvatar =
+            this.first_name.charAt(0).toUpperCase() +
+            this.last_name.charAt(0).toUpperCase();
         }
-      } else {
-        console.error('Unknown error:', error);
-      }
+        console.log('sidebar fetch profile', this.email);
+      });
+    } catch (error) {
+      console.error('Error fetching profile data in sidebar', error);
     }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['isSidebarVisible']) {
+    }
+  }
+
+  closeSidebar() {
+    this.close.emit();
+  }
+
+  onNavigate() {
+    this.closeSidebar();
   }
 
   loadMenuByRole(role: string): void {
@@ -151,14 +170,14 @@ export class SidebarComponent implements OnInit {
           title: 'SCHOOL MANAGEMENT',
           items: [
             {
-              name: 'School Admin Lists',
-              icon: 'adminList',
-              path: '/superadmin/admins',
-            },
-            {
               name: 'School Lists',
               icon: 'schoolList',
               path: '/superadmin/schools',
+            },
+            {
+              name: 'School Admin Lists',
+              icon: 'adminList',
+              path: '/superadmin/admins',
             },
           ],
         },
@@ -175,11 +194,11 @@ export class SidebarComponent implements OnInit {
               icon: 'car',
               path: '/superadmin/vehicles',
             },
-            {
-              name: 'Routes Active',
-              icon: 'routeList',
-              path: '/superadmin/routes',
-            },
+            // {
+            //   name: 'Routes Active',
+            //   icon: 'routeList',
+            //   path: '/superadmin/routes',
+            // },
           ],
         },
       ];

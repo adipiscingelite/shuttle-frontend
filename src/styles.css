@@ -24,6 +24,9 @@
 .ag-theme-quartz .ag-paging-row-summary-panel  {
   display: none;
 }
+/* .ag-paging-panel {
+  display: block !important;
+} */
 
 /* *{
   font-family: "Montserrat", sans-serif;

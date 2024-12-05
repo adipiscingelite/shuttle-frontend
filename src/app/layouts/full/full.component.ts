@@ -5,6 +5,7 @@ import { HeaderComponent } from '../../navigations/header/header.component';
 import { SidebarComponent } from '../../navigations/sidebar/sidebar.component';
 import axios from 'axios';
 import { CookieService } from 'ngx-cookie-service';
+import { ProfileService } from '../../Services/profile/profile.service';
 
 @Component({
   selector: 'app-full',
@@ -13,32 +14,15 @@ import { CookieService } from 'ngx-cookie-service';
   templateUrl: './full.component.html',
   styleUrl: './full.component.css',
 })
-export class FullComponent implements OnInit {
-  private apiUrl: string;
+export class FullComponent {
+  // private apiUrl: string;
+  isSidebarVisible: boolean = false;
 
-  user_id: string = '';
-
-  constructor(
-    private cookieService: CookieService,
-    @Inject('apiUrl') apiUrl: string
-  ) {
-    this.apiUrl = apiUrl;
+  handlerSidebarVisibility(newState: boolean) {
+    this.isSidebarVisible = newState;
   }
 
-  async ngOnInit(): Promise<void> {
-    await this.fetchProfileData();
-  }
-
-  async fetchProfileData(): Promise<void> {
-    const token = this.cookieService.get('accessToken');
-
-    try {
-      const response = await axios.get(`${this.apiUrl}/api/my/profile`, {
-        headers: { Authorization: `${token}` },
-      });
-      this.user_id = response.data.id;
-    } catch (error) {
-      console.error('Error fetching profile data:', error);
-    }
+  handleSidebarClose() {
+    this.isSidebarVisible = false;
   }
 }

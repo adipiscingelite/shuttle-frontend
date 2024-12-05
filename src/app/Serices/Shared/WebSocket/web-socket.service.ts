@@ -12,21 +12,21 @@ export class WebSocketService {
   constructor(private cookieService: CookieService) {}
 
   async initializeWebSocket(apiUrl: string, ws: string): Promise<void> {
-    const token = this.cookieService.get('accessToken');
-    try {
-      const response = await axios.get(
-        `${apiUrl}/api/my/profile`,
-        {
-          headers: { Authorization: `${token}` },
-        }
-      );
-      this.userId = response.data.id;
-      console.log('woi', response.data);
+    // const token = this.cookieService.get('accessToken');
+    // try {
+    //   const response = await axios.get(
+    //     `${apiUrl}/api/my/profile`,
+    //     {
+    //       headers: { Authorization: `${token}` },
+    //     }
+    //   );
+    //   this.userId = response.data.id;
+    //   console.log('woi', response.data);
 
-      this.connectToWebSocket(ws);
-    } catch (error) {
-      console.error('Error fetching profile data:', error);
-    }
+    //   this.connectToWebSocket(ws);
+    // } catch (error) {
+    //   console.error('Error fetching profile data:', error);
+    // }
   }
 
   private connectToWebSocket(ws: string) {

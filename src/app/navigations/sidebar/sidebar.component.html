@@ -1,4 +1,10 @@
-<aside class="hidden md:flex md:flex-col md:w-60 h-screen px-5 pt-3 overflow-y-scroll">
+<div *ngIf="isSidebarVisible" class="absolute top-0 left-0 w-screen h-screen bg-black opacity-35"
+  (click)="closeSidebar()">
+</div>
+<aside [ngClass]="{
+  'relative hidden md:flex md:flex-col md:w-60 md:h-screen md:px-5 md:pt-3 md:overflow-y-scroll': !isSidebarVisible,
+  'absolute top-0 left-0 w-[75vw] h-screen bg-gray-100 z-50 px-5 py-3 overflow-y-scroll': isSidebarVisible
+}">
   <div class="relative h-screen flex flex-col justify-between flex-1">
     <nav class="-mx-3 space-y-6 mb-2 ">
       <div class="sticky top-0 left-0 space-y-4 bg-gray-100 pb-2 border-b-2 border-neutral-500">
@@ -15,7 +21,8 @@
 
         <div class="w-full h-auto flex items-center gap-x-4 rounded-lg shadow-md bg-white px-4 py-3 font-medium">
           <div>
-            <img src="https://cdn.iconscout.com/icon/premium/png-512-thumb/indonesia-51-657957.png?f=webp&w=512" class="w-5 aspect-square" alt="">
+            <img src="https://cdn.iconscout.com/icon/premium/png-512-thumb/indonesia-51-657957.png?f=webp&w=512"
+              class="w-5 aspect-square" alt="">
           </div>
           <p>Bahasa Indonesia</p>
         </div>
@@ -47,11 +54,12 @@
             {{ section.title }}
           </h2>
           <nav class="space-y-1">
-            <div *ngFor="let item of section.items" class="px-2 py-1 rounded-md text-sm text-black font-medium hover:bg-stone-50 hover:rounded-full"
+            <div *ngFor="let item of section.items"
+              class="px-2 py-1 rounded-md text-sm text-black font-medium hover:bg-stone-50 hover:rounded-full"
               routerLinkActive="sidebarActive">
               <!-- Menampilkan item jika cocok dengan pencarian -->
               <div *ngIf="matchesSearch(item)">
-                <a [routerLink]="item.path">
+                <a [routerLink]="item.path" (click)="onNavigate()">
                   <div class="flex items-center space-x-1 px-2">
                     <span class="material-icons" [innerHTML]="getSvgIcon(item.icon)"></span>
                     <p class="block px-3 py-2 rounded-md capitalize">
@@ -71,9 +79,12 @@
       <div
         class="-mx-3 mt-auto w-full h-auto flex items-center py-2 px-1 bg-white rounded-lg border-b border-neutral-600">
         <a [routerLink]="'profile'" class="w-3/4 flex items-center space-x-2">
-          <div class="w-1/4 p-0.5 aspect-square rounded-full border border-neutral-400 shadow">
-            <img class="w-full h-full aspect-auto object-fill rounded-full border border-gray-500"
-              src="{{picture}}" alt="">
+          <div class="w-1/4 p-0.5 aspect-square rounded-full border border-neutral-400 text-center shadow">
+            <img *ngIf="picture" class="w-full h-full aspect-auto object-fill rounded-full border border-gray-500"
+              src="{{picture}}" alt="Profil User" loading="lazy">
+            <div *ngIf="!picture"
+              class="w-full h-full flex justify-center items-center rounded-full border border-gray-500 md:text-sm text-white bg-blue-700">
+              {{initialAvatar}}</div>
           </div>
           <div class="w-3/4 leading-5">
             <p class="text-md font-medium truncate">{{first_name + ' ' + last_name}}</p>

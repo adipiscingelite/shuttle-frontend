@@ -1,16 +1,14 @@
 <div>
-  <app-header></app-header>
-
 
   <h1 class="my-6 text-xl font-semibold uppercase">
     Superadmin list
   </h1>
 
-  <div class="flex items-center my-4">
+  <div class="flex items-center w-full my-4 gap-x-1">
     <form class="form relative">
       <input
-        class="input w-72 rounded-full pr-8 px-4 py-2 text-sm bg-gray-100 border-2 border-transparent focus:outline-none focus:border-blue-500 placeholder-gray-500 transition-all duration-300 shadow-md"
-        placeholder="Search Item" required="" type="text" id="table-search" name="searchText" />
+        class="input w-full md:w-72 rounded-full pr-8 px-4 py-2 text-sm bg-gray-100 border-2 border-transparent focus:outline-none focus:border-blue-500 placeholder-gray-500 transition-all duration-300 shadow-md"
+        placeholder="Search Item" required="" type="text" id="search-item" name="searchText" />
       <button type="reset" class="absolute right-3 -translate-y-1/2 top-1/2 p-1">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-700" fill="none" viewBox="0 0 24 24"
           stroke="currentColor">
@@ -20,18 +18,17 @@
     </form>
 
     <button (click)="openAddModal()"
-      class="flex items-center gap-x-1 ml-auto bg-[#3A3A3A] hover:bg-neutral-600 text-white font-medium px-4 py-2 rounded-md border shadow hover:shadow-md">
-      <div>
+      class="flex items-center gap-x-1 ml-auto bg-[#3A3A3A] hover:bg-neutral-600 text-white font-medium px-3 md:px-4 py-2 rounded-md border shadow hover:shadow-md">
+      <div class="">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
           stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="m12.03 5-.018 14"></path>
           <path d="M5 12h14"></path>
         </svg>
       </div>
-      <p>Add Superadmin</p>
+      <p class="text-sm md:text-base">Add <span class="hidden md:inline">Superadmin</span></p>
     </button>
   </div>
-
 
   <div class="w-fit bg-gray-50 px-4 py-2 text-sm font-medium border rounded-lg shadow-md">
     {{ startRow }} - {{ endRow }} of {{ totalRows }} item(s)
@@ -40,8 +37,8 @@
   <div class="w-full h-[80vh] my-4">
     <ag-grid-angular style="width: 100%; height: 100%; overflow-x: scroll;" [class]="themeClass"
       [rowData]="rowListAllUser" [columnDefs]="colHeaderListAllUser" [defaultColDef]="defaultColDef"
-      [gridOptions]="gridOptions" [pagination]="true" [paginationPageSize]="10"
-      (firstDataRendered)="totalRowCount($event)"></ag-grid-angular>
+      [gridOptions]="gridOptions" (paginationChanged)="onPaginationChanged($event)" [paginationPageSize]="10"
+      [pagination]="true"></ag-grid-angular>
   </div>
 
 
@@ -69,146 +66,254 @@
         <p class="mb-4 text-gray-600">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
 
         <div class="mt-4">
-          <label for="first_name" class="text-sm md:text-[0.875rem] mb-1">First Name</label>
-          <input type="text" id="first_name" name="first_name" placeholder="e.g. John" [(ngModel)]="first_name" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-          focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+          <label for="username" class="text-sm md:text-[0.875rem] mb-1">Username <app-asterisk></app-asterisk></label>
+          <input type="text" id="username" name="username" placeholder="e.g. JohnDoe_10" [(ngModel)]="username"
+            class="border text-sm rounded-lg p-2 px-3 w-full"
+            [ngClass]="{'border-red-500': usernameModel.touched && usernameModel.invalid}" maxlength=""
+            #usernameModel="ngModel" required>
+          <div *ngIf="usernameModel.invalid && usernameModel.touched"><app-required-common></app-required-common></div>
         </div>
 
         <div class="mt-4">
-          <label for="last_name" class="text-sm md:text-[0.875rem] mb-1">Last Name</label>
-          <input type="text" id="last_name" name="last_name" placeholder="e.g. Doe" [(ngModel)]="last_name" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-          focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+          <label for="first_name" class="text-sm md:text-[0.875rem] mb-1">First Name
+            <app-asterisk></app-asterisk></label>
+          <input type="text" id="first_name" name="first_name" placeholder="e.g. John" [(ngModel)]="first_name"
+            class="border text-sm rounded-lg p-2 px-3 w-full"
+            [ngClass]="{'border-red-500': firstnameModel.touched && firstnameModel.invalid}" maxlength=""
+            #firstnameModel="ngModel" required>
+          <div *ngIf="firstnameModel.invalid && firstnameModel.touched"><app-required-common></app-required-common>
+          </div>
         </div>
 
         <div class="mt-4">
-          <label for="gender" class="text-sm md:text-[0.875rem] mb-1">Gender</label>
+          <label for="last_name" class="text-sm md:text-[0.875rem] mb-1">Last Name <app-asterisk></app-asterisk></label>
+          <input type="text" id="last_name" name="last_name" placeholder="e.g. Doe" [(ngModel)]="last_name"
+            class="border text-sm rounded-lg p-2 px-3 w-full"
+            [ngClass]="{'border-red-500': lastnameModel.touched && lastnameModel.invalid}" maxlength=""
+            #lastnameModel="ngModel" required>
+          <div *ngIf="lastnameModel.invalid && lastnameModel.touched"><app-required-common></app-required-common></div>
+        </div>
+
+        <div class="mt-4">
+          <label for="gender" class="text-sm md:text-[0.875rem] mb-1">Gender <app-asterisk></app-asterisk></label>
           <select id="gender" [(ngModel)]="gender" name="gender"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            [ngClass]="{'border-red-500': genderModel.touched && genderModel.invalid}" #genderModel="ngModel" required>
             <option value="" disabled selected>Choose the gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
+          <div *ngIf="genderModel.invalid && genderModel.touched"><app-required-common></app-required-common></div>
         </div>
 
         <div class="mt-4">
-          <label for="email" class="text-sm md:text-[0.875rem] mb-1">Email</label>
-          <input type="text" id="email" name="email" placeholder="e.g. email@gmail.com" [(ngModel)]="email" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-          focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+          <label for="email" class="text-sm md:text-[0.875rem] mb-1">Email <app-asterisk></app-asterisk></label>
+          <input type="email" id="email" name="email" placeholder="e.g. email@gmail.com" [(ngModel)]="email"
+            class="border text-sm rounded-lg p-2 px-3 w-full"
+            [ngClass]="{'border-red-500': emailModel.touched && emailModel.invalid}" maxlength="" #emailModel="ngModel"
+            required>
+          <div *ngIf="emailModel.invalid && emailModel.touched"><app-required-common></app-required-common></div>
         </div>
 
         <div class="mt-4">
-          <label for="password" class="text-sm md:text-[0.875rem] mb-1">Password</label>
-          <input type="password" id="password" name="password" placeholder="e.g. secure123" [(ngModel)]="password" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-          focus:invalid:border-pink-500 focus:invalid:ring-pink-500" autocomplete="new-password">
-        </div>
-
-        <!-- <div class="mt-4 hidden">
-          <label for="role" class="text-sm md:text-[0.875rem] mb-1">Role</label>
-          <input type="text" id="role" name="role" value="superadmin" [(ngModel)]="role" class=" border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-          focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
-        </div> -->
-
-        <div class="mt-4">
-          <label for="phone" class="text-sm md:text-[0.875rem] mb-1">Phone</label>
-          <input type="text" id="phone" name="phone" placeholder="e.g. 0813 1234 5678" [(ngModel)]="phone" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-          focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+          <label for="password" class="text-sm md:text-[0.875rem] mb-1">Password <app-asterisk></app-asterisk></label>
+          <input type="password" id="password" name="password" placeholder="e.g. secure123" [(ngModel)]="password"
+            class="border text-sm rounded-lg p-2 px-3 w-full"
+            [ngClass]="{'border-red-500': passwordModel.touched && passwordModel.invalid}" autocomplete="new-password"
+            minlength="8" #passwordModel="ngModel" required>
+          <div *ngIf="passwordModel.invalid && passwordModel.touched"><app-required-common></app-required-common></div>
         </div>
 
         <div class="mt-4">
-          <label for="address" class="text-sm md:text-[0.875rem] mb-1">Address</label>
-          <input type="text" id="address" name="address" placeholder="e.g. Jl. Sm. Km (o゜▽゜)o☆" [(ngModel)]="address" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-          focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+          <label for="phone" class="text-sm md:text-[0.875rem] mb-1">Phone <app-asterisk></app-asterisk></label>
+          <input type="tel" id="phone" name="phone" placeholder="e.g. 081312345678" [(ngModel)]="phone"
+            class="border text-sm rounded-lg p-2 px-3 w-full"
+            [ngClass]="{'border-red-500': phoneModel.touched && phoneModel.invalid}" minlength="8" maxlength="18"
+            #phoneModel="ngModel" required>
+          <div *ngIf="phoneModel.invalid && phoneModel.touched"><app-required-common></app-required-common></div>
         </div>
 
+        <div class="mt-4">
+          <label for="address" class="text-sm md:text-[0.875rem] mb-1">Address <app-asterisk></app-asterisk></label>
+          <input type="text" id="address" name="address" placeholder="e.g. Durian Runtuh, Sleman, Yogyakarta"
+            [(ngModel)]="address" class="border text-sm rounded-lg p-2 px-3 w-full"
+            [ngClass]="{'border-red-500': addressModel.touched && addressModel.invalid}" maxlength=""
+            #addressModel="ngModel" required>
+          <div *ngIf="addressModel.invalid && addressModel.touched"><app-required-common></app-required-common></div>
+        </div>
 
       </form>
 
       <!-- Modal footer -->
-      <div class="flex items-center p-4 border-t border-gray-200 rounded-b dark:border-gray-600">
-        <button (click)="addSuperadmin()" type="button"
-          class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Draft</button>
+      <div
+        class="w-full flex items-center justify-end p-4 gap-x-3 border-t border-gray-200 rounded-b dark:border-gray-600">
         <button (click)="closeAddModal()" type="button"
-          class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700">Cancel</button>
+          class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700">Cancel</button>
+        <button (click)="addSuperadmin()" type="button"
+          class="text-white bg-[#3A3A3A] hover:bg-black focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
+          [disabled]="!addSuperadminForm.form.valid">Sumbit</button>
       </div>
     </div>
   </div>
 
 
   <div *ngIf="isModalEditOpen" tabindex="-1" (click)="closeEditModal()"
-  class="fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
-  <div (click)="$event.stopPropagation()"
-    class="relative p w-full max-w-xl md:max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
-    <!-- Modal header -->
-    <div class="sticky top-0 flex items-center justify-between p-4 border-b rounded-t bg-white dark:border-gray-600">
-      <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-        Edit
-      </h3>
-      <button (click)="closeAddModal()"
-        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
-        <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-        </svg>
-        <span class="sr-only">Close modal</span>
-      </button>
-    </div>
-    <!-- Modal body -->
-    <form class="p-6" #addSuperadminForm="ngForm" (ngSubmit)="addSuperadmin()">
-      <h3 class="text-2xl text-gray-900 font-semibold">Superadmin</h3>
-      <p class="mb-4 text-gray-600">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
-
-      <div class="mt-4">
-        <label for="first_name" class="text-sm md:text-[0.875rem] mb-1">First Name</label>
-        <input type="text" id="first_name" name="first_name" placeholder="e.g. John" [(ngModel)]="first_name" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-        focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+    class="fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
+    <div (click)="$event.stopPropagation()"
+      class="relative p w-full max-w-xl md:max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
+      <!-- Modal header -->
+      <div class="sticky top-0 flex items-center justify-between p-4 border-b rounded-t bg-white dark:border-gray-600">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          Edit
+        </h3>
+        <button (click)="closeEditModal()"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
+          <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
       </div>
+      <!-- Modal body -->
+      <form class="p-6" #editSuperadminForm="ngForm" (ngSubmit)="updateSuperadmin()">
+        <h3 class="text-2xl text-gray-900 font-semibold">Superadmin</h3>
+        <p class="mb-4 text-gray-600">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
 
-      <div class="mt-4">
-        <label for="last_name" class="text-sm md:text-[0.875rem] mb-1">Last Name</label>
-        <input type="text" id="last_name" name="last_name" placeholder="e.g. Doe" [(ngModel)]="last_name" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-        focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
+        <div class="mt-4">
+          <label for="username" class="text-sm md:text-[0.875rem] mb-1">Username <app-asterisk></app-asterisk></label>
+          <input type="text" id="username" name="username" placeholder="e.g. JohnDoe_10" [(ngModel)]="username" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+          focus:invalid:border-pink-500 focus:invalid:ring-pink-500" maxlength="" #usernameModel="ngModel" required>
+          <div *ngIf="usernameModel.invalid && usernameModel.touched"><app-required-common></app-required-common></div>
+        </div>
+
+        <div class="mt-4">
+          <label for="first_name" class="text-sm md:text-[0.875rem] mb-1">First Name
+            <app-asterisk></app-asterisk></label>
+          <input type="text" id="first_name" name="first_name" placeholder="e.g. John" [(ngModel)]="first_name" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+        focus:invalid:border-pink-500 focus:invalid:ring-pink-500" maxlength="" #firstnameModel="ngModel" required>
+          <div *ngIf="firstnameModel.invalid && firstnameModel.touched"><app-required-common></app-required-common>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <label for="last_name" class="text-sm md:text-[0.875rem] mb-1">Last Name <app-asterisk></app-asterisk></label>
+          <input type="text" id="last_name" name="last_name" placeholder="e.g. Doe" [(ngModel)]="last_name" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+        focus:invalid:border-pink-500 focus:invalid:ring-pink-500" maxlength="" #lastnameModel="ngModel" required>
+          <div *ngIf="lastnameModel.invalid && lastnameModel.touched"><app-required-common></app-required-common></div>
+        </div>
+
+        <div class="mt-4">
+          <label for="gender" class="text-sm md:text-[0.875rem] mb-1">Gender <app-asterisk></app-asterisk></label>
+          <select id="gender" [(ngModel)]="gender" name="gender"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            #genderModel="ngModel" required>
+            <option value="" disabled selected>Choose the gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+          <div *ngIf="genderModel.invalid && genderModel.touched"><app-required-common></app-required-common></div>
+        </div>
+
+        <div class="mt-4">
+          <label for="email" class="text-sm md:text-[0.875rem] mb-1">Email <app-asterisk></app-asterisk></label>
+          <input type="email" id="email" name="email" placeholder="e.g. email@gmail.com" [(ngModel)]="email" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+        focus:invalid:border-pink-500 focus:invalid:ring-pink-500" maxlength="" #emailModel="ngModel" required>
+          <div *ngIf="emailModel.invalid && emailModel.touched"><app-required-common></app-required-common></div>
+        </div>
+
+        <div class="mt-4">
+          <label for="phone" class="text-sm md:text-[0.875rem] mb-1">Phone <app-asterisk></app-asterisk></label>
+          <input type="tel" id="phone" name="phone" placeholder="e.g. 081312345678" [(ngModel)]="phone" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+        focus:invalid:border-pink-500 focus:invalid:ring-pink-500" minlength="8" maxlength="18" #phoneModel="ngModel"
+            required>
+          <div *ngIf="phoneModel.invalid && phoneModel.touched"><app-required-common></app-required-common></div>
+        </div>
+
+        <div class="mt-4">
+          <label for="address" class="text-sm md:text-[0.875rem] mb-1">Address <app-asterisk></app-asterisk></label>
+          <input type="text" id="address" name="address" placeholder="e.g. Durian Runtuh, Sleman, Yogyakarta"
+            [(ngModel)]="address" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+        focus:invalid:border-pink-500 focus:invalid:ring-pink-500" maxlength="" #addressModel="ngModel" required>
+          <div *ngIf="addressModel.invalid && addressModel.touched"><app-required-common></app-required-common></div>
+        </div>
+
+      </form>
+
+      <!-- Modal footer -->
+      <div
+        class="w-full flex items-center justify-end p-4 gap-x-3 border-t border-gray-200 rounded-b dark:border-gray-600">
+        <button (click)="closeEditModal()" type="button"
+          class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700">Cancel</button>
+        <button (click)="updateSuperadmin()" type="button"
+          class="text-white bg-[#3A3A3A] hover:bg-black focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
+          [disabled]="!editSuperadminForm.form.valid">Sumbit</button>
       </div>
-
-      <div class="mt-4">
-        <label for="gender" class="text-sm md:text-[0.875rem] mb-1">Gender</label>
-        <select id="gender" [(ngModel)]="gender" name="gender"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-          <option value="" disabled selected>Choose the gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-        </select>
-      </div>
-
-      <div class="mt-4">
-        <label for="email" class="text-sm md:text-[0.875rem] mb-1">Email</label>
-        <input type="text" id="email" name="email" placeholder="e.g. email@gmail.com" [(ngModel)]="email" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-        focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
-      </div>
-
-      <div class="mt-4">
-        <label for="phone" class="text-sm md:text-[0.875rem] mb-1">Phone</label>
-        <input type="text" id="phone" name="phone" placeholder="e.g. 0813 1234 5678" [(ngModel)]="phone" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-        focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
-      </div>
-
-      <div class="mt-4">
-        <label for="address" class="text-sm md:text-[0.875rem] mb-1">Address</label>
-        <input type="text" id="address" name="address" placeholder="e.g. Jl. Sm. Km (o゜▽゜)o☆" [(ngModel)]="address" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-        focus:invalid:border-pink-500 focus:invalid:ring-pink-500">
-      </div>
-
-
-    </form>
-
-    <!-- Modal footer -->
-    <div class="flex items-center p-4 border-t border-gray-200 rounded-b dark:border-gray-600">
-      <button (click)="updateSuperadmin()" type="button"
-        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Draft</button>
-      <button  type="button"
-        class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700">Cancel</button>
     </div>
   </div>
-</div>
-  
 
+
+  <!-- <div tabindex="-1"
+    class="fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
+    <div (click)="$event.stopPropagation()"
+      class="relative p w-full max-w-xl md:max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
+      Modal header
+      <div class="sticky top-0 flex items-center justify-between p-4 border-b rounded-t bg-white dark:border-gray-600">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          Edit
+        </h3>
+        <button
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
+          <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+
+
+
+    </div>
+  </div> -->
+
+
+  <div   [ngClass]="{
+    'block': isModalDeleteOpen,
+    'hidden': !isModalDeleteOpen,
+    'animate-fade-in': isModalDeleteOpen,
+    'animate-fade-out': !isModalDeleteOpen
+  }" tabindex="-1" (click)="closeDeleteModal()"
+    class="fixed top-0 left-0 right-0 bottom-0 z-[90] flex items-center justify-center bg-gray-900 bg-opacity-20 select-none transition-all duration-1000">
+    <div (click)="$event.stopPropagation()"
+      class="relative flex justify-center w-full max-w-lg md:max-w-md bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto p-3 mx-4 md:mx-0">
+      <div class="text-center py-5">
+        <div class="w-fit flex justify-self-center p-2 rounded-full bg-red-100 text-red-500">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+            stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 12c0-4.969-4.031-9-9-9s-9 4.031-9 9 4.031 9 9 9 9-4.031 9-9Z"></path>
+            <path
+              d="m11.73 7.781.27 5.717.268-5.717a.267.267 0 0 0-.164-.26.269.269 0 0 0-.107-.021v0a.27.27 0 0 0-.266.281v0Z">
+            </path>
+            <path fill="currentColor" stroke="none" d="M12 17.242a.937.937 0 1 1 0-1.874.937.937 0 0 1 0 1.874Z"></path>
+          </svg>
+        </div>
+        <h1 class="my-1 text-2xl font-medium">
+          Hapus Data
+        </h1>
+        <p class="text-sm text-neutral-600">
+          Apakah anda yakin ingin menghapus data ini?
+        </p>
+        <p class="text-sm text-neutral-600">
+          Aksi ini tidak dapat dibatalkan.
+        </p>
+        <div class="grid grid-cols-2 gap-x-3 mt-6 text-sm font-medium capitalize">
+          <button class="px-4 py-2 rounded bg-neutral-200 hover:bg-neutral-300 text-neutral-800 shadow hover:shadow-md"
+            (click)="closeDeleteModal()">Batal</button>
+          <button class="px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white shadow hover:shadow-md"
+            (click)="performDeleteSuperAdmin(id)">Hapus</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

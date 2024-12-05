@@ -1,17 +1,10 @@
 <div>
-
-  <app-header></app-header>
-
-  <!-- <h1 class="my-6 text-xl font-semibold">
-    Hi, Bro
-  </h1> -->
-
   <app-hello-and-date></app-hello-and-date>
   <hr>
 
   <h1 class="mt-4 text-xl font-bold">User Overview</h1>
-  <div class="grid grid-cols-4 my-4 px-2 gap-x-8">
-    <a routerLink="/admin/students"
+  <div class="grid grid-cols-2 md:grid-cols-4 my-4 px-2 gap-4 md:gap-8 auto-rows-fr">
+    <a routerLink="/superadmin/admins"
       class="w-auto aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
       <div>
         <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -31,53 +24,20 @@
         </svg>
       </div>
       <h1 class="text-[2.5rem] font-bold ">{{totalAdmin}}</h1>
-      <p>Total Admin</p>
+      <p class="truncate">Total Admin</p>
     </a>
-    <a routerLink="/admin/"
+    <a routerLink="/superadmin/schools"
       class="w-auto aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
       <div>
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-          stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M18.844 7.875c-.138 1.906-1.552 3.375-3.094 3.375-1.542 0-2.959-1.468-3.094-3.375-.14-1.983 1.236-3.375 3.094-3.375 1.858 0 3.235 1.428 3.094 3.375Z">
-          </path>
-          <path
-            d="M15.75 14.25c-3.055 0-5.993 1.517-6.729 4.472-.097.391.148.778.55.778h12.358c.402 0 .646-.387.55-.778-.736-3.002-3.674-4.472-6.73-4.472Z">
-          </path>
-          <path
-            d="M9.375 8.716c-.11 1.522-1.253 2.722-2.484 2.722-1.232 0-2.377-1.2-2.485-2.722C4.294 7.132 5.406 6 6.891 6c1.484 0 2.596 1.161 2.484 2.716Z">
-          </path>
-          <path
-            d="M9.657 14.341c-.846-.387-1.778-.536-2.766-.536-2.437 0-4.786 1.211-5.374 3.572-.077.312.118.62.44.62h5.262">
-          </path>
+        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 10h-2V4h1V2H4v2h1v6H3a1 1 0 0 0-1 1v9h20v-9a1 1 0 0 0-1-1Zm-7 8v-4h-4v4H7V4h10v14h-3Z"></path>
+          <path d="M9 6h2v2H9V6Zm4 0h2v2h-2V6Zm-4 4h2v2H9v-2Zm4 0h2v2h-2v-2Z"></path>
         </svg>
       </div>
-      <h1 class="text-[2.5rem] font-bold ">258</h1>
-      <p>Total Sekolah</p>
+      <h1 class="text-[2.5rem] font-bold ">{{totalSchool}}</h1>
+      <p class="truncate">Total Sekolah</p>
     </a>
-    <a routerLink="/admin/"
-      class="w-auto aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
-      <div>
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-          stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M18.844 7.875c-.138 1.906-1.552 3.375-3.094 3.375-1.542 0-2.959-1.468-3.094-3.375-.14-1.983 1.236-3.375 3.094-3.375 1.858 0 3.235 1.428 3.094 3.375Z">
-          </path>
-          <path
-            d="M15.75 14.25c-3.055 0-5.993 1.517-6.729 4.472-.097.391.148.778.55.778h12.358c.402 0 .646-.387.55-.778-.736-3.002-3.674-4.472-6.73-4.472Z">
-          </path>
-          <path
-            d="M9.375 8.716c-.11 1.522-1.253 2.722-2.484 2.722-1.232 0-2.377-1.2-2.485-2.722C4.294 7.132 5.406 6 6.891 6c1.484 0 2.596 1.161 2.484 2.716Z">
-          </path>
-          <path
-            d="M9.657 14.341c-.846-.387-1.778-.536-2.766-.536-2.437 0-4.786 1.211-5.374 3.572-.077.312.118.62.44.62h5.262">
-          </path>
-        </svg>
-      </div>
-      <h1 class="text-[2.5rem] font-bold ">258</h1>
-      <p>Total Driver</p>
-    </a>
-    <div
+    <a routerLink="/superadmin/drivers"
       class="w-auto aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
       <div>
         <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -89,27 +49,44 @@
           <path d="M15 14h3"></path>
         </svg>
       </div>
-      <h1 class="text-[2.5rem] font-bold ">25</h1>
-      <p>Total Kendaraan</p>
+      <h1 class="text-[2.5rem] font-bold ">{{totalDriver}}</h1>
+      <p class="truncate">Total Driver</p>
+    </a>
+    <div
+      class="w-auto aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
+      <div>
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="m3.75 10.5 1.77-4.132c.29-.673 1.024-1.118 1.845-1.118h9.27c.821 0 1.556.445 1.844 1.118L20.25 10.5"></path>
+          <path d="M20.25 10.5H3.75v6.75h16.5V10.5Z"></path>
+          <path d="M5.25 17.25v1.5h-1.5v-1.5"></path>
+          <path d="M20.25 17.25v1.5h-1.5v-1.5"></path>
+          <path d="M6.75 14.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"></path>
+          <path d="M17.25 14.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"></path>
+        </svg>
+      </div>
+      <h1 class="text-[2.5rem] font-bold ">{{totalVehicle}}</h1>
+      <p class="truncate">Total Kendaraan</p>
     </div>
   </div>
 
-  <h1 class="mt-4 text-xl font-bold">Overview</h1>
-  <div class="grid grid-cols-4 my-4 px-2 gap-x-8">
+  <h1 class="mt-4 text-xl font-bold">Data Overview</h1>
+  <div class="grid grid-cols-2 md:grid-cols-4 my-4 px-2 gap-4 md:gap-8">
     <div
       class="w-auto aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
       <div>
         <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
           stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 3v18h18"></path>
-          <path d="M7 15v2"></path>
-          <path d="M11 11v6"></path>
-          <path d="M15 3v14"></path>
-          <path d="M19 7v10"></path>
+          <path d="m3.75 10.5 1.77-4.132c.29-.673 1.024-1.118 1.845-1.118h9.27c.821 0 1.556.445 1.844 1.118L20.25 10.5">
+          </path>
+          <path d="M20.25 10.5H3.75v6.75h16.5V10.5Z"></path>
+          <path d="M5.25 17.25v1.5h-1.5v-1.5"></path>
+          <path d="M20.25 17.25v1.5h-1.5v-1.5"></path>
+          <path d="M6.75 14.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"></path>
+          <path d="M17.25 14.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"></path>
         </svg>
       </div>
-      <h1 class="text-[2.5rem] font-bold  ">95%</h1>
-      <p>Ketepatan Waktu</p>
+      <h1 class="text-[2.5rem] font-bold">95%</h1>
+      <p class="truncate">Ketepatan Waktu</p>
     </div>
     <div
       class="w-auto aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
@@ -120,8 +97,8 @@
           <path d="M12.004 6v6.004l4.24 4.24"></path>
         </svg>
       </div>
-      <h1 class="text-[2.5rem] font-bold  ">06:45</h1>
-      <p>Rata Rata Waktu Jemput</p>
+      <h1 class="text-[2.5rem] font-bold">06:45</h1>
+      <p class="truncate">Rata Rata Waktu Jemput</p>
     </div>
   </div>
 </div>
