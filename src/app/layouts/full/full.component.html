@@ -1,13 +1,10 @@
 <div>
-  <app-sidebar [isSidebarVisible]="isSidebarVisible" (close)="handleSidebarClose()" class="absolute top-0 left-0 z-[49]"></app-sidebar>
+  <app-sidebar [isSidebarVisible]="isSidebarVisible" (close)="handleSidebarClose()"
+    class="absolute top-0 left-0 z-[49]"></app-sidebar>
   <div class="pb-8 h-screen overflow-y-auto bg-gray-100 ">
-    <!-- <app-header class="sticky top-0 left-0 z-20"></app-header> -->
     <div class="px-5 py-2 md:ml-64 md:mr-4 md:my-3 bg-white border-1 border-gray-300 shadow-md rounded-md">
-      <!-- <app-breadcrumb></app-breadcrumb> -->
       <app-header class="z-20" (sidebarVisibilityChange)="handlerSidebarVisibility($event)"></app-header>
-
       <router-outlet></router-outlet>
     </div>
-    <!-- <div class="h-8 w-full"></div> -->
   </div>
 </div>

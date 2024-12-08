@@ -17,11 +17,13 @@ export class ProfileService {
     this.apiUrl = apiUrl;
   }
 
-  async fetchProfileData(): Promise<any> {
+  async fetchProfileData(roload: boolean = false): Promise<any> {
     console.log('Memeriksa data profil...');
-    // Cek apakah sudah ada data, jika ada langsung kembalikan data tersebut
-    if (this.profileData.getValue() !== null) {
-      console.log('Data sudah ada di BehaviorSubject, tidak perlu request lagi.');
+
+    if (!roload && this.profileData.getValue() !== null) {
+      console.log(
+        'Data sudah ada di BehaviorSubject, tidak perlu request lagi.',
+      );
 
       return this.profileData.getValue();
     }
@@ -42,4 +44,8 @@ export class ProfileService {
     }
   }
 
+  resetProfileData(): void {
+    this.profileData.next(null); // Reset data ke null
+    console.log('BehaviorSubject di-reset!');
+  }
 }

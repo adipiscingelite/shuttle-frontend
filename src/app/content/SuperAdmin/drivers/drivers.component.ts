@@ -7,9 +7,13 @@ import { AgGridAngular } from 'ag-grid-angular';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AsteriskComponent } from '../../shared/asterisk/asterisk.component';
+import { RequiredCommonComponent } from '../../shared/required-common/required-common.component';
+import { Vehicle } from '../vehicles/vehicles.component';
 
-interface Driver{
+interface Driver {
   id: string;
+  username: string;
   first_name: string;
   last_name: string;
   email: string;
@@ -19,7 +23,7 @@ interface Driver{
   phone: string;
   address: string;
   status: string;
-  last_active: string
+  last_active: string;
   details: Detail;
 }
 
@@ -31,9 +35,17 @@ interface Detail {
 @Component({
   selector: 'app-drivers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, HeaderComponent, FormsModule, ReactiveFormsModule  ],
+  imports: [
+    AsteriskComponent,
+    RequiredCommonComponent,
+    CommonModule,
+    AgGridAngular,
+    HeaderComponent,
+    FormsModule,
+    ReactiveFormsModule,
+  ],
   templateUrl: './drivers.component.html',
-  styleUrl: './drivers.component.css'
+  styleUrl: './drivers.component.css',
 })
 export class DriversComponent implements OnInit {
   token: string | null = '';
@@ -43,6 +55,7 @@ export class DriversComponent implements OnInit {
   endRow: number = 10;
 
   id: string = '';
+  username: string = '';
   first_name: string = '';
   last_name: string = '';
   gender: string = '';
@@ -54,10 +67,15 @@ export class DriversComponent implements OnInit {
   address: string = '';
   status: string = '';
 
+  vehicle_id: string = '';
+  license_number: string = '';
+
   isModalAddOpen: boolean = false;
   isModalEditOpen: boolean = false;
+  isModalDeleteOpen: boolean = false;
 
   rowListAllDriver: Driver[] = [];
+  rowListAllVehicle: Vehicle[] = [];
 
   constructor(
     private cookieService: CookieService,
@@ -69,7 +87,8 @@ export class DriversComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getAllSuperadmin();
+    this.getAllVehicle();
+    this.getAllDriver();
   }
 
   themeClass = 'ag-theme-quartz';
@@ -78,7 +97,7 @@ export class DriversComponent implements OnInit {
     ensureDomOrder: true,
     pagination: true,
     paginationPageSize: 10,
-    paginationPageSizeSelector: [10, 20, 50, 100],    
+    paginationPageSizeSelector: [10, 20, 50, 100],
   };
 
   colHeaderListAllDriver: ColDef<Driver>[] = [
@@ -90,7 +109,8 @@ export class DriversComponent implements OnInit {
       pinned: 'left',
       sortable: false,
     },
-    { headerName: 'First Name', field: 'first_name', pinned: 'left' },
+    { headerName: 'Username', field: 'username' },
+    { headerName: 'First Name', field: 'first_name' },
     { headerName: 'Last Name', field: 'last_name' },
     { headerName: 'Email', field: 'email' },
     { field: 'phone' },
@@ -161,7 +181,7 @@ export class DriversComponent implements OnInit {
         `;
         deleteButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.onDeleteSuperAdmin(params.data.id);
+          this.onDeleteDriver(params.data.id);
         });
 
         buttonContainer.appendChild(editButton);
@@ -185,27 +205,57 @@ export class DriversComponent implements OnInit {
     autoHeaderHeight: true,
   };
 
-  totalRowCount() {
-    if (this.rowListAllDriver) {
+  totalRowCount(currentPage: number, pageSize: number) {
+    if (this.rowListAllDriver && this.rowListAllDriver.length > 0) {
       const totalRows = this.rowListAllDriver.length;
       this.totalRows = totalRows;
-      const currentPage = 0;
-      const pageSize = 10;
-      this.startRow = currentPage * pageSize + 1;
-      this.endRow = Math.min((currentPage + 1) * pageSize, this.totalRows);
+
+      this.startRow = (currentPage - 1) * pageSize + 1;
+      this.endRow = Math.min(currentPage * pageSize, this.totalRows);
+    } else {
+      this.totalRows = 0;
+      this.startRow = 0;
+      this.endRow = 0;
     }
   }
 
-  getAllSuperadmin() {
+  onPaginationChanged(event: any) {
+    const currentPage = event.api.paginationGetCurrentPage() + 1;
+    const pageSize = event.api.paginationGetPageSize();
+
+    this.totalRowCount(currentPage, pageSize);
+  }
+
+  getAllVehicle() {
     axios
-      .get(`${this.apiUrl}/api/superadmin/driver/sa/all`, {
+      .get(`${this.apiUrl}/api/superadmin/vehicle/all`, {
+        headers: {
+          Authorization: `${this.cookieService.get('accessToken')}`,
+        },
+      })
+      .then((response) => {
+        this.rowListAllVehicle = response.data;
+
+        console.log('vehicle', this.rowListAllVehicle);
+
+        this.cdRef.detectChanges();
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+  }
+
+  getAllDriver() {
+    axios
+      .get(`${this.apiUrl}/api/superadmin/user/driver/all`, {
         headers: {
           Authorization: `${this.cookieService.get('accessToken')}`,
         },
       })
       .then((response) => {
         this.rowListAllDriver = response.data;
-        this.totalRowCount();
+
+        console.log('drivers', this.rowListAllDriver);
 
         this.cdRef.detectChanges();
       })
@@ -216,22 +266,29 @@ export class DriversComponent implements OnInit {
 
   openAddModal() {
     this.isModalAddOpen = true;
+    this.cdRef.detectChanges();
   }
 
-  addSuperadmin(): void {
-    const requestDataFormDA = {
+  addDriver(): void {
+    const requestData = {
       first_name: this.first_name,
       last_name: this.last_name,
       gender: this.gender,
       email: this.email,
       password: this.password,
-      role: 'superadmin',
+      role: 'driver',
       phone: this.phone,
       address: this.address,
+      details: {
+        license_number: this.license_number,
+        vehicle_id: this.vehicle_id,
+      },
     };
 
+    console.log('driver add', requestData);
+
     axios
-      .post(`${this.apiUrl}/api/superadmin/Driver/add`, requestDataFormDA, {
+      .post(`${this.apiUrl}/api/superadmin/user/add`, requestData, {
         headers: {
           Authorization: `${this.token}`,
         },
@@ -247,7 +304,10 @@ export class DriversComponent implements OnInit {
           showConfirmButton: false,
         });
 
-        this.getAllSuperadmin();
+        this.getAllDriver();
+
+        this.isModalAddOpen = false;
+        this.cdRef.detectChanges();
       })
       .catch((error) => {
         Swal.fire({
@@ -260,16 +320,16 @@ export class DriversComponent implements OnInit {
           showConfirmButton: false,
         });
       });
-    this.isModalAddOpen = false;
   }
 
   closeAddModal() {
     this.isModalAddOpen = false;
+    this.cdRef.detectChanges();
   }
 
   openEditModal(id: string) {
     axios
-      .get(`${this.apiUrl}/api/superadmin/Driver/sa/${id}`, {
+      .get(`${this.apiUrl}/api/superadmin/user/driver/${id}`, {
         headers: {
           Authorization: `${this.token}`,
         },
@@ -283,9 +343,11 @@ export class DriversComponent implements OnInit {
         this.gender = editData.gender;
         this.email = editData.email;
         this.password = editData.password;
-        this.role = 'superadmin';
+        this.role = 'driver';
         this.phone = editData.phone;
         this.address = editData.address;
+        this.license_number = editData.details.license_number;
+        this.vehicle_id = editData.details.vehicle_id;
 
         this.isModalEditOpen = true;
         this.cdRef.detectChanges();
@@ -308,19 +370,23 @@ export class DriversComponent implements OnInit {
     this.cdRef.detectChanges();
   }
 
-  updateSuperadmin() {
+  updateDriver() {
     const data = {
       first_name: this.first_name,
       last_name: this.last_name,
       gender: this.gender,
       email: this.email,
-      role: 'superadmin',
+      role: 'driver',
       phone: this.phone,
       address: this.address,
+      details: {
+        license_number: this.license_number,
+        vehicle_id: this.vehicle_id,
+      },
     };
 
     axios
-      .put(`${this.apiUrl}/api/superadmin/Driver/update/${this.id}`, data, {
+      .put(`${this.apiUrl}/api/superadmin/user/update/${this.id}`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `${this.token}`,
@@ -337,7 +403,9 @@ export class DriversComponent implements OnInit {
           showConfirmButton: false,
         });
 
-        this.getAllSuperadmin();
+        this.getAllDriver();
+        this.isModalEditOpen = false;
+        this.cdRef.detectChanges();
       })
       .catch((error) => {
         console.error('Error saat update:', error);
@@ -351,31 +419,23 @@ export class DriversComponent implements OnInit {
           showConfirmButton: false,
         });
       });
+  }
 
-    this.isModalEditOpen = false;
+  onDeleteDriver(id: string) {
+    this.isModalDeleteOpen = true;
+    this.cdRef.detectChanges();
+
+    this.id = id;
+  }
+
+  closeDeleteModal() {
+    this.isModalDeleteOpen = false;
     this.cdRef.detectChanges();
   }
 
-  onDeleteSuperAdmin(id: string) {
-    Swal.fire({
-      title: 'Konfirmasi',
-      text: 'Anda yakin ingin menghapus Driver ini?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      cancelButtonText: 'Tidak',
-      confirmButtonText: 'Ya',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.performDeleteSuperAdmin(id);
-      }
-    });
-  }
-
-  performDeleteSuperAdmin(id: string) {
+  performDeleteDriver(id: string) {
     axios
-      .delete(`${this.apiUrl}/api/superadmin/Driver/delete/${id}`, {
+      .delete(`${this.apiUrl}/api/superadmin/user/delete/${id}`, {
         headers: {
           Authorization: `${this.token}`,
         },
@@ -391,7 +451,10 @@ export class DriversComponent implements OnInit {
           showConfirmButton: false,
         });
 
-        this.getAllSuperadmin();
+        this.getAllDriver();
+        this.isModalDeleteOpen = false;
+
+        this.cdRef.detectChanges();
       })
       .catch((error) => {
         Swal.fire({

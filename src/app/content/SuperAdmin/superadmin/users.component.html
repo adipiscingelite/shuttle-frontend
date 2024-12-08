@@ -67,7 +67,7 @@
 
         <div class="mt-4">
           <label for="username" class="text-sm md:text-[0.875rem] mb-1">Username <app-asterisk></app-asterisk></label>
-          <input type="text" id="username" name="username" placeholder="e.g. JohnDoe_10" [(ngModel)]="username"
+          <input type="text" id="username" name="username" placeholder="e.g. johndoe_10" [(ngModel)]="username"
             class="border text-sm rounded-lg p-2 px-3 w-full"
             [ngClass]="{'border-red-500': usernameModel.touched && usernameModel.invalid}" maxlength=""
             #usernameModel="ngModel" required>
@@ -135,7 +135,7 @@
 
         <div class="mt-4">
           <label for="address" class="text-sm md:text-[0.875rem] mb-1">Address <app-asterisk></app-asterisk></label>
-          <input type="text" id="address" name="address" placeholder="e.g. Durian Runtuh, Sleman, Yogyakarta"
+          <input type="text" id="address" name="address" placeholder="e.g. Jl. Pembangunan, Durian Runtuh, Sleman, Yogyakarta"
             [(ngModel)]="address" class="border text-sm rounded-lg p-2 px-3 w-full"
             [ngClass]="{'border-red-500': addressModel.touched && addressModel.invalid}" maxlength=""
             #addressModel="ngModel" required>
@@ -182,7 +182,7 @@
 
         <div class="mt-4">
           <label for="username" class="text-sm md:text-[0.875rem] mb-1">Username <app-asterisk></app-asterisk></label>
-          <input type="text" id="username" name="username" placeholder="e.g. JohnDoe_10" [(ngModel)]="username" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+          <input type="text" id="username" name="username" placeholder="e.g. johndoe_10" [(ngModel)]="username" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
           focus:invalid:border-pink-500 focus:invalid:ring-pink-500" maxlength="" #usernameModel="ngModel" required>
           <div *ngIf="usernameModel.invalid && usernameModel.touched"><app-required-common></app-required-common></div>
         </div>
@@ -232,7 +232,7 @@
 
         <div class="mt-4">
           <label for="address" class="text-sm md:text-[0.875rem] mb-1">Address <app-asterisk></app-asterisk></label>
-          <input type="text" id="address" name="address" placeholder="e.g. Durian Runtuh, Sleman, Yogyakarta"
+          <input type="text" id="address" name="address" placeholder="e.g. Jl. Pembangunan, Durian Runtuh, Sleman, Yogyakarta"
             [(ngModel)]="address" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
         focus:invalid:border-pink-500 focus:invalid:ring-pink-500" maxlength="" #addressModel="ngModel" required>
           <div *ngIf="addressModel.invalid && addressModel.touched"><app-required-common></app-required-common></div>
@@ -252,38 +252,7 @@
     </div>
   </div>
 
-
-  <!-- <div tabindex="-1"
-    class="fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
-    <div (click)="$event.stopPropagation()"
-      class="relative p w-full max-w-xl md:max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
-      Modal header
-      <div class="sticky top-0 flex items-center justify-between p-4 border-b rounded-t bg-white dark:border-gray-600">
-        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-          Edit
-        </h3>
-        <button
-          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
-          <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-          </svg>
-          <span class="sr-only">Close modal</span>
-        </button>
-      </div>
-
-
-
-    </div>
-  </div> -->
-
-
-  <div   [ngClass]="{
-    'block': isModalDeleteOpen,
-    'hidden': !isModalDeleteOpen,
-    'animate-fade-in': isModalDeleteOpen,
-    'animate-fade-out': !isModalDeleteOpen
-  }" tabindex="-1" (click)="closeDeleteModal()"
+  <div *ngIf="isModalDeleteOpen" tabindex="-1" (click)="closeDeleteModal()"
     class="fixed top-0 left-0 right-0 bottom-0 z-[90] flex items-center justify-center bg-gray-900 bg-opacity-20 select-none transition-all duration-1000">
     <div (click)="$event.stopPropagation()"
       class="relative flex justify-center w-full max-w-lg md:max-w-md bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto p-3 mx-4 md:mx-0">

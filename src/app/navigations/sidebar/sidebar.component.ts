@@ -105,7 +105,6 @@ export class SidebarComponent implements OnInit {
 
   async fetchProfileData(): Promise<void> {
     try {
-      await this.profileService.fetchProfileData();
       this.profileService.profileData$.subscribe((data) => {
         if (data) {
           this.user_id = data.user_id;
@@ -162,7 +161,7 @@ export class SidebarComponent implements OnInit {
             {
               name: 'Superadmin Lists',
               icon: 'studentList',
-              path: '/superadmin/users',
+              path: '/superadmin/superadmins',
             },
           ],
         },
@@ -185,14 +184,14 @@ export class SidebarComponent implements OnInit {
           title: 'DRIVER MANAGEMENT',
           items: [
             {
-              name: 'Driver Lists',
-              icon: 'driverList',
-              path: '/superadmin/drivers',
-            },
-            {
               name: 'Vehicle Lists',
               icon: 'car',
               path: '/superadmin/vehicles',
+            },
+            {
+              name: 'Driver Lists',
+              icon: 'driverList',
+              path: '/superadmin/drivers',
             },
             // {
             //   name: 'Routes Active',
@@ -322,6 +321,10 @@ export class SidebarComponent implements OnInit {
           showConfirmButton: false,
         });
         this.router.navigateByUrl('/login');
+
+        this.cookieService.deleteAll();
+        this.profileService.resetProfileData();
+        // this.cookieService.delete('accessToken')
       })
       .catch((error) => {
         if (error.response.status === 401) {

@@ -8,6 +8,8 @@ import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { School } from '../schools/schools.component';
+import { RequiredCommonComponent } from '../../shared/required-common/required-common.component';
+import { AsteriskComponent } from '../../shared/asterisk/asterisk.component';
 
 interface SchoolAdmin {
   id: string;
@@ -33,6 +35,8 @@ interface Detail {
   selector: 'app-admins',
   standalone: true,
   imports: [
+    RequiredCommonComponent,
+    AsteriskComponent,
     CommonModule,
     AgGridAngular,
     HeaderComponent,
@@ -66,6 +70,7 @@ export class AdminsComponent implements OnInit {
 
   isModalAddOpen: boolean = false;
   isModalEditOpen: boolean = false;
+  isModalDeleteOpen: boolean = false;
 
   rowListAllSchool: School[] = [];
   rowListAllSchoolAdmin: SchoolAdmin[] = [];
@@ -81,7 +86,7 @@ export class AdminsComponent implements OnInit {
 
   ngOnInit(): void {
     this.getAllSchool();
-    this.getAllSuperadmin();
+    this.getAllSchooladmin();
   }
 
   themeClass = 'ag-theme-quartz';
@@ -170,7 +175,7 @@ export class AdminsComponent implements OnInit {
         `;
         deleteButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.onDeleteFormITCM(params.data.id);
+          this.onDeleteSchoolAdmin(params.data.id);
         });
 
         buttonContainer.appendChild(editButton);
@@ -194,15 +199,25 @@ export class AdminsComponent implements OnInit {
     autoHeaderHeight: true,
   };
 
-  totalRowCount() {
-    if (this.rowListAllSchoolAdmin) {
+  totalRowCount(currentPage: number, pageSize: number) {
+    if (this.rowListAllSchoolAdmin && this.rowListAllSchoolAdmin.length > 0) {
       const totalRows = this.rowListAllSchoolAdmin.length;
       this.totalRows = totalRows;
-      const currentPage = 0;
-      const pageSize = 10;
-      this.startRow = currentPage * pageSize + 1;
-      this.endRow = Math.min((currentPage + 1) * pageSize, this.totalRows);
+
+      this.startRow = (currentPage - 1) * pageSize + 1;
+      this.endRow = Math.min(currentPage * pageSize, this.totalRows);
+    } else {
+      this.totalRows = 0;
+      this.startRow = 0;
+      this.endRow = 0;
     }
+  }
+
+  onPaginationChanged(event: any) {
+    const currentPage = event.api.paginationGetCurrentPage() + 1;
+    const pageSize = event.api.paginationGetPageSize();
+
+    this.totalRowCount(currentPage, pageSize);
   }
 
   getAllSchool() {
@@ -214,18 +229,13 @@ export class AdminsComponent implements OnInit {
       })
       .then((response) => {
         this.rowListAllSchool = response.data;
-        console.log(this.rowListAllSchool, 'ini');
-
-        this.totalRowCount();
-
-        this.cdRef.detectChanges();
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
       });
   }
 
-  getAllSuperadmin() {
+  getAllSchooladmin() {
     axios
       .get(`${this.apiUrl}/api/superadmin/user/as/all`, {
         headers: {
@@ -234,10 +244,7 @@ export class AdminsComponent implements OnInit {
       })
       .then((response) => {
         this.rowListAllSchoolAdmin = response.data;
-        console.log(this.rowListAllSchoolAdmin);
-
-        this.totalRowCount();
-
+        
         this.cdRef.detectChanges();
       })
       .catch((error) => {
@@ -249,7 +256,7 @@ export class AdminsComponent implements OnInit {
     this.isModalAddOpen = true;
   }
 
-  addSuperadmin(): void {
+  addSchooladmin(): void {
     const requestData = {
       username: this.username,
       first_name: this.first_name,
@@ -282,7 +289,7 @@ export class AdminsComponent implements OnInit {
           showConfirmButton: false,
         });
 
-        this.getAllSuperadmin();
+        this.getAllSchooladmin();
         this.isModalAddOpen = false;
       })
       .catch((error) => {
@@ -351,7 +358,7 @@ export class AdminsComponent implements OnInit {
     this.cdRef.detectChanges();
   }
 
-  updateSuperadmin() {
+  updateSchooladmin() {
     const data = {
       username: this.username,
       first_name: this.first_name,
@@ -387,7 +394,7 @@ export class AdminsComponent implements OnInit {
           showConfirmButton: false,
         });
 
-        this.getAllSuperadmin();
+        this.getAllSchooladmin();
       })
       .catch((error) => {
         console.error('Error saat update:', error);
@@ -406,24 +413,19 @@ export class AdminsComponent implements OnInit {
     this.cdRef.detectChanges();
   }
 
-  onDeleteFormITCM(id: string) {
-    Swal.fire({
-      title: 'Konfirmasi',
-      text: 'Anda yakin ingin menghapus User ini?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      cancelButtonText: 'Tidak',
-      confirmButtonText: 'Ya',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.performDeleteFormITCM(id);
-      }
-    });
+  onDeleteSchoolAdmin(id: string) {
+    this.isModalDeleteOpen = true;
+    this.cdRef.detectChanges();
+
+    this.id = id;
   }
 
-  performDeleteFormITCM(id: string) {
+  closeDeleteModal() {
+    this.isModalDeleteOpen = false;
+    this.cdRef.detectChanges();
+  }
+
+  performDeleteSchoolAdmin(id: string) {
     axios
       .delete(`${this.apiUrl}/api/superadmin/user/delete/${id}`, {
         headers: {
@@ -441,7 +443,10 @@ export class AdminsComponent implements OnInit {
           showConfirmButton: false,
         });
 
-        this.getAllSuperadmin();
+        this.getAllSchool();
+        this.isModalDeleteOpen = false;
+
+        this.cdRef.detectChanges();
       })
       .catch((error) => {
         Swal.fire({

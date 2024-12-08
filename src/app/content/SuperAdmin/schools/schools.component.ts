@@ -49,6 +49,7 @@ export class SchoolsComponent implements OnInit {
 
   isModalAddOpen: boolean = false;
   isModalEditOpen: boolean = false;
+  isModalDeleteOpen: boolean = false;
 
   rowListAllSchool: School[] = [];
 
@@ -151,7 +152,7 @@ export class SchoolsComponent implements OnInit {
         `;
         deleteButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.onDeleteSuperAdmin(params.data.id);
+          this.onDeleteSchool(params.data.id);
         });
 
         buttonContainer.appendChild(editButton);
@@ -175,15 +176,25 @@ export class SchoolsComponent implements OnInit {
     autoHeaderHeight: true,
   };
 
-  totalRowCount() {
-    if (this.rowListAllSchool) {
+  totalRowCount(currentPage: number, pageSize: number) {
+    if (this.rowListAllSchool && this.rowListAllSchool.length > 0) {
       const totalRows = this.rowListAllSchool.length;
       this.totalRows = totalRows;
-      const currentPage = 0;
-      const pageSize = 10;
-      this.startRow = currentPage * pageSize + 1;
-      this.endRow = Math.min((currentPage + 1) * pageSize, this.totalRows);
+
+      this.startRow = (currentPage - 1) * pageSize + 1;
+      this.endRow = Math.min(currentPage * pageSize, this.totalRows);
+    } else {
+      this.totalRows = 0;
+      this.startRow = 0;
+      this.endRow = 0;
     }
+  }
+
+  onPaginationChanged(event: any) {
+    const currentPage = event.api.paginationGetCurrentPage() + 1;
+    const pageSize = event.api.paginationGetPageSize();
+
+    this.totalRowCount(currentPage, pageSize);
   }
 
   getAllSchool() {
@@ -195,9 +206,6 @@ export class SchoolsComponent implements OnInit {
       })
       .then((response) => {
         this.rowListAllSchool = response.data;
-        console.log(this.rowListAllSchool);
-
-        this.totalRowCount();
 
         this.cdRef.detectChanges();
       })
@@ -341,26 +349,21 @@ export class SchoolsComponent implements OnInit {
     this.cdRef.detectChanges();
   }
 
-  onDeleteSuperAdmin(id: string) {
-    Swal.fire({
-      title: 'Konfirmasi',
-      text: 'Anda yakin ingin menghapus User ini?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      cancelButtonText: 'Tidak',
-      confirmButtonText: 'Ya',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.performDeleteSuperAdmin(id);
-      }
-    });
+  onDeleteSchool(id: string) {
+    this.isModalDeleteOpen = true;
+    this.cdRef.detectChanges();
+
+    this.id = id;
   }
 
-  performDeleteSuperAdmin(id: string) {
+  closeDeleteModal() {
+    this.isModalDeleteOpen = false;
+    this.cdRef.detectChanges();
+  }
+
+  performDeleteSchool(id: string) {
     axios
-      .delete(`${this.apiUrl}/api/superadmin/school/delete/${id}`, {
+      .delete(`${this.apiUrl}/api/superadmin/user/delete/${id}`, {
         headers: {
           Authorization: `${this.token}`,
         },
@@ -377,6 +380,9 @@ export class SchoolsComponent implements OnInit {
         });
 
         this.getAllSchool();
+        this.isModalDeleteOpen = false;
+
+        this.cdRef.detectChanges();
       })
       .catch((error) => {
         Swal.fire({

@@ -56,8 +56,8 @@ export class StudentsComponent implements OnInit{
   woi() {
     axios.get('https://jsonplaceholder.typicode.com/comments')
       .then(response => {
-        console.log(response.data); // Handle the response data here
-        this.rowData = response.data; // Update rowData with fetched data
+        // console.log(response.data); // Handle the response data here
+        // this.rowData = response.data; // Update rowData with fetched data
       })
       .catch(error => {
         console.error('Error fetching data:', error);

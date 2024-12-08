@@ -1,8 +1,29 @@
-li {
-  height: 24px; /* Set a height that matches the line height */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-span {
-  display: flex; /* Makes sure the icon is a flex container */
-  align-items: center; /* Centers the icon vertically */
+.breadcrumb-item {
+  margin-right: 8px;
+}
+
+.breadcrumb-item a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.breadcrumb-item:last-child a,
+.breadcrumb-item:last-child span {
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.breadcrumb-icon svg {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-right: 5px;
 }

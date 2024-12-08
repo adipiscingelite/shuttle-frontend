@@ -1,13 +1,13 @@
 <div>
   <h1 class="my-6 text-xl font-semibold uppercase">
-    School Admin list
+    Vehicle list
   </h1>
 
-  <div class="flex items-center my-4">
+  <div class="flex items-center w-full my-4 gap-x-1">
     <form class="form relative">
       <input
-        class="input w-72 rounded-full pr-8 px-4 py-2 text-sm bg-gray-100 border-2 border-transparent focus:outline-none focus:border-blue-500 placeholder-gray-500 transition-all duration-300 shadow-md"
-        placeholder="Search Item" required="" type="text" id="table-search" name="searchText" />
+        class="input w-full md:w-72 rounded-full pr-8 px-4 py-2 text-sm bg-gray-100 border-2 border-transparent focus:outline-none focus:border-blue-500 placeholder-gray-500 transition-all duration-300 shadow-md"
+        placeholder="Search Item" required="" type="text" id="search-item" name="searchText" />
       <button type="reset" class="absolute right-3 -translate-y-1/2 top-1/2 p-1">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-700" fill="none" viewBox="0 0 24 24"
           stroke="currentColor">
@@ -16,16 +16,16 @@
       </button>
     </form>
 
-    <button (click)="openModalAdd()"
-      class="flex items-center gap-x-1 ml-auto bg-[#3A3A3A] hover:bg-neutral-600 text-white font-medium px-4 py-2 rounded-md border shadow hover:shadow-md">
-      <div>
+    <button (click)="openAddModal()"
+      class="flex items-center gap-x-1 ml-auto bg-[#3A3A3A] hover:bg-neutral-600 text-white font-medium px-3 md:px-4 py-2 rounded-md border shadow hover:shadow-md">
+      <div class="">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
           stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="m12.03 5-.018 14"></path>
           <path d="M5 12h14"></path>
         </svg>
       </div>
-      <p>Add School Admin</p>
+      <p class="text-sm md:text-base">Add <span class="hidden md:inline">Vehicle</span></p>
     </button>
   </div>
 
@@ -38,103 +38,243 @@
     <ag-grid-angular style="width: 100%; height: 100%; overflow-x: scroll;" [class]="themeClass"
       [rowData]="rowListAllVehicle" [columnDefs]="colHeaderListAllVehicle" [defaultColDef]="defaultColDef"
       [gridOptions]="gridOptions" [pagination]="true" [paginationPageSize]="10"
-      (firstDataRendered)="totalRowCount($event)"></ag-grid-angular>
+      (paginationChanged)="onPaginationChanged($event)"></ag-grid-angular>
   </div>
 
-  <!-- Modal Add Driver -->
-  <div *ngIf="isModalAddOpen"
-    class="fixed inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-black bg-opacity-50 outline-none focus:outline-none z-50">
-    <div class="relative w-full max-w-md max-h-full">
-      <div class="relative bg-white rounded-lg shadow-lg">
-        <!-- Modal Header -->
-        <div class="flex items-center justify-between p-5 border-b rounded-t">
-          <h3 class="text-xl font-semibold text-gray-900">
-            Add New Driver Account
-          </h3>
-          <button (click)="closeModalAdd()"
-            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
-            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-            </svg>
-          </button>
+  <div *ngIf="isModalAddOpen" tabindex="-1" (click)="closeAddModal()"
+    class="fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
+    <div (click)="$event.stopPropagation()"
+      class="relative p w-full max-w-xl md:max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
+      <!-- Modal header -->
+      <div class="sticky top-0 flex items-center justify-between p-4 border-b rounded-t bg-white dark:border-gray-600">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          Tambah
+        </h3>
+        <button (click)="closeAddModal()"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
+          <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <!-- Modal body -->
+      <form class="p-6" #addVehicleForm="ngForm" (ngSubmit)="addVehicle()">
+        <h3 class="text-2xl text-gray-900 font-semibold">Superadmin</h3>
+        <p class="mb-4 text-gray-600">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
+
+        <div class="mt-4">
+          <label for="vehicle_name" class="text-sm md:text-[0.875rem] mb-1">Nama Kendaraan
+            <app-asterisk></app-asterisk></label>
+          <input type="text" id="vehicle_name" name="vehicle_name" placeholder="e.g. Toyota Hilux"
+            [(ngModel)]="vehicle_name" class="border text-sm rounded-lg p-2 px-3 w-full"
+            [ngClass]="{'border-red-500': vehicleNameModel.touched && vehicleNameModel.invalid}" maxlength=""
+            #vehicleNameModel="ngModel" required>
+          <div *ngIf="vehicleNameModel.invalid && vehicleNameModel.touched"><app-required-common></app-required-common>
+          </div>
         </div>
 
-        <!-- Modal Body -->
-        <div class="p-6 space-y-6">
-          <form class="space-y-4">
-            <div>
-              <label for="name" class="block mb-2 text-sm font-medium text-gray-900">
-                Full Name
-              </label>
-              <input type="text" id="name" name="name"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder="Enter driver full name" required>
-            </div>
-
-            <div>
-              <label for="email" class="block mb-2 text-sm font-medium text-gray-900">
-                Email
-              </label>
-              <input type="email" id="email" name="email"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder="Enter driver email address" required>
-            </div>
-
-            <div>
-              <label for="phone" class="block mb-2 text-sm font-medium text-gray-900">
-                Phone Number
-              </label>
-              <input type="tel" id="phone" name="phone"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder="Enter phone number" required>
-            </div>
-
-            <div>
-              <label for="license" class="block mb-2 text-sm font-medium text-gray-900">
-                Driver License Number
-              </label>
-              <input type="text" id="license" name="license"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder="Enter driver license number" required>
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="flex items-center justify-end p-6 border-t border-gray-200 rounded-b">
-              <button type="button" (click)="closeModalAdd()"
-                class="text-gray-500 bg-white hover:bg-gray-100 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">
-                Cancel
-              </button>
-              <button type="submit"
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ml-3">
-                Add Driver
-              </button>
-            </div>
-          </form>
+        <div class="mt-4">
+          <label for="vehicle_number" class="text-sm md:text-[0.875rem] mb-1">Nomor Polisi Kendaraan
+            <app-asterisk></app-asterisk></label>
+          <input type="text" id="vehicle_number" name="vehicle_number" placeholder="e.g. AB 1234 XX"
+            [(ngModel)]="vehicle_number" class="border text-sm rounded-lg p-2 px-3 w-full"
+            [ngClass]="{'border-red-500': vehicleNumberModel.touched && vehicleNumberModel.invalid}" maxlength=""
+            #vehicleNumberModel="ngModel" required>
+          <div *ngIf="vehicleNumberModel.invalid && vehicleNumberModel.touched">
+            <app-required-common></app-required-common></div>
         </div>
+
+        <div class="mt-4">
+          <label for="vehicle_type" class="text-sm md:text-[0.875rem] mb-1">Tipe Kendaraan
+            <app-asterisk></app-asterisk></label>
+          <input type="text" id="vehicle_type" name="vehicle_type" placeholder="e.g. Hatchback"
+            [(ngModel)]="vehicle_type" class="border text-sm rounded-lg p-2 px-3 w-full"
+            [ngClass]="{'border-red-500': vehicleTypeModel.touched && vehicleTypeModel.invalid}" maxlength=""
+            #vehicleTypeModel="ngModel" required>
+          <div *ngIf="vehicleTypeModel.invalid && vehicleTypeModel.touched"><app-required-common></app-required-common>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <label for="colour" class="text-sm md:text-[0.875rem] mb-1">Warna Kendaraan
+            <app-asterisk></app-asterisk></label>
+          <input type="text" id="colour" name="colour" placeholder="e.g. Merah" [(ngModel)]="colour"
+            class="border text-sm rounded-lg p-2 px-3 w-full"
+            [ngClass]="{'border-red-500': colourModel.touched && colourModel.invalid}" maxlength="" #colourModel="ngModel" required>
+          <div *ngIf="colourModel.invalid && colourModel.touched"><app-required-common></app-required-common></div>
+        </div>
+
+        <div class="mt-4">
+          <label for="seats" class="text-sm md:text-[0.875rem] mb-1">Jumlah Tempat Duduk
+            <app-asterisk></app-asterisk></label>
+          <input type="number" id="seats" name="seats" placeholder="e.g. 7" [(ngModel)]="seats"
+            class="border text-sm rounded-lg p-2 px-3 w-full"
+            [ngClass]="{'border-red-500': seatsModel.touched && seatsModel.invalid}" max="50" maxlength="" #seatsModel="ngModel"
+            required>
+          <div *ngIf="seatsModel.invalid && seatsModel.touched"><app-required-common></app-required-common></div>
+        </div>
+
+        <div class="mt-4">
+          <label for="status" class="text-sm md:text-[0.875rem] mb-1">Status Kendaraan
+            <app-asterisk></app-asterisk></label>
+          <input type="text" id="status" name="status" placeholder="e.g. Tersedia" [(ngModel)]="status"
+            class="border text-sm rounded-lg p-2 px-3 w-full" value="Available"
+            [ngClass]="{'border-red-500': statusModel.touched && statusModel.invalid}" maxlength=""
+            #statusModel="ngModel" required>
+          <div *ngIf="statusModel.invalid && statusModel.touched"><app-required-common></app-required-common></div>
+        </div>
+        status kendaraan gimana?
+
+      </form>
+
+      <!-- Modal footer -->
+      <div
+        class="w-full flex items-center justify-end p-4 gap-x-3 border-t border-gray-200 rounded-b dark:border-gray-600">
+        <button (click)="closeAddModal()" type="button"
+          class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700">Cancel</button>
+        <button (click)="addVehicle()" type="button"
+          class="text-white bg-[#3A3A3A] hover:bg-black focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
+          [disabled]="!addVehicleForm.form.valid">Sumbit</button>
       </div>
     </div>
   </div>
 
 
-  <div *ngIf="isModalEditOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-xl">
-      <h1 class="text-2xl mb-4">Statik Modal Edit</h1>
-
-      <div class="mb-4">
-        <p>Ini adalah konten statik modal. Anda bisa menggantinya dengan form nanti.</p>
+  <div *ngIf="isModalEditOpen" tabindex="-1" (click)="closeEditModal()"
+    class="fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
+    <div (click)="$event.stopPropagation()"
+      class="relative p w-full max-w-xl md:max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
+      <!-- Modal header -->
+      <div class="sticky top-0 flex items-center justify-between p-4 border-b rounded-t bg-white dark:border-gray-600">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          Edit
+        </h3>
+        <button (click)="closeEditModal()"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
+          <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
       </div>
+      <!-- Modal body -->
+      <form class="p-6" #editVehicleForm="ngForm" (ngSubmit)="updateVehicle()">
+        <h3 class="text-2xl text-gray-900 font-semibold">Superadmin</h3>
+        <p class="mb-4 text-gray-600">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
 
-      <div class="flex justify-end space-x-2">
-        <button (click)="closeModalEdit()" class="bg-gray-300 text-black px-4 py-2 rounded">
-          Batal
-        </button>
-        <button class="bg-blue-500 text-white px-4 py-2 rounded">
-          Simpan
-        </button>
+        <div class="mt-4">
+          <label for="vehicle_name" class="text-sm md:text-[0.875rem] mb-1">Nama Kendaraan
+            <app-asterisk></app-asterisk></label>
+          <input type="text" id="vehicle_name" name="vehicle_name" placeholder="e.g. Toyota Hilux"
+            [(ngModel)]="vehicle_name" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+            [ngClass]="{'border-red-500': vehicleNameModel.touched && vehicleNameModel.invalid}" maxlength=""
+            #vehicleNameModel="ngModel" required>
+          <div *ngIf="vehicleNameModel.invalid && vehicleNameModel.touched"><app-required-common></app-required-common>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <label for="vehicle_number" class="text-sm md:text-[0.875rem] mb-1">Nomor Polisi Kendaraan
+            <app-asterisk></app-asterisk></label>
+          <input type="text" id="vehicle_number" name="vehicle_number" placeholder="e.g. AB 1234 XX"
+            [(ngModel)]="vehicle_number" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+            [ngClass]="{'border-red-500': vehicleNumberModel.touched && vehicleNumberModel.invalid}" maxlength=""
+            #vehicleNumberModel="ngModel" required>
+          <div *ngIf="vehicleNumberModel.invalid && vehicleNumberModel.touched">
+            <app-required-common></app-required-common></div>
+        </div>
+
+        <div class="mt-4">
+          <label for="vehicle_type" class="text-sm md:text-[0.875rem] mb-1">Tipe Kendaraan
+            <app-asterisk></app-asterisk></label>
+          <input type="text" id="vehicle_type" name="vehicle_type" placeholder="e.g. Hatchback"
+            [(ngModel)]="vehicle_type" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+            [ngClass]="{'border-red-500': vehicleTypeModel.touched && vehicleTypeModel.invalid}" maxlength=""
+            #vehicleTypeModel="ngModel" required>
+          <div *ngIf="vehicleTypeModel.invalid && vehicleTypeModel.touched"><app-required-common></app-required-common>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <label for="colour" class="text-sm md:text-[0.875rem] mb-1">Warna Kendaraan
+            <app-asterisk></app-asterisk></label>
+          <input type="text" id="colour" name="colour" placeholder="e.g. Merah" [(ngModel)]="colour"
+            class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+            [ngClass]="{'border-red-500': colourModel.touched && colourModel.invalid}" maxlength="" #colourModel="ngModel" required>
+          <div *ngIf="colourModel.invalid && colourModel.touched"><app-required-common></app-required-common></div>
+        </div>
+
+        <div class="mt-4">
+          <label for="seats" class="text-sm md:text-[0.875rem] mb-1">Jumlah Tempat Duduk
+            <app-asterisk></app-asterisk></label>
+          <input type="number" id="seats" name="seats" placeholder="e.g. 7" [(ngModel)]="seats"
+            class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+            [ngClass]="{'border-red-500': seatsModel.touched && seatsModel.invalid}" max="50" maxlength="" #seatsModel="ngModel"
+            required>
+          <div *ngIf="seatsModel.invalid && seatsModel.touched"><app-required-common></app-required-common></div>
+        </div>
+
+        <div class="mt-4">
+          <label for="status" class="text-sm md:text-[0.875rem] mb-1">Status Kendaraan
+            <app-asterisk></app-asterisk></label>
+          <input type="text" id="status" name="status" placeholder="e.g. Tersedia" [(ngModel)]="status"
+            class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500" value="Available"
+            [ngClass]="{'border-red-500': statusModel.touched && statusModel.invalid}" maxlength=""
+            #statusModel="ngModel" required>
+          <div *ngIf="statusModel.invalid && statusModel.touched"><app-required-common></app-required-common></div>
+        </div>
+
+      </form>
+
+      <!-- Modal footer -->
+      <div
+        class="w-full flex items-center justify-end p-4 gap-x-3 border-t border-gray-200 rounded-b dark:border-gray-600">
+        <button (click)="closeEditModal()" type="button"
+          class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700">Cancel</button>
+        <button (click)="updateVehicle()" type="button"
+          class="text-white bg-[#3A3A3A] hover:bg-black focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
+          [disabled]="!editVehicleForm.form.valid">Sumbit</button>
       </div>
     </div>
   </div>
 
+
+
+  <div *ngIf="isModalDeleteOpen" tabindex="-1" (click)="closeDeleteModal()"
+    class="fixed top-0 left-0 right-0 bottom-0 z-[90] flex items-center justify-center bg-gray-900 bg-opacity-20 select-none transition-all duration-1000">
+    <div (click)="$event.stopPropagation()"
+      class="relative flex justify-center w-full max-w-lg md:max-w-md bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto p-3 mx-4 md:mx-0">
+      <div class="text-center py-5">
+        <div class="w-fit flex justify-self-center p-2 rounded-full bg-red-100 text-red-500">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+            stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 12c0-4.969-4.031-9-9-9s-9 4.031-9 9 4.031 9 9 9 9-4.031 9-9Z"></path>
+            <path
+              d="m11.73 7.781.27 5.717.268-5.717a.267.267 0 0 0-.164-.26.269.269 0 0 0-.107-.021v0a.27.27 0 0 0-.266.281v0Z">
+            </path>
+            <path fill="currentColor" stroke="none" d="M12 17.242a.937.937 0 1 1 0-1.874.937.937 0 0 1 0 1.874Z"></path>
+          </svg>
+        </div>
+        <h1 class="my-1 text-2xl font-medium">
+          Hapus Data
+        </h1>
+        <p class="text-sm text-neutral-600">
+          Apakah anda yakin ingin menghapus data ini?
+        </p>
+        <p class="text-sm text-neutral-600">
+          Aksi ini tidak dapat dibatalkan.
+        </p>
+        <div class="grid grid-cols-2 gap-x-3 mt-6 text-sm font-medium capitalize">
+          <button class="px-4 py-2 rounded bg-neutral-200 hover:bg-neutral-300 text-neutral-800 shadow hover:shadow-md"
+            (click)="closeDeleteModal()">Batal</button>
+          <button class="px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white shadow hover:shadow-md"
+            (click)="performDeleteVehicle(id)">Hapus</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </div>

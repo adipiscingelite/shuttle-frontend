@@ -63,23 +63,23 @@ export class DashboardSuperAdminComponent implements OnInit {
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
-        this.totalAdmin = 0;
+        this.totalSchool = 0;
       });
   }
 
   getAllDriver() {
     axios
-      .get(`${this.apiUrl}/api/superadmin/driver/sa/all`, {
+      .get(`${this.apiUrl}/api/superadmin/user/driver/all`, {
         headers: {
           Authorization: `${this.token}`,
         },
       })
       .then((response) => {
-        this.totalSchool = response.data.length || 0;
+        this.totalDriver = response.data.length || 0;
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
-        this.totalAdmin = 0;
+        this.totalDriver = 0;
       });
   }
 
@@ -91,11 +91,11 @@ export class DashboardSuperAdminComponent implements OnInit {
         },
       })
       .then((response) => {
-        this.totalSchool = response.data.length || 0;
+        this.totalVehicle = response.data.length || 0;
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
-        this.totalAdmin = 0;
+        this.totalVehicle = 0;
       });
   }
 }

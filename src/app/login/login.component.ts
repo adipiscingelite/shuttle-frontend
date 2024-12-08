@@ -5,6 +5,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
+import { ProfileService } from '../Services/profile/profile.service';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,7 @@ export class LoginComponent {
 
   loginData = {
     email: '',
-    password: '',
+    password: '12345678',
   };
 
   emailError: string = '';
@@ -27,13 +28,13 @@ export class LoginComponent {
   private apiUrl: string;
 
   constructor(
-    private router: Router,
+    private profileService: ProfileService,
     private cookieService: CookieService,
+    private router: Router,
     @Inject('apiUrl') apiUrl: string
   ) {
     this.apiUrl = apiUrl;
   }
-  redirectUrl: any = localStorage.getItem('redirectUrl');
 
   validateLogin(): boolean {
     this.emailError = '';
@@ -69,14 +70,16 @@ export class LoginComponent {
         this.cookieService.set('refreshToken', refresh_token);
 
         try {
-          const fetchRoleCode = await axios.get(
-            `${this.apiUrl}/api/my/profile`,
-            {
-              headers: { Authorization: `${access_token}` },
-            }
-          );
+          
+        const profileData = await this.profileService.fetchProfileData();
+          // const fetchRoleCode = await axios.get(
+          //   `${this.apiUrl}/api/my/profile`,
+          //   {
+          //     headers: { Authorization: `${access_token}` },
+          //   }
+          // );
 
-          const roleCode = fetchRoleCode.data.role_code;
+          const roleCode = profileData.role_code;      
 
           switch (roleCode) {
             case 'SA':
@@ -92,9 +95,12 @@ export class LoginComponent {
               this.router.navigate(['/parent']);
               break;
             default:
-              this.router.navigate(['/not-found']);
+              this.router.navigate(['/jawa']);
               break;
           }
+
+          console.log('saat login', roleCode);
+          
         } catch (error) {
           console.error('Error fetching profile:', error);
           Swal.fire({

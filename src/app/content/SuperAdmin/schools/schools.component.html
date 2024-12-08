@@ -3,11 +3,11 @@
     School list
   </h1>
 
-  <div class="flex items-center my-4">
+  <div class="flex items-center w-full my-4 gap-x-1">
     <form class="form relative">
       <input
-        class="input w-72 rounded-full pr-8 px-4 py-2 text-sm bg-gray-100 border-2 border-transparent focus:outline-none focus:border-blue-500 placeholder-gray-500 transition-all duration-300 shadow-md"
-        placeholder="Search Item" required="" type="text" id="search-item" name="searchText" oninput="onFilterTextBoxChanged()" />
+        class="input w-full md:w-72 rounded-full pr-8 px-4 py-2 text-sm bg-gray-100 border-2 border-transparent focus:outline-none focus:border-blue-500 placeholder-gray-500 transition-all duration-300 shadow-md"
+        placeholder="Search Item" required="" type="text" id="search-item" name="searchText" />
       <button type="reset" class="absolute right-3 -translate-y-1/2 top-1/2 p-1">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-700" fill="none" viewBox="0 0 24 24"
           stroke="currentColor">
@@ -17,15 +17,15 @@
     </form>
 
     <button (click)="openAddModal()"
-      class="flex items-center gap-x-1 ml-auto bg-[#3A3A3A] hover:bg-neutral-600 text-white font-medium px-4 py-2 rounded-md border shadow hover:shadow-md">
-      <div>
+      class="flex items-center gap-x-1 ml-auto bg-[#3A3A3A] hover:bg-neutral-600 text-white font-medium px-3 md:px-4 py-2 rounded-md border shadow hover:shadow-md">
+      <div class="">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
           stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="m12.03 5-.018 14"></path>
           <path d="M5 12h14"></path>
         </svg>
       </div>
-      <p>Add School Admin</p>
+      <p class="text-sm md:text-base">Add <span class="hidden md:inline">School</span></p>
     </button>
   </div>
 
@@ -38,7 +38,7 @@
     <ag-grid-angular id="myGrid" style="width: 100%; height: 100%; overflow-x: scroll;" [class]="themeClass"
       [rowData]="rowListAllSchool" [columnDefs]="colHeaderListAllSchool" [defaultColDef]="defaultColDef"
       [gridOptions]="gridOptions" [pagination]="true" [paginationPageSize]="10"
-      (firstDataRendered)="totalRowCount()"></ag-grid-angular>
+      (paginationChanged)="onPaginationChanged($event)"></ag-grid-angular>
   </div>
 
 
@@ -62,19 +62,20 @@
       </div>
       <!-- Modal body -->
       <form class="p-6" #addSchoolForm="ngForm" (ngSubmit)="addSchool()">
-        <h3 class="text-2xl text-gray-900 font-semibold">Superadmin</h3>
+        <h3 class="text-2xl text-gray-900 font-semibold">Sekolah</h3>
         <p class="mb-4 text-gray-600">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
 
         <div class="mt-4">
           <label for="name" class="text-sm md:text-[0.875rem] mb-1">Nama Sekolah <app-asterisk></app-asterisk></label>
-          <input type="text" id="name" name="name" placeholder="e.g. John" [(ngModel)]="name" class="border text-sm rounded-lg p-2 px-3 w-full" #nameModel="ngModel" required>
+          <input type="text" id="name" name="name" placeholder="e.g. SD Negeri 1" [(ngModel)]="name"
+            class="border text-sm rounded-lg p-2 px-3 w-full" #nameModel="ngModel" required>
           <div *ngIf="nameModel.invalid && nameModel.touched"><app-required-common></app-required-common></div>
         </div>
 
         <div class="mt-4">
           <label for="address" class="text-sm md:text-[0.875rem] mb-1">Alamat Sekolah
             <app-asterisk></app-asterisk></label>
-          <input type="text" id="address" name="address" placeholder="e.g. Jl. Sm. Km (o゜▽゜)o☆" [(ngModel)]="address"
+          <input type="text" id="address" name="address" placeholder="e.g. Jl. Pembangunan, Durian Runtuh, Sleman, Yogyakarta" [(ngModel)]="address"
             class="border text-sm rounded-lg p-2 px-3 w-full" #addressModel="ngModel" required>
           <div *ngIf="addressModel.invalid && addressModel.touched"><app-required-common></app-required-common></div>
         </div>
@@ -82,25 +83,27 @@
         <div class="mt-4">
           <label for="contact" class="text-sm md:text-[0.875rem] mb-1">Telepon Sekolah
             <app-asterisk></app-asterisk></label>
-          <input type="tel" id="contact" name="contact" placeholder="e.g. 081312345678" [(ngModel)]="contact" class="border text-sm rounded-lg p-2 px-3 w-full" #contactModel="ngModel" required>
+          <input type="tel" id="contact" name="contact" placeholder="e.g. 081312345678" [(ngModel)]="contact"
+            class="border text-sm rounded-lg p-2 px-3 w-full" #contactModel="ngModel" required>
           <div *ngIf="contactModel.invalid && contactModel.touched"><app-required-common></app-required-common></div>
         </div>
 
         <div class="mt-4">
           <label for="email" class="text-sm md:text-[0.875rem] mb-1">Email Sekolah <app-asterisk></app-asterisk></label>
-          <input type="email" id="email" name="email" placeholder="e.g. email@gmail.com" [(ngModel)]="email" class="border text-sm rounded-lg p-2 px-3 w-full" autocomplete="email" #emailModel="ngModel" required>
+          <input type="email" id="email" name="email" placeholder="e.g. email@gmail.com" [(ngModel)]="email"
+            class="border text-sm rounded-lg p-2 px-3 w-full" autocomplete="email" #emailModel="ngModel" required>
           <div *ngIf="emailModel.invalid && emailModel.touched"><app-required-common></app-required-common></div>
         </div>
 
         <div class="mt-4">
-          <label for="description" class="text-sm md:text-[0.875rem] mb-1">Deskripsi Sekolah</label>
-          <textarea id="description" name="description" placeholder="e.g. Description for School"
-            [(ngModel)]="description" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+          <label for="description" class="min-h-[4.5rem] text-sm md:text-[0.875rem] mb-1">Deskripsi Sekolah</label>
+          <textarea id="description" name="description" placeholder="e.g. Deskripsi Untuk Sekolah"
+            [(ngModel)]="description" class="border text-sm rounded-lg p-2 px-3 w-full text-neutral-600 invalid:border-pink-500 invalid:text-pink-600
           focus:invalid:border-pink-500 focus:invalid:ring-pink-500" rows="5" maxlength="255"></textarea>
         </div>
 
       </form>
-      
+
 
       <!-- Modal footer -->
       <div
@@ -135,12 +138,12 @@
       </div>
       <!-- Modal body -->
       <form class="p-6" #editSchoolForm="ngForm" (ngSubmit)="addSchool()">
-        <h3 class="text-2xl text-gray-900 font-semibold">Superadmin</h3>
+        <h3 class="text-2xl text-gray-900 font-semibold">Sekolah</h3>
         <p class="mb-4 text-gray-600">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
 
         <div class="mt-4">
           <label for="name" class="text-sm md:text-[0.875rem] mb-1">Nama Sekolah <app-asterisk></app-asterisk></label>
-          <input type="text" id="name" name="name" placeholder="e.g. John" [(ngModel)]="name" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+          <input type="text" id="name" name="name" placeholder="e.g. SD Negeri 1" [(ngModel)]="name" class="border text-sm rounded-lg p-2 px-3 w-full text-neutral-600 invalid:border-pink-500 invalid:text-pink-600
         focus:invalid:border-pink-500 focus:invalid:ring-pink-500" maxlength="" #nameModel="ngModel" required>
           <div *ngIf="nameModel.invalid && nameModel.touched"><app-required-common></app-required-common></div>
         </div>
@@ -148,8 +151,8 @@
         <div class="mt-4">
           <label for="address" class="text-sm md:text-[0.875rem] mb-1">Alamat Sekolah
             <app-asterisk></app-asterisk></label>
-          <input type="text" id="address" name="address" placeholder="e.g. Jl. Sm. Km (o゜▽゜)o☆" [(ngModel)]="address"
-            class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+          <input type="text" id="address" name="address" placeholder="e.g. Jl. Pembangunan, Durian Runtuh, Sleman, Yogyakarta" [(ngModel)]="address"
+            class="border text-sm rounded-lg p-2 px-3 w-full text-neutral-600 invalid:border-pink-500 invalid:text-pink-600
         focus:invalid:border-pink-500 focus:invalid:ring-pink-500" #addressModel="ngModel" required>
           <div *ngIf="addressModel.invalid && addressModel.touched"><app-required-common></app-required-common></div>
         </div>
@@ -157,22 +160,22 @@
         <div class="mt-4">
           <label for="contact" class="text-sm md:text-[0.875rem] mb-1">Telepon Sekolah
             <app-asterisk></app-asterisk></label>
-          <input type="tel" id="contact" name="contact" placeholder="e.g. 081312345678" [(ngModel)]="contact" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+          <input type="tel" id="contact" name="contact" placeholder="e.g. 081312345678" [(ngModel)]="contact" class="border text-sm rounded-lg p-2 px-3 w-full text-neutral-600 invalid:border-pink-500 invalid:text-pink-600
         focus:invalid:border-pink-500 focus:invalid:ring-pink-500" #contactModel="ngModel" required>
           <div *ngIf="contactModel.invalid && contactModel.touched"><app-required-common></app-required-common></div>
         </div>
 
         <div class="mt-4">
           <label for="email" class="text-sm md:text-[0.875rem] mb-1">Email Sekolah <app-asterisk></app-asterisk></label>
-          <input type="email" id="email" name="email" placeholder="e.g. email@gmail.com" [(ngModel)]="email" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+          <input type="email" id="email" name="email" placeholder="e.g. email@gmail.com" [(ngModel)]="email" class="border text-sm rounded-lg p-2 px-3 w-full text-neutral-600 invalid:border-pink-500 invalid:text-pink-600
         focus:invalid:border-pink-500 focus:invalid:ring-pink-500" autocomplete="email" #emailModel="ngModel" required>
           <div *ngIf="emailModel.invalid && emailModel.touched"><app-required-common></app-required-common></div>
         </div>
 
         <div class="mt-4">
           <label for="description" class="text-sm md:text-[0.875rem] mb-1">Deskripsi Sekolah</label>
-          <textarea id="description" name="description" placeholder="e.g. Description for School"
-            [(ngModel)]="description" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
+          <textarea id="description" name="description" placeholder="e.g. Deskripsi Untuk Sekolah"
+            [(ngModel)]="description" class="border text-sm rounded-lg p-2 px-3 w-full text-neutral-600 invalid:border-pink-500 invalid:text-pink-600
           focus:invalid:border-pink-500 focus:invalid:ring-pink-500" rows="5" maxlength="255"></textarea>
         </div>
 
@@ -190,4 +193,38 @@
     </div>
   </div>
 
+
+  <div *ngIf="isModalDeleteOpen" tabindex="-1" (click)="closeDeleteModal()"
+    class="fixed top-0 left-0 right-0 bottom-0 z-[90] flex items-center justify-center bg-gray-900 bg-opacity-20 select-none transition-all duration-1000">
+    <div (click)="$event.stopPropagation()"
+      class="relative flex justify-center w-full max-w-lg md:max-w-md bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto p-3 mx-4 md:mx-0">
+      <div class="text-center py-5">
+        <div class="w-fit flex justify-self-center p-2 rounded-full bg-red-100 text-red-500">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+            stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 12c0-4.969-4.031-9-9-9s-9 4.031-9 9 4.031 9 9 9 9-4.031 9-9Z"></path>
+            <path
+              d="m11.73 7.781.27 5.717.268-5.717a.267.267 0 0 0-.164-.26.269.269 0 0 0-.107-.021v0a.27.27 0 0 0-.266.281v0Z">
+            </path>
+            <path fill="currentColor" stroke="none" d="M12 17.242a.937.937 0 1 1 0-1.874.937.937 0 0 1 0 1.874Z"></path>
+          </svg>
+        </div>
+        <h1 class="my-1 text-2xl font-medium">
+          Hapus Data
+        </h1>
+        <p class="text-sm text-neutral-600">
+          Apakah anda yakin ingin menghapus data ini?
+        </p>
+        <p class="text-sm text-neutral-600">
+          Aksi ini tidak dapat dibatalkan.
+        </p>
+        <div class="grid grid-cols-2 gap-x-3 mt-6 text-sm font-medium capitalize">
+          <button class="px-4 py-2 rounded bg-neutral-200 hover:bg-neutral-300 text-neutral-800 shadow hover:shadow-md"
+            (click)="closeDeleteModal()">Batal</button>
+          <button class="px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white shadow hover:shadow-md"
+            (click)="performDeleteSchool(id)">Hapus</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

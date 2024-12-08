@@ -13,7 +13,7 @@
             <img class="w-full h-full"
               src="https://i.pinimg.com/enabled_lo_mid/736x/43/05/d0/4305d0c2c396f87a25824243cb3b3685.jpg" alt="">
           </div>
-          <div class="w-3/4 leading-4">
+          <div class="w-3/4">
             <p class="text-sm text-gray-600">{{role}}</p>
             <p class="text-md font-medium truncate">{{first_name + ' ' + last_name}}</p>
           </div>
@@ -77,8 +77,8 @@
 
     <div class="py-1 sticky bottom-0 left-0 bg-gray-100">
       <div
-        class="-mx-3 mt-auto w-full h-auto flex items-center py-2 px-1 bg-white rounded-lg border-b border-neutral-600">
-        <a [routerLink]="'profile'" class="w-3/4 flex items-center space-x-2">
+        class="mt-auto w-full h-auto flex items-center py-2 px-1 bg-white rounded-lg border-b border-neutral-600">
+        <a [routerLink]="'profile'"  (click)="onNavigate()" class="w-full flex items-center space-x-2">
           <div class="w-1/4 p-0.5 aspect-square rounded-full border border-neutral-400 text-center shadow">
             <img *ngIf="picture" class="w-full h-full aspect-auto object-fill rounded-full border border-gray-500"
               src="{{picture}}" alt="Profil User" loading="lazy">
@@ -91,6 +91,7 @@
             <p class="text-xs text-neutal-500 truncate">{{email}}</p>
           </div>
         </a>
+        
         <div class="w-1/4 text-red-500" (click)="onLogout()">
           <svg class="ml-auto w-6 aspect-square" fill="none" stroke="currentColor" stroke-linecap="round"
             stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
