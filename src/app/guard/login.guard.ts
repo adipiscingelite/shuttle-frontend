@@ -8,6 +8,7 @@ import {
 } from '@angular/router';
 import { ProfileService } from '../Services/profile/profile.service';
 import { CookieService } from 'ngx-cookie-service';
+import axios from 'axios';
 
 @Injectable({
   providedIn: 'root',
@@ -26,13 +27,20 @@ export class loginGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
   ): Promise<boolean | UrlTree> {
-    const accessToken = this.cookieService.check('accessToken');
-    const refreshToken = this.cookieService.check('refreshToken');
+    const accessToken = this.cookieService.get('accessToken');
+    const refreshToken = this.cookieService.get('refreshToken');
 
     if (accessToken || refreshToken) {
       try {
-        // Ambil data profil
-        const profileData = await this.profileService.fetchProfileData(true);
+        // Kirim request ke /api/my/profile menggunakan Axios
+        const response = await axios.get<any>(`${this.apiUrl}/api/my/profile`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        // Jika response berhasil, ambil data profil
+        const profileData = response.data;
         const role_code = profileData?.role_code;
 
         // Arahkan berdasarkan role_code
@@ -43,9 +51,16 @@ export class loginGuard implements CanActivate {
         } else {
           return this.router.createUrlTree(['/not-found']);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching profile data:', error);
-        // Jika ada error saat mengambil profil, arahkan ke login
+
+        // Jika respons adalah 401, hapus semua cookies dan arahkan ke /login
+        if (error.response && error.response.status === 401) {
+          this.cookieService.deleteAll(); // Hapus semua cookies
+          return this.router.createUrlTree(['/login']);
+        }
+
+        // Jika error lainnya, arahkan ke login
         return this.router.createUrlTree(['/login']);
       }
     }

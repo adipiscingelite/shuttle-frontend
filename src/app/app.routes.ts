@@ -1,23 +1,24 @@
 import { Route, Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { DashboardAdminComponent } from './content/Admin/dashboard/dashboard.component';
-import { FullComponent } from './layouts/full/full.component';
-import { ProfileAdminComponent } from './content/Admin/profile/profile.component';
 import { AuthGuard } from './guard/auth-guard.guard';
 import { loginGuard } from './guard/login.guard';
+import { LoginComponent } from './login/login.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { FullComponent } from './layouts/full/full.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { DashboardSuperAdminComponent } from './content/SuperAdmin/dashboard/dashboard.component';
-import { StudentsComponent } from './content/Admin/students/students.component';
 import { SchoolsComponent } from './content/SuperAdmin/schools/schools.component';
 import { DriversComponent } from './content/SuperAdmin/drivers/drivers.component';
 import { VehiclesComponent } from './content/SuperAdmin/vehicles/vehicles.component';
-// import { RoutesComponent } from './content/SuperAdmin/routes/routes.component';
-import { DashboardParentComponent } from './content/Parent/dashboard/dashboard.component';
-import { ProfileParentComponent } from './content/Parent/profile/profile.component';
 import { UsersComponent } from './content/SuperAdmin/superadmin/users.component';
 import { AdminsComponent } from './content/SuperAdmin/admins/admins.component';
 import { SuperadminProfileComponent } from './content/SuperAdmin/profile/profile.component';
+import { DashboardAdminComponent } from './content/Admin/dashboard/dashboard.component';
+import { ProfileAdminComponent } from './content/Admin/profile/profile.component';
+import { StudentsComponent } from './content/Admin/students/students.component';
+import { DashboardParentComponent } from './content/Parent/dashboard/dashboard.component';
+import { ProfileParentComponent } from './content/Parent/profile/profile.component';
+import { DashboardDriverComponent } from './content/Driver/dashboard/dashboard.component';
+import { ProfileDriverComponent } from './content/Driver/profile/profile.component';
 
 const superAdminChildrenRoutes: Route[] = [
   {
@@ -60,10 +61,6 @@ const superAdminChildrenRoutes: Route[] = [
     component: VehiclesComponent,
     data: { breadcrumb: 'Vehicles' },
   },
-  // {
-  //   path: 'routes',
-  //   component: RoutesComponent,
-  // },
 ];
 
 const adminChildrenRoutes: Route[] = [
@@ -105,6 +102,22 @@ const parentChildrenRoutes: Route[] = [
   },
 ];
 
+const driverChildrenRoutes: Route[] = [
+  {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full',
+  },
+  {
+    path: 'dashboard',
+    component: DashboardDriverComponent,
+  },
+  {
+    path: 'profile',
+    component: ProfileDriverComponent,
+  },
+];
+
 export const routes: Routes = [
   {
     path: '',
@@ -113,14 +126,14 @@ export const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
-    
+
     // Digunakan untuk mencegah user yg memiliki token untuk mengakses /login
     canActivate: [loginGuard],
   },
   {
     path: 'superadmin',
     component: FullComponent,
-    
+
     // Digunakan untuk mencegah user yg tidak memiliki token untuk mengakses /superadmin
     canActivate: [AuthGuard],
     children: superAdminChildrenRoutes,
@@ -136,15 +149,15 @@ export const routes: Routes = [
   {
     path: 'driver',
     component: FullComponent,
-    
+
     // Digunakan untuk mencegah user yg tidak memiliki token untuk mengakses /driver
     canActivate: [AuthGuard],
-    children: parentChildrenRoutes,
+    children: driverChildrenRoutes,
   },
   {
     path: 'parent',
     component: FullComponent,
-    
+
     // Digunakan untuk mencegah user yg tidak memiliki token untuk mengakses /parent
     canActivate: [AuthGuard],
     children: parentChildrenRoutes,

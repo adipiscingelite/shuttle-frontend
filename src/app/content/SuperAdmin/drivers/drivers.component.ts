@@ -388,7 +388,7 @@ export class DriversComponent implements OnInit {
     axios
       .put(`${this.apiUrl}/api/superadmin/user/update/${this.id}`, data, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          // 'Content-Type': 'multipart/form-data',
           Authorization: `${this.token}`,
         },
       })

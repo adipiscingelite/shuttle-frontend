@@ -17,6 +17,7 @@
     "@angular/platform-browser": "^18.1.0",
     "@angular/platform-browser-dynamic": "^18.1.0",
     "@angular/router": "^18.1.0",
+    "@webed/angular-tooltip": "^18.0.0",
     "ag-grid-angular": "^32.3.3",
     "ag-grid-community": "^32.3.3",
     "axios": "^1.7.7",

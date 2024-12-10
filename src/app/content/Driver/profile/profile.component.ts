@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
-export class ProfileAdminComponent {
+export class ProfileDriverComponent {
   openTab = 1;
   toggleTabs($tabNumber: number) {
     this.openTab = $tabNumber;

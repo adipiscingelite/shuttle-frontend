@@ -59,6 +59,8 @@ export class SidebarComponent implements OnInit {
     items: { name: string; icon: string; path: string }[];
   }[] = [];
 
+  isModalDeleteOpen: boolean = false;
+
   constructor(
     private profileService: ProfileService,
     private sanitizer: DomSanitizer,
@@ -279,24 +281,44 @@ export class SidebarComponent implements OnInit {
           ],
         },
       ];
+    } else if (role === 'D') {
+      this.role = 'Driver';
+      this.sections = [
+        {
+          title: 'MAIN',
+          items: [
+            {
+              name: 'Dashboard',
+              icon: 'dashboard',
+              path: '/driver/dashboard',
+            },
+          ],
+        },
+        {
+          title: 'CHILD MANAGEMENT',
+          items: [
+            {
+              name: 'Rekap Kehadiran',
+              icon: 'dashboard',
+              path: '/driver/p',
+            },
+            {
+              name: 'Edit Data Siswa',
+              icon: 'dashboard',
+              path: '/driver/ard',
+            },
+          ],
+        },
+      ];
     }
   }
 
   onLogout() {
-    Swal.fire({
-      title: 'Logout Confirmation',
-      text: 'Are you sure you want to logout?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, logout!',
-      cancelButtonText: 'Cancel',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.performLogout();
-      }
-    });
+    this.isModalDeleteOpen = true;
+  }
+
+  closeDeleteModal(){
+    this.isModalDeleteOpen = false
   }
 
   performLogout() {

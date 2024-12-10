@@ -40,8 +40,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.startWebSocket();
+    // this.startWebSocket();
     this.getCurrentLocation();
+    console.log('inpoooo');
+    
   }
 
   private async startWebSocket() {
@@ -56,14 +58,21 @@ export class AppComponent implements OnInit {
   currLng: number = 0;
 
   getCurrentLocation() {
+    console.log('Fungsi getCurrentLocation dipanggil');
+  
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.currLat = position.coords.latitude;
-        this.currLng = position.coords.longitude;
-        console.log('pp', this.currLat, 'woi', this.currLng);
-      });
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log('Lokasi berhasil diperoleh:', position.coords.latitude, position.coords.longitude);
+        },
+        (error) => {
+          console.error('Error Code:', error.code);
+          console.error('Error Message:', error.message);
+        }
+      );
     } else {
-      alert('Geolocation is not supported by this browser.');
+      console.error('Geolocation tidak didukung oleh browser ini');
     }
   }
+  
 }
