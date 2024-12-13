@@ -20,6 +20,7 @@
     "@webed/angular-tooltip": "^18.0.0",
     "ag-grid-angular": "^32.3.3",
     "ag-grid-community": "^32.3.3",
+    "ag-grid-enterprise": "^33.0.1",
     "axios": "^1.7.7",
     "flowbite": "^2.5.2",
     "ngx-cookie-service": "^18.0.0",

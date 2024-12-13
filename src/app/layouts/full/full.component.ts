@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { HeaderComponent } from '../../navigations/header/header.component';
-import { SidebarComponent } from '../../navigations/sidebar/sidebar.component';
+import { HeaderComponent } from '../header/header.component';
+import { SidebarComponent } from '../sidebar/sidebar.component';
 import axios from 'axios';
 import { CookieService } from 'ngx-cookie-service';
-import { ProfileService } from '../../Services/profile/profile.service';
+import { ProfileService } from '../../core/services/profile/profile.service';
 
 @Component({
   selector: 'app-full',

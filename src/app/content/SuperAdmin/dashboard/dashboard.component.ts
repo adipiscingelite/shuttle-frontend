@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { HeaderComponent } from '../../../navigations/header/header.component';
-import { HelloAndDateComponent } from '../../shared/hello-and-date/hello-and-date.component';
+import { HeaderComponent } from '../../../layouts/header/header.component';
+import { HelloAndDateComponent } from '../../../shared/components/hello-and-date/hello-and-date.component';
 import axios from 'axios';
 import { CookieService } from 'ngx-cookie-service';
 import { RouterLink } from '@angular/router';

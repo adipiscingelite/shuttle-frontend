@@ -1,17 +1,17 @@
 import { Route, Routes } from '@angular/router';
-import { AuthGuard } from './guard/auth-guard.guard';
-import { loginGuard } from './guard/login.guard';
-import { LoginComponent } from './login/login.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { AuthGuard } from './core/guards/auth.guard';
+import { GuestGuard } from './core/guards/guest.guard';
+import { LoginComponent } from './auth/login/login.component';
+import { LandingComponent } from './home/landing/landing.component';
 import { FullComponent } from './layouts/full/full.component';
-import { NotFoundComponent } from './not-found/not-found.component';
+import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { DashboardSuperAdminComponent } from './content/SuperAdmin/dashboard/dashboard.component';
-import { SchoolsComponent } from './content/SuperAdmin/schools/schools.component';
-import { DriversComponent } from './content/SuperAdmin/drivers/drivers.component';
-import { VehiclesComponent } from './content/SuperAdmin/vehicles/vehicles.component';
-import { UsersComponent } from './content/SuperAdmin/superadmin/users.component';
-import { AdminsComponent } from './content/SuperAdmin/admins/admins.component';
-import { SuperadminProfileComponent } from './content/SuperAdmin/profile/profile.component';
+import { SchoolsComponent } from './content/SuperAdmin/lists-school/schools.component';
+import { DriversComponent } from './content/SuperAdmin/lists-driver/drivers.component';
+import { VehiclesComponent } from './content/SuperAdmin/lists-vehicle/vehicles.component';
+import { SuperadminsComponent } from './content/SuperAdmin/lists-superadmin/superadmins.component';
+import { AdminsComponent } from './content/SuperAdmin/lists-admin/admins.component';
+import { SuperadminProfileComponent } from './content/SuperAdmin/my-profile/profile.component';
 import { DashboardAdminComponent } from './content/Admin/dashboard/dashboard.component';
 import { ProfileAdminComponent } from './content/Admin/profile/profile.component';
 import { StudentsComponent } from './content/Admin/students/students.component';
@@ -27,18 +27,20 @@ const superAdminChildrenRoutes: Route[] = [
     pathMatch: 'full',
   },
   {
+    // title: 'Superadmin - Dashboard',
     path: 'dashboard',
     component: DashboardSuperAdminComponent,
     data: { breadcrumb: 'Dashboard' },
   },
   {
+    // title: 'Superadmin - Profile',
     path: 'profile',
     component: SuperadminProfileComponent,
     data: { breadcrumb: 'Profile' },
   },
   {
     path: 'superadmins',
-    component: UsersComponent,
+    component: SuperadminsComponent,
     data: { breadcrumb: 'Super Admins' },
   },
   {
@@ -49,7 +51,7 @@ const superAdminChildrenRoutes: Route[] = [
   {
     path: 'admins',
     component: AdminsComponent,
-    data: { breadcrumb: 'Admins' },
+    data: { breadcrumb: 'Shool Admins' },
   },
   {
     path: 'drivers',
@@ -121,14 +123,14 @@ const driverChildrenRoutes: Route[] = [
 export const routes: Routes = [
   {
     path: '',
-    component: DashboardComponent,
+    component: LandingComponent,
   },
   {
     path: 'login',
     component: LoginComponent,
 
     // Digunakan untuk mencegah user yg memiliki token untuk mengakses /login
-    canActivate: [loginGuard],
+    canActivate: [GuestGuard],
   },
   {
     path: 'superadmin',

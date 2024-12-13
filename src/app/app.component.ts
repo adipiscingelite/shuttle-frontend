@@ -7,10 +7,10 @@ import {
   Router,
   RouterOutlet,
 } from '@angular/router';
-import { WebSocketService } from './Serices/Shared/WebSocket/web-socket.service';
+import { WebSocketService } from './core/services/WebSocket/web-socket.service';
 import { CookieService } from 'ngx-cookie-service';
 import { environment } from '../environments/environment'; // Impor environment
-import { SpinnerComponent } from './content/shared/spinner/spinner.component';
+import { SpinnerComponent } from './shared/components/spinner/spinner.component';
 import { CommonModule } from '@angular/common';
 
 @Component({
