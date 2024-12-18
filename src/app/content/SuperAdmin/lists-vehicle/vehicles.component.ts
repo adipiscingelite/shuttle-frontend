@@ -1,63 +1,82 @@
+// ANGULAR
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
-import { HeaderComponent } from '../../../layouts/header/header.component';
-import { AgGridAngular } from 'ag-grid-angular';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+
+// THIRD PARTY
+import { AgGridAngular } from 'ag-grid-angular';
 import { CookieService } from 'ngx-cookie-service';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import axios from 'axios';
-import Swal from 'sweetalert2';
-import { AsteriskComponent } from '../../../shared/components/asterisk/asterisk.component';
-import { RequiredCommonComponent } from '../../../shared/components/required-common/required-common.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-export interface Vehicle {
-  id: string;
-  vehicle_name: string;
-  vehicle_number: string;
-  vehicle_type: string;
-  colour: string;
-  seats: number;
-  status: string;
-}
+// COMPONENTS
+import { HeaderComponent } from '@layouts/header/header.component';
+import { AsteriskComponent } from '@shared/components/asterisk/asterisk.component';
+import { RequiredCommonComponent } from '@shared/components/required-common/required-common.component';
+
+// SHARED
+import { Response, Vehicle } from '@core/interfaces';
+import { ToastService } from '@core/services/toast/toast.service';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
+import { toastInOutAnimation } from '@shared/utils/toast.animation';
+import { modalScaleAnimation } from '@shared/utils/modal.animation';
+
 @Component({
   selector: 'app-vehicles',
   standalone: true,
   imports: [
-    AsteriskComponent,
-    RequiredCommonComponent,
     CommonModule,
-    AgGridAngular,
-    HeaderComponent,
     FormsModule,
     ReactiveFormsModule,
+    AgGridAngular,
+    AsteriskComponent,
+    HeaderComponent,
+    RequiredCommonComponent,
+    SpinnerComponent,
   ],
   templateUrl: './vehicles.component.html',
   styleUrl: './vehicles.component.css',
+  animations: [toastInOutAnimation, modalScaleAnimation],
 })
 export class VehiclesComponent implements OnInit {
   token: string | null = '';
 
-  totalRows: number = 0;
-  startRow: number = 1;
-  endRow: number = 10;
+  sortBy: string = 'vehicle_id';
+  sortDirection: string = 'asc';
 
-  id: string = '';
+  paginationPage: number = 1;
+  paginationCurrentPage: number = 1;
+  paginationItemsLimit: number = 10;
+  paginationTotalPage: number = 0;
+  showing: string = '';
+  pages: number[] = [];
+
+  vehicle_uuid: string = '';
   vehicle_name: string = '';
   vehicle_number: string = '';
   vehicle_type: string = '';
-  colour: string = '';
-  seats: number = 0;
-  status: string = '';
+  vehicle_color: string = '';
+  vehicle_seats: number = 0;
+  vehicle_status: string = '';
+
+  school_uuid: string = '';
+
+  isLoading: boolean = false;
+  isMobile = window.innerWidth <= 768;
 
   isModalAddOpen: boolean = false;
   isModalEditOpen: boolean = false;
+  isModalDetailOpen: boolean = false;
   isModalDeleteOpen: boolean = false;
 
   rowListAllVehicle: Vehicle[] = [];
 
+  private columnClickCount: { [key: string]: number } = {};
+
   constructor(
     private cookieService: CookieService,
     private cdRef: ChangeDetectorRef,
+    public toastService: ToastService,
     @Inject('apiUrl') private apiUrl: string,
   ) {
     this.apiUrl = apiUrl;
@@ -76,6 +95,12 @@ export class VehiclesComponent implements OnInit {
     pagination: true,
     paginationPageSize: 10,
     paginationPageSizeSelector: [10, 20, 50, 100],
+    suppressPaginationPanel: true,
+    suppressMovable: true,
+    onSortChanged: this.onSortChanged.bind(this),
+    onGridReady: () => {
+      console.log('Grid sudah siap!');
+    },
   };
 
   colHeaderListAllVehicle: ColDef<Vehicle>[] = [
@@ -86,12 +111,14 @@ export class VehiclesComponent implements OnInit {
       maxWidth: 70,
       pinned: 'left',
     },
-    { field: 'vehicle_name' },
-    { field: 'vehicle_number' },
-    { field: 'vehicle_type' },
-    { field: 'colour' },
-    { field: 'seats' },
-    { field: 'status' },
+    { field: 'vehicle_name', sortable: true },
+    { field: 'school_name', sortable: true },
+    { field: 'driver_name', sortable: true },
+    { field: 'vehicle_number', sortable: true },
+    { field: 'vehicle_type', sortable: true },
+    { field: 'vehicle_color', sortable: true },
+    { field: 'vehicle_seats', sortable: true },
+    { field: 'vehicle_status' },
     {
       headerName: 'Actions',
       sortable: false,
@@ -117,7 +144,7 @@ export class VehiclesComponent implements OnInit {
         `;
         editButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.openEditModal(params.data.id);
+          this.openEditModal(params.data.vehicle_uuid);
         });
 
         const viewButton = document.createElement('button');
@@ -132,7 +159,7 @@ export class VehiclesComponent implements OnInit {
         `;
         viewButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.openViewModal(params.data.id);
+          this.openViewModal(params.data.vehicle_uuid);
         });
 
         const deleteButton = document.createElement('button');
@@ -152,7 +179,7 @@ export class VehiclesComponent implements OnInit {
         `;
         deleteButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.onDeleteVehicle(params.data.id);
+          this.onDeleteVehicle(params.data.vehicle_uuid);
         });
 
         buttonContainer.appendChild(editButton);
@@ -161,7 +188,7 @@ export class VehiclesComponent implements OnInit {
 
         return buttonContainer;
       },
-      pinned: 'right',
+      pinned: this.isMobile ? null : 'right',
     },
   ];
   openViewModal(id: any) {}
@@ -172,43 +199,96 @@ export class VehiclesComponent implements OnInit {
     maxWidth: 250,
     wrapHeaderText: true,
     autoHeaderHeight: true,
+    sortable: false,
   };
 
-  totalRowCount(currentPage: number, pageSize: number) {
-    if (this.rowListAllVehicle && this.rowListAllVehicle.length > 0) {
-      const totalRows = this.rowListAllVehicle.length;
-      this.totalRows = totalRows;
-
-      this.startRow = (currentPage - 1) * pageSize + 1;
-      this.endRow = Math.min(currentPage * pageSize, this.totalRows);
-    } else {
-      this.totalRows = 0;
-      this.startRow = 0;
-      this.endRow = 0;
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.paginationTotalPage) {
+      this.paginationPage = page;
+      this.getAllVehicle();
     }
   }
 
-  onPaginationChanged(event: any) {
-    const currentPage = event.api.paginationGetCurrentPage() + 1;
-    const pageSize = event.api.paginationGetPageSize();
+  goToNextPage() {
+    if (this.paginationPage < this.paginationTotalPage) {
+      this.paginationPage++;
+      this.getAllVehicle();
+    }
+  }
 
-    this.totalRowCount(currentPage, pageSize);
+  goToPreviousPage() {
+    if (this.paginationPage > 1) {
+      this.paginationPage--;
+      this.getAllVehicle();
+    }
+  }
+
+  changeMaxItemsPerPage(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    this.paginationItemsLimit = +target.value;
+    this.paginationPage = 1;
+    this.getAllVehicle();
+  }
+
+  onSortChanged(event: any) {
+    console.log('onSortChanged event:', event);
+
+    if (event && event.columns && event.columns.length > 0) {
+      event.columns.forEach((column: any) => {
+        const colId = column.colId;
+        console.log('Sorting column ID:', colId);
+
+        if (!this.columnClickCount[colId]) {
+          this.columnClickCount[colId] = 0;
+        }
+        this.columnClickCount[colId] += 1;
+
+        if (this.columnClickCount[colId] === 3) {
+          this.sortBy = 'vehicle_id';
+          this.sortDirection = 'asc';
+          this.columnClickCount[colId] = 0;
+        }
+      });
+
+      this.getAllVehicle();
+    } else {
+      console.error('onSortChanged: event.columns is undefined or empty');
+    }
   }
 
   getAllVehicle() {
+    this.isLoading = true;
     axios
       .get(`${this.apiUrl}/api/superadmin/vehicle/all`, {
         headers: {
           Authorization: `${this.cookieService.get('accessToken')}`,
         },
+        params: {
+          page: this.paginationPage,
+          limit: this.paginationItemsLimit,
+
+          sort_by: this.sortBy,
+          direction: this.sortDirection,
+        },
       })
       .then((response) => {
-        this.rowListAllVehicle = response.data;
+        this.rowListAllVehicle = response.data.data.data;
+
+        console.log(this.rowListAllVehicle);
+        this.paginationTotalPage = response.data.data.meta.total_pages;
+        this.pages = Array.from(
+          { length: this.paginationTotalPage },
+          (_, i) => i + 1,
+        );
+        this.showing = response.data.data.meta.showing;
+
+        this.isLoading = false;
 
         this.cdRef.detectChanges();
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
+        this.isLoading = false;
       });
   }
 
@@ -221,9 +301,10 @@ export class VehiclesComponent implements OnInit {
       vehicle_name: this.vehicle_name,
       vehicle_number: this.vehicle_number,
       vehicle_type: this.vehicle_type,
-      colour: this.colour,
-      seats: this.seats,
-      status: this.status,
+      vehicle_color: this.vehicle_color,
+      vehicle_seats: this.vehicle_seats,
+      vehicle_status: this.vehicle_status,
+      school_id: this.school_uuid,
     };
     console.log('add vehicle', requestData);
 
@@ -234,15 +315,8 @@ export class VehiclesComponent implements OnInit {
         },
       })
       .then((response) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'SUCCESS',
-          text: response.data.message,
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage = response.data?.message || 'Success.';
+        this.showToast(responseMessage, 3000, Response.Success);
 
         this.getAllVehicle();
         this.isModalAddOpen = false;
@@ -250,15 +324,9 @@ export class VehiclesComponent implements OnInit {
         this.cdRef.detectChanges();
       })
       .catch((error) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'ERROR',
-          text: error.response.data.message,
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
   }
 
@@ -274,29 +342,23 @@ export class VehiclesComponent implements OnInit {
         },
       })
       .then((response) => {
-        const editData = response.data;
+        const editData = response.data.data;
 
-        this.id = editData.id;
+        this.vehicle_uuid = editData.vehicle_uuid;
         this.vehicle_name = editData.vehicle_name;
         this.vehicle_number = editData.vehicle_number;
         this.vehicle_type = editData.vehicle_type;
-        this.colour = editData.colour;
-        this.seats = editData.seats;
-        this.status = editData.status;
+        this.vehicle_color = editData.vehicle_color;
+        this.vehicle_seats = editData.vehicle_seats;
+        this.vehicle_status = editData.vehicle_status;
 
         this.isModalEditOpen = true;
         this.cdRef.detectChanges();
       })
       .catch((error) => {
-        Swal.fire({
-          title: 'Error',
-          text: error.response.data.message,
-          icon: 'error',
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
   }
 
@@ -310,27 +372,24 @@ export class VehiclesComponent implements OnInit {
       vehicle_name: this.vehicle_name,
       vehicle_number: this.vehicle_number,
       vehicle_type: this.vehicle_type,
-      colour: this.colour,
-      seats: this.seats,
-      status: this.status,
+      vehicle_color: this.vehicle_color,
+      vehicle_seats: this.vehicle_seats,
+      vehicle_status: this.vehicle_status,
     };
 
     axios
-      .put(`${this.apiUrl}/api/superadmin/vehicle/update/${this.id}`, data, {
-        headers: {
-          Authorization: `${this.token}`,
+      .put(
+        `${this.apiUrl}/api/superadmin/vehicle/update/${this.vehicle_uuid}`,
+        data,
+        {
+          headers: {
+            Authorization: `${this.token}`,
+          },
         },
-      })
+      )
       .then((response) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'SUCCESS',
-          text: response.data.message,
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage = response.data?.message || 'Success.';
+        this.showToast(responseMessage, 3000, Response.Success);
 
         this.getAllVehicle();
 
@@ -338,16 +397,9 @@ export class VehiclesComponent implements OnInit {
         this.cdRef.detectChanges();
       })
       .catch((error) => {
-        console.error('Error saat update:', error);
-        Swal.fire({
-          title: 'Error',
-          text: error.response?.data?.message || 'Unknown error',
-          icon: 'error',
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
   }
 
@@ -355,7 +407,7 @@ export class VehiclesComponent implements OnInit {
     this.isModalDeleteOpen = true;
     this.cdRef.detectChanges();
 
-    this.id = id;
+    this.vehicle_uuid = id;
   }
 
   closeDeleteModal() {
@@ -371,15 +423,8 @@ export class VehiclesComponent implements OnInit {
         },
       })
       .then((response) => {
-        Swal.fire({
-          title: 'Success',
-          text: response.data.message,
-          icon: 'success',
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage = response.data?.message || 'Success.';
+        this.showToast(responseMessage, 3000, Response.Success);
 
         this.getAllVehicle();
         this.isModalDeleteOpen = false;
@@ -387,15 +432,17 @@ export class VehiclesComponent implements OnInit {
         this.cdRef.detectChanges();
       })
       .catch((error) => {
-        Swal.fire({
-          title: 'Error',
-          text: error.response.data.message,
-          icon: 'error',
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
+  }
+
+  showToast(message: string, duration: number, type: Response) {
+    this.toastService.add(message, duration, type);
+  }
+
+  removeToast(index: number) {
+    this.toastService.remove(index);
   }
 }

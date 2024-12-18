@@ -43,6 +43,7 @@ export class SidebarComponent implements OnInit {
 
   user_id: string = '';
   email: string = '';
+  user_username: string = ''
   first_name: string = '';
   last_name: string = '';
   password: string = '';
@@ -114,6 +115,7 @@ export class SidebarComponent implements OnInit {
         if (data) {
           this.user_id = data.user_uuid;
           this.email = data.user_email;
+          this.user_username = data.user_username;
           this.first_name = data.user_details.user_first_name;
           this.last_name = data.user_details.user_last_name;
           this.password = data.password;
@@ -274,12 +276,12 @@ export class SidebarComponent implements OnInit {
             {
               name: 'Rekap Kehadiran',
               icon: 'dashboard',
-              path: '/parent/p',
+              path: '/parent/attendance',
             },
             {
               name: 'Edit Data Siswa',
               icon: 'dashboard',
-              path: '/parent/ard',
+              path: '/parent/my-childern',
             },
           ],
         },
@@ -298,17 +300,12 @@ export class SidebarComponent implements OnInit {
           ],
         },
         {
-          title: 'CHILD MANAGEMENT',
+          title: 'ROUTE MANAGEMENT',
           items: [
             {
-              name: 'Rekap Kehadiran',
+              name: 'Route Management',
               icon: 'dashboard',
               path: '/driver/p',
-            },
-            {
-              name: 'Edit Data Siswa',
-              icon: 'dashboard',
-              path: '/driver/ard',
             },
           ],
         },
@@ -337,6 +334,10 @@ export class SidebarComponent implements OnInit {
         },
       )
       .then((response) => {
+        this.router.navigateByUrl('/login');
+        this.cookieService.deleteAll();
+        this.profileService.resetProfileData();
+        
         console.log(response.data.message);
         Swal.fire({
           title: 'Success',
@@ -345,10 +346,7 @@ export class SidebarComponent implements OnInit {
           timer: 1500,
           showConfirmButton: false,
         });
-        this.router.navigateByUrl('/login');
-
-        this.cookieService.deleteAll();
-        this.profileService.resetProfileData();
+        
       })
       .catch((error) => {
         if (error.response.status === 401) {

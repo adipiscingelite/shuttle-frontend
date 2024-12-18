@@ -1,2 +1,6 @@
-export * from './user.interface'
+export * from './driver.interface'
+export * from './superadmin.interface'
+export * from './school.interface'
+export * from './schooladmin.interface'
 export * from './response.interface'
+export * from './vehicle.interface'

@@ -1,36 +1,26 @@
+// ANGULAR
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
+// THIRD PARTY
+import { AgGridAngular } from 'ag-grid-angular';
+import { CookieService } from 'ngx-cookie-service';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import axios from 'axios';
-import { CookieService } from 'ngx-cookie-service';
-import { HeaderComponent } from '../../../layouts/header/header.component';
-import { AgGridAngular } from 'ag-grid-angular';
-import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AsteriskComponent } from '../../../shared/components/asterisk/asterisk.component';
-import { RequiredCommonComponent } from '../../../shared/components/required-common/required-common.component';
-import { Vehicle } from '../lists-vehicle/vehicles.component';
 
-interface Driver {
-  id: string;
-  username: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  password: string;
-  role: string;
-  role_code: string;
-  phone: string;
-  address: string;
-  status: string;
-  last_active: string;
-  details: Detail;
-}
+// COMPONENTS
+import { HeaderComponent } from '@layouts/header/header.component';
+import { AsteriskComponent } from '@shared/components/asterisk/asterisk.component';
+import { RequiredCommonComponent } from '@shared/components/required-common/required-common.component';
 
-interface Detail {
-  vehicle_id: string;
-  license_number: string;
-}
+// SHARED
+import { Driver, Response, Vehicle } from '@core/interfaces';
+import { ToastService } from '@core/services/toast/toast.service';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
+import { toastInOutAnimation } from '@shared/utils/toast.animation';
+import { modalScaleAnimation } from '@shared/utils/modal.animation';
 
 @Component({
   selector: 'app-drivers',
@@ -43,43 +33,68 @@ interface Detail {
     HeaderComponent,
     FormsModule,
     ReactiveFormsModule,
+    SpinnerComponent,
   ],
   templateUrl: './drivers.component.html',
   styleUrl: './drivers.component.css',
+  animations: [toastInOutAnimation, modalScaleAnimation],
 })
 export class DriversComponent implements OnInit {
   token: string | null = '';
 
-  totalRows: number = 0;
-  startRow: number = 1;
-  endRow: number = 10;
+  sortBy: string = 'user_id';
+  sortDirection: string = 'asc';
 
-  id: string = '';
-  username: string = '';
-  first_name: string = '';
-  last_name: string = '';
-  gender: string = '';
-  email: string = '';
-  password: string = '';
-  role: string = '';
-  role_code: string = '';
-  phone: string = '';
-  address: string = '';
-  status: string = '';
+  paginationPage: number = 1;
+  paginationCurrentPage: number = 1;
+  paginationItemsLimit: number = 10;
+  paginationTotalPage: number = 0;
+  showing: string = '';
+  pages: number[] = [];
 
-  vehicle_id: string = '';
+  user_uuid: string = '';
+  user_username: string = '';
+  user_first_name: string = '';
+  user_last_name: string = '';
+  user_gender: string = '';
+  user_email: string = '';
+  user_password: string = '';
+  user_role: string = '';
+  user_role_code: string = '';
+  user_phone: string = '';
+  user_address: string = '';
+  user_status: string = '';
+
+  initialAvatar: string = '';
+
+  vehicle_uuid: string = '';
+  vehicle_name: string = '';
+  vehicle_number: string = '';
   license_number: string = '';
+
+  isLoading: boolean = false;
+  isMobile = window.innerWidth <= 768;
 
   isModalAddOpen: boolean = false;
   isModalEditOpen: boolean = false;
+  isModalDetailOpen: boolean = false;
   isModalDeleteOpen: boolean = false;
 
   rowListAllDriver: Driver[] = [];
   rowListAllVehicle: Vehicle[] = [];
 
+  columnMapping: { [key: string]: string } = {
+    'user_details.user_first_name': 'user_first_name',
+    'user_details.user_last_name': 'user_last_name',
+    user_username: 'user_username',
+  };
+
+  private columnClickCount: { [key: string]: number } = {};
+
   constructor(
     private cookieService: CookieService,
     private cdRef: ChangeDetectorRef,
+    public toastService: ToastService,
     @Inject('apiUrl') private apiUrl: string,
   ) {
     this.apiUrl = apiUrl;
@@ -98,6 +113,12 @@ export class DriversComponent implements OnInit {
     pagination: true,
     paginationPageSize: 10,
     paginationPageSizeSelector: [10, 20, 50, 100],
+    suppressPaginationPanel: true,
+    suppressMovable: true,
+    onSortChanged: this.onSortChanged.bind(this),
+    onGridReady: () => {
+      console.log('Grid sudah siap!');
+    },
   };
 
   colHeaderListAllDriver: ColDef<Driver>[] = [
@@ -109,15 +130,15 @@ export class DriversComponent implements OnInit {
       pinned: 'left',
       sortable: false,
     },
-    { headerName: 'Username', field: 'username' },
-    { headerName: 'First Name', field: 'first_name' },
-    { headerName: 'Last Name', field: 'last_name' },
-    { headerName: 'Email', field: 'email' },
-    { field: 'phone' },
-    { field: 'address' },
-    { field: 'details.vehicle_id' },
-    { field: 'status' },
-    { field: 'last_active' },
+    { headerName: 'Username', field: 'user_username', sortable: true },
+    { headerName: 'First Name', field: 'user_details.user_first_name', sortable: true },
+    { headerName: 'Last Name', field: 'user_details.user_last_name', sortable: true },
+    { headerName: 'Email', field: 'user_email' },
+    { field: 'user_details.user_phone' },
+    // { field: 'user_address' },
+    // { field: 'details.vehicle_id' },
+    // { field: 'status' },
+    // { field: 'last_active' },
     {
       headerName: 'Actions',
       headerClass: 'justify-center',
@@ -146,7 +167,7 @@ export class DriversComponent implements OnInit {
         `;
         editButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.openEditModal(params.data.id);
+          this.openEditModal(params.data.user_uuid);
         });
 
         const viewButton = document.createElement('button');
@@ -161,7 +182,7 @@ export class DriversComponent implements OnInit {
         `;
         viewButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.openViewModal(params.data.id);
+          this.openDetailModal(params.data.user_uuid);
         });
 
         const deleteButton = document.createElement('button');
@@ -181,7 +202,7 @@ export class DriversComponent implements OnInit {
         `;
         deleteButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.onDeleteDriver(params.data.id);
+          this.onDeleteDriver(params.data.user_uuid);
         });
 
         buttonContainer.appendChild(editButton);
@@ -190,7 +211,7 @@ export class DriversComponent implements OnInit {
 
         return buttonContainer;
       },
-      pinned: 'right',
+      pinned: this.isMobile ? null : 'right',
     },
   ];
 
@@ -203,30 +224,77 @@ export class DriversComponent implements OnInit {
     maxWidth: 250,
     wrapHeaderText: true,
     autoHeaderHeight: true,
+    sortable: false,
   };
 
-  totalRowCount(currentPage: number, pageSize: number) {
-    if (this.rowListAllDriver && this.rowListAllDriver.length > 0) {
-      const totalRows = this.rowListAllDriver.length;
-      this.totalRows = totalRows;
-
-      this.startRow = (currentPage - 1) * pageSize + 1;
-      this.endRow = Math.min(currentPage * pageSize, this.totalRows);
-    } else {
-      this.totalRows = 0;
-      this.startRow = 0;
-      this.endRow = 0;
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.paginationTotalPage) {
+      this.paginationPage = page;
+      this.getAllDriver();
     }
   }
 
-  onPaginationChanged(event: any) {
-    const currentPage = event.api.paginationGetCurrentPage() + 1;
-    const pageSize = event.api.paginationGetPageSize();
+  goToNextPage() {
+    if (this.paginationPage < this.paginationTotalPage) {
+      this.paginationPage++;
+      this.getAllDriver();
+    }
+  }
 
-    this.totalRowCount(currentPage, pageSize);
+  goToPreviousPage() {
+    if (this.paginationPage > 1) {
+      this.paginationPage--;
+      this.getAllDriver();
+    }
+  }
+
+  changeMaxItemsPerPage(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    this.paginationItemsLimit = +target.value;
+    this.paginationPage = 1;
+    this.getAllDriver();
+  }
+
+  onSortChanged(event: any) {
+    console.log('onSortChanged event:', event);
+
+    if (event && event.columns && event.columns.length > 0) {
+      event.columns.forEach((column: any) => {
+        const colId = column.colId;
+        console.log('Sorting column ID:', colId);
+
+        if (!this.columnClickCount[colId]) {
+          this.columnClickCount[colId] = 0;
+        }
+        this.columnClickCount[colId] += 1;
+
+        if (this.columnClickCount[colId] === 3) {
+          this.sortBy = 'user_id';
+          this.sortDirection = 'asc';
+          this.columnClickCount[colId] = 0;
+        } else {
+          if (this.columnMapping[colId]) {
+            this.sortBy = this.columnMapping[colId];
+          } else {
+            this.sortBy = colId;
+          }
+
+          if (this.columnClickCount[colId] === 1) {
+            this.sortDirection = 'asc';
+          } else if (this.columnClickCount[colId] === 2) {
+            this.sortDirection = 'desc';
+          }
+        }
+      });
+
+      this.getAllDriver();
+    } else {
+      console.error('onSortChanged: event.columns is undefined or empty');
+    }
   }
 
   getAllVehicle() {
+    this.isLoading = true;
     axios
       .get(`${this.apiUrl}/api/superadmin/vehicle/all`, {
         headers: {
@@ -234,7 +302,7 @@ export class DriversComponent implements OnInit {
         },
       })
       .then((response) => {
-        this.rowListAllVehicle = response.data;
+        this.rowListAllVehicle = response.data.data.data;
 
         console.log('vehicle', this.rowListAllVehicle);
 
@@ -246,6 +314,7 @@ export class DriversComponent implements OnInit {
   }
 
   getAllDriver() {
+    this.isLoading = true;
     axios
       .get(`${this.apiUrl}/api/superadmin/user/driver/all`, {
         headers: {
@@ -253,9 +322,16 @@ export class DriversComponent implements OnInit {
         },
       })
       .then((response) => {
-        this.rowListAllDriver = response.data;
+        this.rowListAllDriver = response.data.data.data;
+        this.paginationTotalPage = response.data.data.meta.total_pages;
+        this.pages = Array.from(
+          { length: this.paginationTotalPage },
+          (_, i) => i + 1,
+        );
+        this.showing = response.data.data.meta.showing;
 
         console.log('drivers', this.rowListAllDriver);
+        this.isLoading = false;
 
         this.cdRef.detectChanges();
       })
@@ -271,17 +347,18 @@ export class DriversComponent implements OnInit {
 
   addDriver(): void {
     const requestData = {
-      first_name: this.first_name,
-      last_name: this.last_name,
-      gender: this.gender,
-      email: this.email,
-      password: this.password,
+      username: this.user_username,
+      first_name: this.user_first_name,
+      last_name: this.user_last_name,
+      gender: this.user_gender,
+      email: this.user_email,
+      password: this.user_password,
       role: 'driver',
-      phone: this.phone,
-      address: this.address,
+      phone: this.user_phone,
+      address: this.user_address,
       details: {
         license_number: this.license_number,
-        vehicle_id: this.vehicle_id,
+        vehicle_id: this.vehicle_uuid,
       },
     };
 
@@ -294,15 +371,8 @@ export class DriversComponent implements OnInit {
         },
       })
       .then((response) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'SUCCESS',
-          text: response.data.message,
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage = response.data?.message || 'Success.';
+        this.showToast(responseMessage, 3000, Response.Success);
 
         this.getAllDriver();
 
@@ -310,15 +380,9 @@ export class DriversComponent implements OnInit {
         this.cdRef.detectChanges();
       })
       .catch((error) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'ERROR',
-          text: error.response.data.message,
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
   }
 
@@ -327,41 +391,42 @@ export class DriversComponent implements OnInit {
     this.cdRef.detectChanges();
   }
 
-  openEditModal(id: string) {
+  openEditModal(user_uuid: string) {
     axios
-      .get(`${this.apiUrl}/api/superadmin/user/driver/${id}`, {
+      .get(`${this.apiUrl}/api/superadmin/user/driver/${user_uuid}`, {
         headers: {
           Authorization: `${this.token}`,
         },
       })
       .then((response) => {
-        const editData = response.data;
+        console.log('Full Response:', response);
+        const editData = response.data.data;
 
-        this.id = editData.id;
-        this.first_name = editData.first_name;
-        this.last_name = editData.last_name;
-        this.gender = editData.gender;
-        this.email = editData.email;
-        this.password = editData.password;
-        this.role = 'driver';
-        this.phone = editData.phone;
-        this.address = editData.address;
-        this.license_number = editData.details.license_number;
-        this.vehicle_id = editData.details.vehicle_id;
+        console.log('pppp', editData);
+
+        this.user_uuid = editData.user_uuid;
+        this.user_username = editData.user_username;
+        this.user_first_name = editData.user_details.user_first_name;
+        this.user_last_name = editData.user_details.user_last_name;
+        this.user_gender = editData.user_details.user_gender;
+        this.user_email = editData.user_email;
+        this.user_role = 'driver';
+        this.user_phone = editData.user_details.user_phone;
+        this.user_address = editData.user_details.user_address;
+        this.license_number = editData.user_details.license_number;
+        this.vehicle_uuid = editData.user_details.vehicle_uuid;
+
+        this.initialAvatar =
+          this.user_first_name.charAt(0).toUpperCase() +
+          this.user_last_name.charAt(0).toUpperCase();
 
         this.isModalEditOpen = true;
         this.cdRef.detectChanges();
       })
       .catch((error) => {
-        Swal.fire({
-          title: 'Error',
-          text: error.response.data.message,
-          icon: 'error',
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
   }
 
@@ -372,46 +437,82 @@ export class DriversComponent implements OnInit {
 
   updateDriver() {
     const data = {
-      first_name: this.first_name,
-      last_name: this.last_name,
-      gender: this.gender,
-      email: this.email,
+      username: this.user_username,
+      first_name: this.user_first_name,
+      last_name: this.user_last_name,
+      gender: this.user_gender,
+      email: this.user_email,
+      password: this.user_password,
       role: 'driver',
-      phone: this.phone,
-      address: this.address,
+      phone: this.user_phone,
+      address: this.user_address,
       details: {
         license_number: this.license_number,
-        vehicle_id: this.vehicle_id,
+        vehicle_uuid: this.vehicle_uuid,
       },
     };
 
     axios
-      .put(`${this.apiUrl}/api/superadmin/user/update/${this.id}`, data, {
-        headers: {
-          // 'Content-Type': 'multipart/form-data',
-          Authorization: `${this.token}`,
+      .put(
+        `${this.apiUrl}/api/superadmin/user/update/${this.user_uuid}`,
+        data,
+        {
+          headers: {
+            // 'Content-Type': 'multipart/form-data',
+            Authorization: `${this.token}`,
+          },
         },
-      })
+      )
       .then((response) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'SUCCESS',
-          text: response.data.message,
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage = response.data?.message || 'Success.';
+        this.showToast(responseMessage, 3000, Response.Success);
 
         this.getAllDriver();
         this.isModalEditOpen = false;
         this.cdRef.detectChanges();
       })
       .catch((error) => {
-        console.error('Error saat update:', error);
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
+      });
+  }
+
+  openDetailModal(user_uuid: string) {
+    axios
+      .get(`${this.apiUrl}/api/superadmin/user/driver/${user_uuid}`, {
+        headers: {
+          Authorization: `${this.token}`,
+        },
+      })
+      .then((response) => {
+        const detailData = response.data.data;
+
+        this.user_uuid = detailData.user_uuid;
+        this.user_username = detailData.user_username;
+        this.user_first_name = detailData.user_details.user_first_name;
+        this.user_last_name = detailData.user_details.user_last_name;
+        this.user_gender = detailData.user_details.user_gender;
+        this.user_email = detailData.user_email;
+        this.user_role = 'superadmin';
+        this.user_phone = detailData.user_details.user_phone;
+        this.user_address = detailData.user_details.user_address;
+        this.license_number = detailData.user_details.license_number;
+        this.vehicle_name = detailData.user_details.vehicle_name;
+        this.vehicle_number = detailData.user_details.vehicle_number;
+       
+
+        this.initialAvatar =
+          this.user_first_name.charAt(0).toUpperCase() +
+          this.user_last_name.charAt(0).toUpperCase();
+
+        this.isModalDetailOpen = true;
+        this.cdRef.detectChanges();
+      })
+      .catch((error) => {
         Swal.fire({
           title: 'Error',
-          text: error.response?.data?.message || 'Unknown error',
+          text: error.response.data.message,
           icon: 'error',
           timer: 2000,
           timerProgressBar: true,
@@ -421,11 +522,16 @@ export class DriversComponent implements OnInit {
       });
   }
 
+  closeDetailModal() {
+    this.isModalDetailOpen = false;
+    this.cdRef.detectChanges();
+  }
+
   onDeleteDriver(id: string) {
     this.isModalDeleteOpen = true;
     this.cdRef.detectChanges();
 
-    this.id = id;
+    this.user_uuid = id;
   }
 
   closeDeleteModal() {
@@ -441,15 +547,8 @@ export class DriversComponent implements OnInit {
         },
       })
       .then((response) => {
-        Swal.fire({
-          title: 'Success',
-          text: response.data.message,
-          icon: 'success',
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage = response.data?.message || 'Success.';
+        this.showToast(responseMessage, 3000, Response.Success);
 
         this.getAllDriver();
         this.isModalDeleteOpen = false;
@@ -457,15 +556,17 @@ export class DriversComponent implements OnInit {
         this.cdRef.detectChanges();
       })
       .catch((error) => {
-        Swal.fire({
-          title: 'Error',
-          text: error.response.data.message,
-          icon: 'error',
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
+  }
+
+  showToast(message: string, duration: number, type: Response) {
+    this.toastService.add(message, duration, type);
+  }
+
+  removeToast(index: number) {
+    this.toastService.remove(index);
   }
 }

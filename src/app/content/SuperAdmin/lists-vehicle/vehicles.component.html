@@ -1,4 +1,9 @@
 <div>
+  <!-- SPINNER -->
+  <div *ngIf="isLoading" class="absolute top-0 left-0 flex items-center justify-center bg-gray-50 bg-opacity-50 z-50">
+    <app-spinner></app-spinner>
+  </div>
+
   <h1 class="my-6 text-xl font-semibold uppercase">
     Vehicle list
   </h1>
@@ -30,20 +35,89 @@
   </div>
 
 
-  <div class="w-fit bg-gray-50 px-4 py-2 text-sm font-medium border rounded-lg shadow-md">
-    {{ startRow }} - {{ endRow }} of {{ totalRows }} item(s)
+  <!-- TABLE & PAGINATION -->
+  <div>
+    <div class="flex items-center gap-x-3">
+      <div class="w-fit bg-gray-50 px-4 py-2 text-sm font-medium border rounded-lg shadow-md">
+        {{showing}}
+      </div>
+
+      <!-- <label for="itemsPerPage" class="ml-4">Limit: </label> -->
+      <select id="itemsPerPage" class="px-2 py-1 border rounded-lg" (change)="changeMaxItemsPerPage($event)">
+        <option [value]="10" [selected]>10</option>
+        <option [value]="20">20</option>
+        <option [value]="50">50</option>
+        <option [value]="100">100</option>
+      </select>
+    </div>
+
+    <!-- TABLE -->
+    <div class="relative w-full h-[80vh] my-4">
+
+      <ag-grid-angular style="width: 100%; height: 100%; overflow-x: scroll;" [class]="themeClass"
+        [rowData]="rowListAllVehicle" [columnDefs]="colHeaderListAllVehicle" [defaultColDef]="defaultColDef"
+        [gridOptions]="gridOptions" [pagination]="true"></ag-grid-angular>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="w-full flex items-center justify-center space-x-4 mb-4">
+      <button class="p-2 bg-black text-white shadow-md rounded-full" (click)="goToPreviousPage()"
+        [disabled]="paginationPage === 1" [ngClass]="{'cursor-not-allowed': paginationPage === 1}">
+        <div class="w-5 h-5 bg-white"
+          style="mask: url('/assets/svg/chevron-left.icon.svg') no-repeat; -webkit-mask: url('/assets/svg/chevron-left.icon.svg') no-repeat;">
+        </div>
+
+      </button>
+
+      <div class="flex space-x-2 rounded-full bg-gray-100 shadow">
+        <button *ngFor="let page of pages" class="w-10 h-10 rounded-full flex items-center justify-center"
+          [ngClass]="{'border border-[#3A3A3A] bg-black text-white shadow': paginationPage === page}"
+          (click)="goToPage(page)">
+          <span>{{ page }}</span>
+        </button>
+      </div>
+
+      <button class="p-2 bg-black text-white shadow-md rounded-full" (click)="goToNextPage()"
+        [disabled]="paginationPage >= paginationTotalPage"
+        [ngClass]="{'cursor-not-allowed': paginationPage >= paginationTotalPage}">
+        <div class="w-5 h-5 bg-white"
+          style="mask: url('/assets/svg/chevron-right.icon.svg') no-repeat; -webkit-mask: url('/assets/svg/chevron-right.icon.svg') no-repeat;">
+        </div>
+
+      </button>
+    </div>
   </div>
 
-  <div class="w-full h-[80vh] my-4">
-    <ag-grid-angular style="width: 100%; height: 100%; overflow-x: scroll;" [class]="themeClass"
-      [rowData]="rowListAllVehicle" [columnDefs]="colHeaderListAllVehicle" [defaultColDef]="defaultColDef"
-      [gridOptions]="gridOptions" [pagination]="true" [paginationPageSize]="10"
-      (paginationChanged)="onPaginationChanged($event)"></ag-grid-angular>
+  <!-- TOAST NOTIFICATION -->
+  <div class="fixed top-5 right-5 select-none z-[99]">
+    <div *ngFor="let toast of toastService.toasts; let i = index" [@toastInOutAnimation]
+      class="max-w-xs bg-green-500 text-sm text-white rounded-md shadow-xl mb-3 ml-3"
+      [ngClass]="{'bg-green-500 border border-green-600': toast.type === 'success', 'bg-red-500 border border-red-600': toast.type === 'error'}"
+      role="alert">
+      <div class="flex p-4 gap-x-3">
+        <img class="w-5 h-5 aspect-square"
+          [src]="toast.type === 'success' ? '/assets/svg/check.icon.svg' : '/assets/svg/error.icon.svg'">
+        <p class="font-medium">{{ toast.message }}</p>
+
+        <div class="ml-auto">
+          <button type="button" (click)="removeToast(i)"
+            class="inline-flex flex-shrink-0 justify-center items-center h-4 w-4 rounded-md text-white/[.5] hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-800 focus:ring-green-500 transition-all text-sm dark:focus:ring-offset-green-500 dark:focus:ring-green-700">
+            <span class="sr-only">Close</span>
+            <svg class="w-3.5 h-3.5" width="16" height="16" viewBox="0 0 16 16" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M0.92524 0.687069C1.126 0.486219 1.39823 0.373377 1.68209 0.373377C1.96597 0.373377 2.2382 0.486219 2.43894 0.687069L8.10514 6.35813L13.7714 0.687069C13.8701 0.584748 13.9882 0.503105 14.1188 0.446962C14.2494 0.39082 14.3899 0.361248 14.5321 0.360026C14.6742 0.358783 14.8151 0.38589 14.9468 0.439762C15.0782 0.493633 15.1977 0.573197 15.2983 0.673783C15.3987 0.774389 15.4784 0.894026 15.5321 1.02568C15.5859 1.15736 15.6131 1.29845 15.6118 1.44071C15.6105 1.58297 15.5809 1.72357 15.5248 1.85428C15.4688 1.98499 15.3872 2.10324 15.2851 2.20206L9.61883 7.87312L15.2851 13.5441C15.4801 13.7462 15.588 14.0168 15.5854 14.2977C15.5831 14.5787 15.4705 14.8474 15.272 15.046C15.0735 15.2449 14.805 15.3574 14.5244 15.3599C14.2437 15.3623 13.9733 15.2543 13.7714 15.0591L8.10514 9.38812L2.43894 15.0591C2.23704 15.2543 1.96663 15.3623 1.68594 15.3599C1.40526 15.3574 1.13677 15.2449 0.938279 15.046C0.739807 14.8474 0.627232 14.5787 0.624791 14.2977C0.62235 14.0168 0.730236 13.7462 0.92524 13.5441L6.59144 7.87312L0.92524 2.20206C0.724562 2.00115 0.611816 1.72867 0.611816 1.44457C0.611816 1.16047 0.724562 0.887983 0.92524 0.687069Z"
+                fill="currentColor" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div *ngIf="isModalAddOpen" tabindex="-1" (click)="closeAddModal()"
     class="fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
-    <div (click)="$event.stopPropagation()"
+    <div (click)="$event.stopPropagation()" [@modalScale]
       class="relative p w-full max-w-xl md:max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
       <!-- Modal header -->
       <div class="sticky top-0 flex items-center justify-between p-4 border-b rounded-t bg-white dark:border-gray-600">
@@ -83,7 +157,8 @@
             [ngClass]="{'border-red-500': vehicleNumberModel.touched && vehicleNumberModel.invalid}" maxlength=""
             #vehicleNumberModel="ngModel" required>
           <div *ngIf="vehicleNumberModel.invalid && vehicleNumberModel.touched">
-            <app-required-common></app-required-common></div>
+            <app-required-common></app-required-common>
+          </div>
         </div>
 
         <div class="mt-4">
@@ -98,29 +173,30 @@
         </div>
 
         <div class="mt-4">
-          <label for="colour" class="text-sm md:text-[0.875rem] mb-1">Warna Kendaraan
+          <label for="vehicle_color" class="text-sm md:text-[0.875rem] mb-1">Warna Kendaraan
             <app-asterisk></app-asterisk></label>
-          <input type="text" id="colour" name="colour" placeholder="e.g. Merah" [(ngModel)]="colour"
-            class="border text-sm rounded-lg p-2 px-3 w-full"
-            [ngClass]="{'border-red-500': colourModel.touched && colourModel.invalid}" maxlength="" #colourModel="ngModel" required>
-          <div *ngIf="colourModel.invalid && colourModel.touched"><app-required-common></app-required-common></div>
+          <input type="text" id="vehicle_color" name="vehicle_color" placeholder="e.g. Merah"
+            [(ngModel)]="vehicle_color" class="border text-sm rounded-lg p-2 px-3 w-full"
+            [ngClass]="{'border-red-500': colorModel.touched && colorModel.invalid}" maxlength="" #colorModel="ngModel"
+            required>
+          <div *ngIf="colorModel.invalid && colorModel.touched"><app-required-common></app-required-common></div>
         </div>
 
         <div class="mt-4">
-          <label for="seats" class="text-sm md:text-[0.875rem] mb-1">Jumlah Tempat Duduk
+          <label for="vehicle_seats" class="text-sm md:text-[0.875rem] mb-1">Jumlah Tempat Duduk
             <app-asterisk></app-asterisk></label>
-          <input type="number" id="seats" name="seats" placeholder="e.g. 7" [(ngModel)]="seats"
+          <input type="number" id="vehicle_seats" name="vehicle_seats" placeholder="e.g. 7" [(ngModel)]="vehicle_seats"
             class="border text-sm rounded-lg p-2 px-3 w-full"
-            [ngClass]="{'border-red-500': seatsModel.touched && seatsModel.invalid}" max="50" maxlength="" #seatsModel="ngModel"
-            required>
+            [ngClass]="{'border-red-500': seatsModel.touched && seatsModel.invalid}" max="50" maxlength=""
+            #seatsModel="ngModel" required>
           <div *ngIf="seatsModel.invalid && seatsModel.touched"><app-required-common></app-required-common></div>
         </div>
 
         <div class="mt-4">
-          <label for="status" class="text-sm md:text-[0.875rem] mb-1">Status Kendaraan
+          <label for="vehicle_status" class="text-sm md:text-[0.875rem] mb-1">Status Kendaraan
             <app-asterisk></app-asterisk></label>
-          <input type="text" id="status" name="status" placeholder="e.g. Tersedia" [(ngModel)]="status"
-            class="border text-sm rounded-lg p-2 px-3 w-full" value="Available"
+          <input type="text" id="vehicle_status" name="vehicle_status" placeholder="e.g. Tersedia"
+            [(ngModel)]="vehicle_status" class="border text-sm rounded-lg p-2 px-3 w-full" value="Available"
             [ngClass]="{'border-red-500': statusModel.touched && statusModel.invalid}" maxlength=""
             #statusModel="ngModel" required>
           <div *ngIf="statusModel.invalid && statusModel.touched"><app-required-common></app-required-common></div>
@@ -135,8 +211,7 @@
         <button (click)="closeAddModal()" type="button"
           class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700">Cancel</button>
         <button (click)="addVehicle()" type="button"
-          class="text-white bg-[#3A3A3A] hover:bg-black focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
-          [disabled]="!addVehicleForm.form.valid">Sumbit</button>
+          class="text-white bg-[#3A3A3A] hover:bg-black focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Sumbit</button>
       </div>
     </div>
   </div>
@@ -144,7 +219,7 @@
 
   <div *ngIf="isModalEditOpen" tabindex="-1" (click)="closeEditModal()"
     class="fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
-    <div (click)="$event.stopPropagation()"
+    <div (click)="$event.stopPropagation()" [@modalScale]
       class="relative p w-full max-w-xl md:max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
       <!-- Modal header -->
       <div class="sticky top-0 flex items-center justify-between p-4 border-b rounded-t bg-white dark:border-gray-600">
@@ -169,7 +244,8 @@
           <label for="vehicle_name" class="text-sm md:text-[0.875rem] mb-1">Nama Kendaraan
             <app-asterisk></app-asterisk></label>
           <input type="text" id="vehicle_name" name="vehicle_name" placeholder="e.g. Toyota Hilux"
-            [(ngModel)]="vehicle_name" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+            [(ngModel)]="vehicle_name"
+            class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
             [ngClass]="{'border-red-500': vehicleNameModel.touched && vehicleNameModel.invalid}" maxlength=""
             #vehicleNameModel="ngModel" required>
           <div *ngIf="vehicleNameModel.invalid && vehicleNameModel.touched"><app-required-common></app-required-common>
@@ -180,18 +256,21 @@
           <label for="vehicle_number" class="text-sm md:text-[0.875rem] mb-1">Nomor Polisi Kendaraan
             <app-asterisk></app-asterisk></label>
           <input type="text" id="vehicle_number" name="vehicle_number" placeholder="e.g. AB 1234 XX"
-            [(ngModel)]="vehicle_number" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+            [(ngModel)]="vehicle_number"
+            class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
             [ngClass]="{'border-red-500': vehicleNumberModel.touched && vehicleNumberModel.invalid}" maxlength=""
             #vehicleNumberModel="ngModel" required>
           <div *ngIf="vehicleNumberModel.invalid && vehicleNumberModel.touched">
-            <app-required-common></app-required-common></div>
+            <app-required-common></app-required-common>
+          </div>
         </div>
 
         <div class="mt-4">
           <label for="vehicle_type" class="text-sm md:text-[0.875rem] mb-1">Tipe Kendaraan
             <app-asterisk></app-asterisk></label>
           <input type="text" id="vehicle_type" name="vehicle_type" placeholder="e.g. Hatchback"
-            [(ngModel)]="vehicle_type" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+            [(ngModel)]="vehicle_type"
+            class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
             [ngClass]="{'border-red-500': vehicleTypeModel.touched && vehicleTypeModel.invalid}" maxlength=""
             #vehicleTypeModel="ngModel" required>
           <div *ngIf="vehicleTypeModel.invalid && vehicleTypeModel.touched"><app-required-common></app-required-common>
@@ -199,30 +278,33 @@
         </div>
 
         <div class="mt-4">
-          <label for="colour" class="text-sm md:text-[0.875rem] mb-1">Warna Kendaraan
+          <label for="vehicle_color" class="text-sm md:text-[0.875rem] mb-1">Warna Kendaraan
             <app-asterisk></app-asterisk></label>
-          <input type="text" id="colour" name="colour" placeholder="e.g. Merah" [(ngModel)]="colour"
+          <input type="text" id="vehicle_color" name="vehicle_color" placeholder="e.g. Merah"
+            [(ngModel)]="vehicle_color"
             class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
-            [ngClass]="{'border-red-500': colourModel.touched && colourModel.invalid}" maxlength="" #colourModel="ngModel" required>
-          <div *ngIf="colourModel.invalid && colourModel.touched"><app-required-common></app-required-common></div>
+            [ngClass]="{'border-red-500': colorModel.touched && colorModel.invalid}" maxlength="" #colorModel="ngModel"
+            required>
+          <div *ngIf="colorModel.invalid && colorModel.touched"><app-required-common></app-required-common></div>
         </div>
 
         <div class="mt-4">
-          <label for="seats" class="text-sm md:text-[0.875rem] mb-1">Jumlah Tempat Duduk
+          <label for="vehicle_seats" class="text-sm md:text-[0.875rem] mb-1">Jumlah Tempat Duduk
             <app-asterisk></app-asterisk></label>
-          <input type="number" id="seats" name="seats" placeholder="e.g. 7" [(ngModel)]="seats"
+          <input type="number" id="vehicle_seats" name="vehicle_seats" placeholder="e.g. 7" [(ngModel)]="vehicle_seats"
             class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
-            [ngClass]="{'border-red-500': seatsModel.touched && seatsModel.invalid}" max="50" maxlength="" #seatsModel="ngModel"
-            required>
+            [ngClass]="{'border-red-500': seatsModel.touched && seatsModel.invalid}" max="50" maxlength=""
+            #seatsModel="ngModel" required>
           <div *ngIf="seatsModel.invalid && seatsModel.touched"><app-required-common></app-required-common></div>
         </div>
 
         <div class="mt-4">
-          <label for="status" class="text-sm md:text-[0.875rem] mb-1">Status Kendaraan
+          <label for="vehicle_status" class="text-sm md:text-[0.875rem] mb-1">Status Kendaraan
             <app-asterisk></app-asterisk></label>
-          <input type="text" id="status" name="status" placeholder="e.g. Tersedia" [(ngModel)]="status"
-            class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500" value="Available"
-            [ngClass]="{'border-red-500': statusModel.touched && statusModel.invalid}" maxlength=""
+          <input type="text" id="vehicle_status" name="vehicle_status" placeholder="e.g. Tersedia"
+            [(ngModel)]="vehicle_status"
+            class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+            value="Available" [ngClass]="{'border-red-500': statusModel.touched && statusModel.invalid}" maxlength=""
             #statusModel="ngModel" required>
           <div *ngIf="statusModel.invalid && statusModel.touched"><app-required-common></app-required-common></div>
         </div>
@@ -236,7 +318,7 @@
           class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700">Cancel</button>
         <button (click)="updateVehicle()" type="button"
           class="text-white bg-[#3A3A3A] hover:bg-black focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
-          [disabled]="!editVehicleForm.form.valid">Sumbit</button>
+          [disabled]="!editVehicleForm.form.valid">Save Changes</button>
       </div>
     </div>
   </div>
@@ -245,7 +327,7 @@
 
   <div *ngIf="isModalDeleteOpen" tabindex="-1" (click)="closeDeleteModal()"
     class="fixed top-0 left-0 right-0 bottom-0 z-[90] flex items-center justify-center bg-gray-900 bg-opacity-20 select-none transition-all duration-1000">
-    <div (click)="$event.stopPropagation()"
+    <div (click)="$event.stopPropagation()" [@modalScale]
       class="relative flex justify-center w-full max-w-lg md:max-w-md bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto p-3 mx-4 md:mx-0">
       <div class="text-center py-5">
         <div class="w-fit flex justify-self-center p-2 rounded-full bg-red-100 text-red-500">
@@ -271,7 +353,7 @@
           <button class="px-4 py-2 rounded bg-neutral-200 hover:bg-neutral-300 text-neutral-800 shadow hover:shadow-md"
             (click)="closeDeleteModal()">Batal</button>
           <button class="px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white shadow hover:shadow-md"
-            (click)="performDeleteVehicle(id)">Hapus</button>
+            (click)="performDeleteVehicle(vehicle_uuid)">Hapus</button>
         </div>
       </div>
     </div>

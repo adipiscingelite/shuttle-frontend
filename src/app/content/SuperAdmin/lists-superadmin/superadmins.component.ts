@@ -2,13 +2,6 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
-} from '@angular/animations';
 
 // THIRD-PARTY LIBRARIES
 import {
@@ -26,12 +19,12 @@ import Swal from 'sweetalert2';
 import { HeaderComponent } from '@layouts/header/header.component';
 import { AsteriskComponent } from '@shared/components/asterisk/asterisk.component';
 import { RequiredCommonComponent } from '@shared/components/required-common/required-common.component';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
 // SHARED
-import { Response, User } from '@core/interfaces';
+import { Response, Superadmin } from '@core/interfaces';
 import { TimeDateFormatPipe } from '@shared/pipes/time-date-format.pipe';
 import { ToastService } from '@core/services/toast/toast.service';
-import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
 import { toastInOutAnimation } from '@shared/utils/toast.animation';
 import { modalScaleAnimation } from '@shared/utils/modal.animation';
@@ -79,13 +72,25 @@ export class SuperadminsComponent implements OnInit {
   user_address: string = '';
   user_status: string = '';
 
+  initialAvatar: string = '';
+
   isLoading: boolean = false;
+  isMobile = window.innerWidth <= 768;
 
   isModalAddOpen: boolean = false;
   isModalEditOpen: boolean = false;
+  isModalDetailOpen: boolean = false;
   isModalDeleteOpen: boolean = false;
 
-  rowListAllUser: User[] = [];
+  rowListAllUser: Superadmin[] = [];
+
+  columnMapping: { [key: string]: string } = {
+    'user_details.user_first_name': 'user_first_name',
+    'user_details.user_last_name': 'user_last_name',
+    user_username: 'user_username',
+  };
+
+  private columnClickCount: { [key: string]: number } = {};
 
   constructor(
     private cookieService: CookieService,
@@ -99,6 +104,16 @@ export class SuperadminsComponent implements OnInit {
 
   ngOnInit(): void {
     this.getAllSuperadmin();
+    window.addEventListener('resize', this.updateIsMobile.bind(this));
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('resize', this.updateIsMobile.bind(this));
+  }
+
+  updateIsMobile(): void {
+    this.isMobile = window.innerWidth <= 768;
+    this.cdRef.detectChanges();
   }
 
   themeClass = 'ag-theme-quartz';
@@ -108,12 +123,14 @@ export class SuperadminsComponent implements OnInit {
     pagination: true,
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
+    suppressMovable: true,
+    onSortChanged: this.onSortChanged.bind(this),
     onGridReady: () => {
       console.log('Grid sudah siap!');
     },
   };
 
-  colHeaderListAllUser: ColDef<User>[] = [
+  colHeaderListAllUser: ColDef<Superadmin>[] = [
     {
       headerName: 'No.',
       valueGetter: 'node.rowIndex + 1',
@@ -126,10 +143,8 @@ export class SuperadminsComponent implements OnInit {
       headerName: 'Username',
       field: 'user_username',
       maxWidth: 250,
-      // pinned: 'left',
       sortable: true,
     },
-    { headerName: 'User UUID', field: 'user_uuid', maxWidth: 250 },
     {
       headerName: 'First Name',
       field: 'user_details.user_first_name',
@@ -149,19 +164,20 @@ export class SuperadminsComponent implements OnInit {
       maxWidth: 250,
     },
     { headerName: 'User Status', field: 'user_status', maxWidth: 250 },
-    // {
-    //   field: 'user_last_active',
-    //   valueFormatter: (params) => {
-    //     if (!params.value || params.value === 'N/A') {
-    //       return '-';
-    //     }
+    {
+      headerName: 'User Last Active',
+      field: 'user_last_active',
+      // valueFormatter: (params) => {
+      //   if (!params.value || params.value === 'N/A') {
+      //     return '-';
+      //   }
 
-    //     // Menggunakan custom pipe untuk memformat tanggal
-    //     const formattedDate = this.timeDateFormatPipe.transform(params.value);
-    //     return formattedDate ? formattedDate : '-';
-    //   },
-    //   maxWidth: undefined,
-    // },
+      //   // Menggunakan custom pipe untuk memformat tanggal
+      //   const formattedDate = this.timeDateFormatPipe.transform(params.value);
+      //   return formattedDate ? formattedDate : '-';
+      // },
+      maxWidth: undefined,
+    },
     {
       headerName: 'Actions',
       headerClass: 'justify-center',
@@ -205,7 +221,7 @@ export class SuperadminsComponent implements OnInit {
         `;
         viewButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.openViewModal(params.data.user_uuid);
+          this.openDetailModal(params.data.user_uuid);
         });
 
         const deleteButton = document.createElement('button');
@@ -234,7 +250,7 @@ export class SuperadminsComponent implements OnInit {
 
         return buttonContainer;
       },
-      pinned: 'right',
+      pinned: this.isMobile ? null : 'right',
     },
   ];
 
@@ -246,6 +262,7 @@ export class SuperadminsComponent implements OnInit {
     minWidth: 120,
     wrapHeaderText: true,
     autoHeaderHeight: true,
+    sortable: false,
   };
 
   goToPage(page: number) {
@@ -276,6 +293,44 @@ export class SuperadminsComponent implements OnInit {
     this.getAllSuperadmin();
   }
 
+  onSortChanged(event: any) {
+    console.log('onSortChanged event:', event);
+
+    if (event && event.columns && event.columns.length > 0) {
+      event.columns.forEach((column: any) => {
+        const colId = column.colId;
+        console.log('Sorting column ID:', colId);
+
+        if (!this.columnClickCount[colId]) {
+          this.columnClickCount[colId] = 0;
+        }
+        this.columnClickCount[colId] += 1;
+
+        if (this.columnClickCount[colId] === 3) {
+          this.sortBy = 'user_id';
+          this.sortDirection = 'asc';
+          this.columnClickCount[colId] = 0;
+        } else {
+          if (this.columnMapping[colId]) {
+            this.sortBy = this.columnMapping[colId];
+          } else {
+            this.sortBy = colId;
+          }
+
+          if (this.columnClickCount[colId] === 1) {
+            this.sortDirection = 'asc';
+          } else if (this.columnClickCount[colId] === 2) {
+            this.sortDirection = 'desc';
+          }
+        }
+      });
+
+      this.getAllSuperadmin();
+    } else {
+      console.error('onSortChanged: event.columns is undefined or empty');
+    }
+  }
+
   getAllSuperadmin() {
     this.isLoading = true;
     axios
@@ -297,7 +352,7 @@ export class SuperadminsComponent implements OnInit {
         this.pages = Array.from(
           { length: this.paginationTotalPage },
           (_, i) => i + 1,
-        ); // Buat daftar halaman
+        );
         this.showing = response.data.data.meta.showing;
 
         this.isLoading = false;
@@ -310,7 +365,17 @@ export class SuperadminsComponent implements OnInit {
   }
 
   openAddModal() {
+    this.user_username = '';
+    this.user_first_name = '';
+    this.user_last_name = '';
+    this.user_gender = '';
+    this.user_email = '';
+    this.user_password = '';
+    this.user_phone = '';
+    this.user_address = '';
+
     this.isModalAddOpen = true;
+    this.cdRef.detectChanges()
   }
 
   addSuperadmin(): void {
@@ -370,6 +435,10 @@ export class SuperadminsComponent implements OnInit {
         this.user_role = 'superadmin';
         this.user_phone = editData.user_details.user_phone;
         this.user_address = editData.user_details.user_address;
+
+        this.initialAvatar =
+          this.user_first_name.charAt(0).toUpperCase() +
+          this.user_last_name.charAt(0).toUpperCase();
 
         this.isModalEditOpen = true;
         this.cdRef.detectChanges();
@@ -431,6 +500,51 @@ export class SuperadminsComponent implements OnInit {
           error.response?.data?.message || 'An unexpected error occurred.';
         this.showToast(responseMessage, 3000, Response.Error);
       });
+  }
+
+  openDetailModal(user_uuid: string) {
+    axios
+      .get(`${this.apiUrl}/api/superadmin/user/sa/${user_uuid}`, {
+        headers: {
+          Authorization: `${this.token}`,
+        },
+      })
+      .then((response) => {
+        const detailData = response.data.data;
+
+        this.user_uuid = detailData.user_uuid;
+        this.user_username = detailData.user_username;
+        this.user_first_name = detailData.user_details.user_first_name;
+        this.user_last_name = detailData.user_details.user_last_name;
+        this.user_gender = detailData.user_details.user_gender;
+        this.user_email = detailData.user_email;
+        this.user_role = 'superadmin';
+        this.user_phone = detailData.user_details.user_phone;
+        this.user_address = detailData.user_details.user_address;
+
+        this.initialAvatar =
+          this.user_first_name.charAt(0).toUpperCase() +
+          this.user_last_name.charAt(0).toUpperCase();
+
+        this.isModalDetailOpen = true;
+        this.cdRef.detectChanges();
+      })
+      .catch((error) => {
+        Swal.fire({
+          title: 'Error',
+          text: error.response.data.message,
+          icon: 'error',
+          timer: 2000,
+          timerProgressBar: true,
+          showCancelButton: false,
+          showConfirmButton: false,
+        });
+      });
+  }
+
+  closeDetailModal() {
+    this.isModalDetailOpen = false;
+    this.cdRef.detectChanges();
   }
 
   onDeleteSuperAdmin(user_uuid: string) {

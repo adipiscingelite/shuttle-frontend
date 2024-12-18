@@ -1,61 +1,82 @@
-import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
-import { ColDef, ICellRendererParams } from 'ag-grid-community';
-import axios from 'axios';
-import { CookieService } from 'ngx-cookie-service';
-import { HeaderComponent } from '../../../layouts/header/header.component';
-import { AgGridAngular } from 'ag-grid-angular';
-import { CommonModule } from '@angular/common';
-import Swal from 'sweetalert2';
+// ANGULAR
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AsteriskComponent } from '../../../shared/components/asterisk/asterisk.component';
-import { RequiredCommonComponent } from '../../../shared/components/required-common/required-common.component';
+import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
-export interface School {
-  id: string;
-  name: string;
-  address: string;
-  contact: string;
-  email: string;
-  description: string;
-}
+// THIRD-PARTY LIBRARIES
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import { CookieService } from 'ngx-cookie-service';
+import { AgGridAngular } from 'ag-grid-angular';
+import { ColDef, ICellRendererParams } from 'ag-grid-community';
+
+// COMPONENTS
+import { HeaderComponent } from '@layouts/header/header.component';
+import { AsteriskComponent } from '@shared/components/asterisk/asterisk.component';
+import { RequiredCommonComponent } from '@shared/components/required-common/required-common.component';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
+
+// SHARED
+import { Response, School } from '@core/interfaces';
+
+import { ToastService } from '@core/services/toast/toast.service';
+
+import { toastInOutAnimation } from '@shared/utils/toast.animation';
+import { modalScaleAnimation } from '@shared/utils/modal.animation';
+
 @Component({
   selector: 'app-schools',
   standalone: true,
   imports: [
     CommonModule,
-    AgGridAngular,
     HeaderComponent,
     FormsModule,
     ReactiveFormsModule,
+    AgGridAngular,
     AsteriskComponent,
-    RequiredCommonComponent
+    RequiredCommonComponent,
+    SpinnerComponent,
   ],
   templateUrl: './schools.component.html',
   styleUrl: './schools.component.css',
+  animations: [toastInOutAnimation, modalScaleAnimation],
 })
 export class SchoolsComponent implements OnInit {
   token: string | null = '';
 
-  totalRows: number = 0;
-  startRow: number = 1;
-  endRow: number = 10;
+  sortBy: string = 'school_id';
+  sortDirection: string = 'asc';
 
-  id: string = '';
-  name: string = '';
-  address: string = '';
-  contact: string = '';
-  email: string = '';
-  description: string = '';
+  paginationPage: number = 1;
+  paginationCurrentPage: number = 1;
+  paginationItemsLimit: number = 10;
+  paginationTotalPage: number = 0;
+  showing: string = '';
+  pages: number[] = [];
+
+  school_uuid: string = '';
+  school_name: string = '';
+  school_address: string = '';
+  school_contact: string = '';
+  school_email: string = '';
+  school_description: string = '';
+
+  isLoading: boolean = false;
+  isMobile = window.innerWidth <= 768;
 
   isModalAddOpen: boolean = false;
   isModalEditOpen: boolean = false;
+  isModalDetailOpen: boolean = false;
   isModalDeleteOpen: boolean = false;
 
   rowListAllSchool: School[] = [];
 
+  private columnClickCount: { [key: string]: number } = {};
+
   constructor(
     private cookieService: CookieService,
     private cdRef: ChangeDetectorRef,
+    public toastService: ToastService,
     @Inject('apiUrl') private apiUrl: string,
   ) {
     this.apiUrl = apiUrl;
@@ -73,6 +94,12 @@ export class SchoolsComponent implements OnInit {
     pagination: true,
     paginationPageSize: 10,
     paginationPageSizeSelector: [10, 20, 50, 100],
+    suppressPaginationPanel: true,
+    suppressMovable: true,
+    onSortChanged: this.onSortChanged.bind(this),
+    onGridReady: () => {
+      console.log('Grid sudah siap!');
+    },
   };
 
   colHeaderListAllSchool: ColDef<School>[] = [
@@ -82,13 +109,12 @@ export class SchoolsComponent implements OnInit {
       width: 50,
       maxWidth: 70,
       pinned: 'left',
-      sortable: false,
     },
-    { field: 'name' },
-    { field: 'address' },
-    { field: 'contact' },
-    { field: 'email' },
-    { field: 'description' },
+    { headerName: 'Nama Sekolah', field: 'school_name', sortable: true },
+    { headerName: 'Alamat Sekolah', field: 'school_address' },
+    { headerName: 'Kontak Sekolah', field: 'school_contact' },
+    { headerName: 'Email Sekolah', field: 'school_email' },
+    // { field: 'school_description' },
     {
       headerName: 'Actions',
       headerClass: 'justify-center',
@@ -117,7 +143,7 @@ export class SchoolsComponent implements OnInit {
         `;
         editButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.openEditModal(params.data.id);
+          this.openEditModal(params.data.school_uuid);
         });
 
         const viewButton = document.createElement('button');
@@ -132,7 +158,7 @@ export class SchoolsComponent implements OnInit {
         `;
         viewButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.openViewModal(params.data.id);
+          this.openViewModal(params.data.school_uuid);
         });
 
         const deleteButton = document.createElement('button');
@@ -152,7 +178,7 @@ export class SchoolsComponent implements OnInit {
         `;
         deleteButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.onDeleteSchool(params.data.id);
+          this.onDeleteSchool(params.data.school_uuid);
         });
 
         buttonContainer.appendChild(editButton);
@@ -161,7 +187,7 @@ export class SchoolsComponent implements OnInit {
 
         return buttonContainer;
       },
-      pinned: 'right',
+      pinned: this.isMobile ? null : 'right',
     },
   ];
 
@@ -174,57 +200,115 @@ export class SchoolsComponent implements OnInit {
     maxWidth: 250,
     wrapHeaderText: true,
     autoHeaderHeight: true,
+    sortable: false,
   };
 
-  totalRowCount(currentPage: number, pageSize: number) {
-    if (this.rowListAllSchool && this.rowListAllSchool.length > 0) {
-      const totalRows = this.rowListAllSchool.length;
-      this.totalRows = totalRows;
-
-      this.startRow = (currentPage - 1) * pageSize + 1;
-      this.endRow = Math.min(currentPage * pageSize, this.totalRows);
-    } else {
-      this.totalRows = 0;
-      this.startRow = 0;
-      this.endRow = 0;
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.paginationTotalPage) {
+      this.paginationPage = page;
+      this.getAllSchool();
     }
   }
 
-  onPaginationChanged(event: any) {
-    const currentPage = event.api.paginationGetCurrentPage() + 1;
-    const pageSize = event.api.paginationGetPageSize();
+  goToNextPage() {
+    if (this.paginationPage < this.paginationTotalPage) {
+      this.paginationPage++;
+      this.getAllSchool();
+    }
+  }
 
-    this.totalRowCount(currentPage, pageSize);
+  goToPreviousPage() {
+    if (this.paginationPage > 1) {
+      this.paginationPage--;
+      this.getAllSchool();
+    }
+  }
+
+  changeMaxItemsPerPage(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    this.paginationItemsLimit = +target.value;
+    this.paginationPage = 1;
+    this.getAllSchool();
+  }
+
+  onSortChanged(event: any) {
+    console.log('onSortChanged event:', event);
+
+    if (event && event.columns && event.columns.length > 0) {
+      event.columns.forEach((column: any) => {
+        const colId = column.colId;
+        console.log('Sorting column ID:', colId);
+
+        if (!this.columnClickCount[colId]) {
+          this.columnClickCount[colId] = 0;
+        }
+        this.columnClickCount[colId] += 1;
+
+        if (this.columnClickCount[colId] === 3) {
+          this.sortBy = 'school_id';
+          this.sortDirection = 'asc';
+          this.columnClickCount[colId] = 0;
+        }
+      });
+
+      this.getAllSchool();
+    } else {
+      console.error('onSortChanged: event.columns is undefined or empty');
+    }
   }
 
   getAllSchool() {
+    this.isLoading = true;
     axios
       .get(`${this.apiUrl}/api/superadmin/school/all`, {
         headers: {
           Authorization: `${this.cookieService.get('accessToken')}`,
         },
+        params: {
+          page: this.paginationPage,
+          limit: this.paginationItemsLimit,
+
+          sort_by: this.sortBy,
+          direction: this.sortDirection,
+        },
       })
       .then((response) => {
-        this.rowListAllSchool = response.data;
+        this.rowListAllSchool = response.data.data.data;
+        this.paginationTotalPage = response.data.data.meta.total_pages;
+        this.pages = Array.from(
+          { length: this.paginationTotalPage },
+          (_, i) => i + 1,
+        );
+        this.showing = response.data.data.meta.showing;
+
+        this.isLoading = false;
 
         this.cdRef.detectChanges();
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
+        this.isLoading = false;
       });
   }
 
   openAddModal() {
+    this.school_uuid = '';
+    this.school_name = '';
+    this.school_address = '';
+    this.school_contact = '';
+    this.school_email = '';
+    this.school_description = '';
+
     this.isModalAddOpen = true;
   }
 
   addSchool(): void {
     const requestDataFormDA = {
-      name: this.name,
-      address: this.address,
-      contact: this.contact,
-      email: this.email,
-      description: this.description,
+      name: this.school_name,
+      address: this.school_address,
+      contact: this.school_contact,
+      email: this.school_email,
+      description: this.school_description,
     };
 
     axios
@@ -234,29 +318,16 @@ export class SchoolsComponent implements OnInit {
         },
       })
       .then((response) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'SUCCESS',
-          text: response.data.message,
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage = response.data?.message || 'Success.';
+        this.showToast(responseMessage, 3000, Response.Success);
 
         this.getAllSchool();
         this.isModalAddOpen = false;
       })
       .catch((error) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'ERROR',
-          text: error.response.data.message,
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
   }
 
@@ -272,30 +343,23 @@ export class SchoolsComponent implements OnInit {
         },
       })
       .then((response) => {
-        const editData = response.data;
+        const editData = response.data.data;
         console.log('school edit', editData);
-        
 
-        this.id = editData.id;
-        this.name = editData.name;
-        this.address = editData.address;
-        this.contact = editData.contact;
-        this.email = editData.email;
-        this.description = editData.description;
+        this.school_uuid = editData.school_uuid;
+        this.school_name = editData.school_name;
+        this.school_address = editData.school_address;
+        this.school_contact = editData.school_contact;
+        this.school_email = editData.school_email;
+        this.school_description = editData.school_description;
 
         this.isModalEditOpen = true;
         this.cdRef.detectChanges();
       })
       .catch((error) => {
-        Swal.fire({
-          title: 'Error',
-          text: error.response.data.message,
-          icon: 'error',
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
   }
 
@@ -306,54 +370,44 @@ export class SchoolsComponent implements OnInit {
 
   updateSchool() {
     const data = {
-      name: this.name,
-      address: this.address,
-      contact: this.contact,
-      email: this.email,
-      description: this.description,
+      name: this.school_name,
+      address: this.school_address,
+      contact: this.school_contact,
+      email: this.school_email,
+      description: this.school_description,
     };
 
     axios
-      .put(`${this.apiUrl}/api/superadmin/school/update/${this.id}`, data, {
-        headers: {
-          Authorization: `${this.token}`,
+      .put(
+        `${this.apiUrl}/api/superadmin/school/update/${this.school_uuid}`,
+        data,
+        {
+          headers: {
+            Authorization: `${this.token}`,
+          },
         },
-      })
+      )
       .then((response) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'SUCCESS',
-          text: response.data.message,
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage = response.data?.message || 'Success.';
+        this.showToast(responseMessage, 3000, Response.Success);
 
         this.getAllSchool();
       })
       .catch((error) => {
-        console.error('Error saat update:', error);
-        Swal.fire({
-          title: 'Error',
-          text: error.response?.data?.message || 'Unknown error',
-          icon: 'error',
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
 
     this.isModalEditOpen = false;
     this.cdRef.detectChanges();
   }
 
-  onDeleteSchool(id: string) {
+  onDeleteSchool(school_uuid: string) {
     this.isModalDeleteOpen = true;
     this.cdRef.detectChanges();
 
-    this.id = id;
+    this.school_uuid = school_uuid;
   }
 
   closeDeleteModal() {
@@ -361,9 +415,9 @@ export class SchoolsComponent implements OnInit {
     this.cdRef.detectChanges();
   }
 
-  performDeleteSchool(id: string) {
+  performDeleteSchool(school_uuid: string) {
     axios
-      .delete(`${this.apiUrl}/api/superadmin/user/delete/${id}`, {
+      .delete(`${this.apiUrl}/api/superadmin/user/delete/${school_uuid}`, {
         headers: {
           Authorization: `${this.token}`,
         },
@@ -385,15 +439,17 @@ export class SchoolsComponent implements OnInit {
         this.cdRef.detectChanges();
       })
       .catch((error) => {
-        Swal.fire({
-          title: 'Error',
-          text: error.response.data.message,
-          icon: 'error',
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
+  }
+
+  showToast(message: string, duration: number, type: Response) {
+    this.toastService.add(message, duration, type);
+  }
+
+  removeToast(index: number) {
+    this.toastService.remove(index);
   }
 }

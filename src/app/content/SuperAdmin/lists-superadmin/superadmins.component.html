@@ -1,6 +1,8 @@
 <div>
-
-
+  <!-- SPINNER -->
+  <div *ngIf="isLoading" class="absolute top-0 left-0 flex items-center justify-center bg-gray-50 bg-opacity-50 z-50">
+    <app-spinner></app-spinner>
+  </div>
 
   <h1 class="my-6 text-xl font-semibold uppercase">
     Superadmin list
@@ -50,11 +52,6 @@
 
     <!-- TABLE -->
     <div class="relative w-full h-[80vh] my-4">
-      <!-- SPINNER -->
-      <div *ngIf="isLoading"
-        class="absolute top-0 left-0 flex items-center justify-center bg-gray-50 bg-opacity-50 z-50">
-        <app-spinner></app-spinner>
-      </div>
 
       <ag-grid-angular style="width: 100%; height: 100%; overflow-x: scroll;" [class]="themeClass"
         [rowData]="rowListAllUser" [columnDefs]="colHeaderListAllUser" [defaultColDef]="defaultColDef"
@@ -123,7 +120,7 @@
     <div (click)="$event.stopPropagation()" [@modalScale]
       class="relative p w-full max-w-xl md:max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
       <!-- Modal header -->
-      <div class="sticky top-0 flex items-center justify-between p-4 border-b rounded-t bg-white dark:border-gray-600">
+      <!-- <div class="sticky top-0 flex items-center justify-between p-4 border-b rounded-t bg-white dark:border-gray-600">
         <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
           Tambah
         </h3>
@@ -135,94 +132,147 @@
           </svg>
           <span class="sr-only">Close modal</span>
         </button>
-      </div>
+      </div> -->
       <!-- Modal body -->
-      <form class="p-6" #addSuperadminForm="ngForm" (ngSubmit)="addSuperadmin()">
-        <h3 class="text-2xl text-gray-900 font-semibold">Superadmin</h3>
-        <p class="mb-4 text-gray-600">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
-
-        <div class="mt-4">
-          <label for="user_username" class="text-sm md:text-[0.875rem] mb-1">Username
-            <app-asterisk></app-asterisk></label>
-          <input type="text" id="user_username" name="user_username" placeholder="e.g. johndoe_10"
-            [(ngModel)]="user_username" class="border text-sm rounded-lg p-2 px-3 w-full"
-            [ngClass]="{'border-red-500': usernameModel.touched && usernameModel.invalid}" maxlength=""
-            #usernameModel="ngModel" required>
-          <div *ngIf="usernameModel.invalid && usernameModel.touched"><app-required-common></app-required-common></div>
-        </div>
-
-        <div class="mt-4">
-          <label for="user_first_name" class="text-sm md:text-[0.875rem] mb-1">First Name
-            <app-asterisk></app-asterisk></label>
-          <input type="text" id="user_first_name" name="user_first_name" placeholder="e.g. John"
-            [(ngModel)]="user_first_name" class="border text-sm rounded-lg p-2 px-3 w-full"
-            [ngClass]="{'border-red-500': firstnameModel.touched && firstnameModel.invalid}" maxlength=""
-            #firstnameModel="ngModel" required>
-          <div *ngIf="firstnameModel.invalid && firstnameModel.touched"><app-required-common></app-required-common>
+      <form class="my-7 px-8 max-w-2xl mx-auto" #addSuperadminForm="ngForm" (ngSubmit)="addSuperadmin()">
+        <div class="flex items-center gap-x-8 my-9">
+          <img class="w-16 aspect-square rounded-full"
+            src="https://i.pinimg.com/474x/28/c2/0b/28c20b3bf4e1a48334b2278d3c7fb447.jpg" alt="">
+          <div class="form-header mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Add a New Superadmin</h2>
+            <p class="text-sm text-gray-600">Fill in the details below to add a new superadmin.</p>
           </div>
         </div>
 
-        <div class="mt-4">
-          <label for="user_last_name" class="text-sm md:text-[0.875rem] mb-1">Last Name
-            <app-asterisk></app-asterisk></label>
-          <input type="text" id="user_last_name" name="user_last_name" placeholder="e.g. Doe"
-            [(ngModel)]="user_last_name" class="border text-sm rounded-lg p-2 px-3 w-full"
-            [ngClass]="{'border-red-500': lastnameModel.touched && lastnameModel.invalid}" maxlength=""
-            #lastnameModel="ngModel" required>
-          <div *ngIf="lastnameModel.invalid && lastnameModel.touched"><app-required-common></app-required-common></div>
+        <hr>
+        <div class="grid grid-cols-3 items-start my-3">
+          <label for="user_username" class="block text-sm font-medium text-gray-700 col-span-1">
+            Username <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <input type="text" id="user_username" name="user_username" placeholder="e.g. johndoe_10"
+              [(ngModel)]="user_username" class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
+              maxlength="" #usernameModel="ngModel" required />
+            <div *ngIf="usernameModel.invalid && usernameModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
         </div>
 
-        <div class="mt-4">
-          <label for="user_gender" class="text-sm md:text-[0.875rem] mb-1">Gender <app-asterisk></app-asterisk></label>
-          <select id="user_gender" [(ngModel)]="user_gender" name="user_gender"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            [ngClass]="{'border-red-500': genderModel.touched && genderModel.invalid}" #genderModel="ngModel" required>
-            <option value="" disabled selected>Choose the gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-          <div *ngIf="genderModel.invalid && genderModel.touched"><app-required-common></app-required-common></div>
+        <hr>
+
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_first_name" class="block text-sm font-medium text-gray-700 col-span-1">
+            Name <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="user_first_name" class="block text-sm text-gray-700">First Name</label>
+              <input type="text" id="user_first_name" name="user_first_name" placeholder="e.g. John"
+                [(ngModel)]="user_first_name"
+                class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm" maxlength=""
+                #firstnameModel="ngModel" required />
+              <div *ngIf="firstnameModel.invalid && firstnameModel.touched" class="mt-1 text-sm text-pink-600">
+                <app-required-common></app-required-common>
+              </div>
+            </div>
+
+            <div>
+              <label for="user_last_name" class="block text-sm text-gray-700">Last Name</label>
+              <input type="text" id="user_last_name" name="user_last_name" placeholder="e.g. Doe"
+                [(ngModel)]="user_last_name"
+                class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm" maxlength=""
+                #lastnameModel="ngModel" required />
+              <div *ngIf="lastnameModel.invalid && lastnameModel.touched" class="mt-1 text-sm text-pink-600">
+                <app-required-common></app-required-common>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="mt-4">
-          <label for="user_email" class="text-sm md:text-[0.875rem] mb-1">Email <app-asterisk></app-asterisk></label>
-          <input type="email" id="user_email" name="user_email" placeholder="e.g. email@gmail.com"
-            [(ngModel)]="user_email" class="border text-sm rounded-lg p-2 px-3 w-full"
-            [ngClass]="{'border-red-500': emailModel.touched && emailModel.invalid}" maxlength="" #emailModel="ngModel"
-            required>
-          <div *ngIf="emailModel.invalid && emailModel.touched"><app-required-common></app-required-common></div>
+        <hr>
+
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_gender" class="block text-sm font-medium text-gray-700 col-span-1">
+            Gender <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <select id="user_gender" [(ngModel)]="user_gender" name="user_gender"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              #genderModel="ngModel" required>
+              <option value="" disabled selected>Choose the gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+            <div *ngIf="genderModel.invalid && genderModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
         </div>
 
-        <div class="mt-4">
-          <label for="user_password" class="text-sm md:text-[0.875rem] mb-1">Password
-            <app-asterisk></app-asterisk></label>
-          <input type="user_password" id="user_password" name="user_password" placeholder="e.g. secure123"
-            [(ngModel)]="user_password" class="border text-sm rounded-lg p-2 px-3 w-full"
-            [ngClass]="{'border-red-500': passwordModel.touched && passwordModel.invalid}" autocomplete="new-password"
-            minlength="8" #passwordModel="ngModel" required>
-          <div *ngIf="passwordModel.invalid && passwordModel.touched"><app-required-common></app-required-common></div>
+        <hr>
+
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_email" class="block text-sm font-medium text-gray-700 col-span-1">
+            Email <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <input type="email" id="user_email" name="user_email" placeholder="e.g. email@gmail.com"
+              [(ngModel)]="user_email" class="border text-sm rounded-lg p-2 px-3 w-full shadow-sm" maxlength=""
+              #emailModel="ngModel" required>
+            <div *ngIf="emailModel.invalid && emailModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
         </div>
 
-        <div class="mt-4">
-          <label for="user_phone" class="text-sm md:text-[0.875rem] mb-1">Phone <app-asterisk></app-asterisk></label>
-          <input type="tel" id="user_phone" name="user_phone" placeholder="e.g. 081312345678" [(ngModel)]="user_phone"
-            class="border text-sm rounded-lg p-2 px-3 w-full"
-            [ngClass]="{'border-red-500': phoneModel.touched && phoneModel.invalid}" minlength="8" maxlength="18"
-            #phoneModel="ngModel" required>
-          <div *ngIf="phoneModel.invalid && phoneModel.touched"><app-required-common></app-required-common></div>
+        <hr>
+
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_password" class="block text-sm font-medium text-gray-700 col-span-1">
+            Password <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <input type="password" id="user_password" name="user_password" placeholder="e.g. secure123"
+              [(ngModel)]="user_password" class="border text-sm rounded-lg p-2 px-3 w-full shadow-sm" maxlength=""
+              #passwordModel="ngModel" required>
+            <div *ngIf="passwordModel.invalid && passwordModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
         </div>
 
-        <div class="mt-4">
-          <label for="user_address" class="text-sm md:text-[0.875rem] mb-1">Address
-            <app-asterisk></app-asterisk></label>
-          <input type="text" id="user_address" name="user_address"
-            placeholder="e.g. Jl. Pembangunan, Durian Runtuh, Sleman, Yogyakarta" [(ngModel)]="user_address"
-            class="border text-sm rounded-lg p-2 px-3 w-full"
-            [ngClass]="{'border-red-500': addressModel.touched && addressModel.invalid}" maxlength=""
-            #addressModel="ngModel" required>
-          <div *ngIf="addressModel.invalid && addressModel.touched"><app-required-common></app-required-common></div>
+        <hr>
+
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_phone" class="block text-sm font-medium text-gray-700 col-span-1">
+            Phone <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <input type="tel" id="user_phone" name="user_phone" placeholder="e.g. 081312345678" [(ngModel)]="user_phone"
+              class="border text-sm rounded-lg p-2 px-3 w-full shadow-sm" minlength="8" maxlength="18"
+              #phoneModel="ngModel" required>
+            <div *ngIf="phoneModel.invalid && phoneModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
         </div>
 
+        <hr>
+
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_address" class="block text-sm font-medium text-gray-700 col-span-1">
+            Address <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <input type="text" id="user_address" name="user_address"
+              placeholder="e.g. Jl. Pembangunan, Durian Runtuh, Sleman, Yogyakarta" [(ngModel)]="user_address"
+              class="border text-sm rounded-lg p-2 px-3 w-full shadow-sm" maxlength="" #addressModel="ngModel" required>
+            <div *ngIf="addressModel.invalid && addressModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
+        </div>
       </form>
 
       <!-- Modal footer -->
@@ -240,190 +290,283 @@
   <div *ngIf="isModalEditOpen" tabindex="-1" (click)="closeEditModal()"
     class="fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
     <div (click)="$event.stopPropagation()" [@modalScale]
-      class="relative p w-full max-w-xl md:max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
-      <!-- Modal header -->
-      <div class="sticky top-0 flex items-center justify-between p-4 border-b rounded-t bg-white dark:border-gray-600">
-        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-          Edit
-        </h3>
-        <button (click)="closeEditModal()"
-          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
-          <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-          </svg>
-          <span class="sr-only">Close modal</span>
-        </button>
-      </div>
-      <!-- Modal body -->
-      <form class="p-6" #editSuperadminForm="ngForm" (ngSubmit)="updateSuperadmin()">
-        <h3 class="text-2xl text-gray-900 font-semibold">Superadmin</h3>
-        <p class="mb-4 text-gray-600">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
-
-        <div class="mt-4">
-          <label for="user_username" class="text-sm md:text-[0.875rem] mb-1">Username
-            <app-asterisk></app-asterisk></label>
-          <input type="text" id="user_username" name="user_username" placeholder="e.g. johndoe_10"
-            [(ngModel)]="user_username" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-          focus:invalid:border-pink-500 focus:invalid:ring-pink-500" maxlength="" #usernameModel="ngModel" required>
-          <div *ngIf="usernameModel.invalid && usernameModel.touched"><app-required-common></app-required-common></div>
-        </div>
-
-        <div class="mt-4">
-          <label for="user_first_name" class="text-sm md:text-[0.875rem] mb-1">First Name
-            <app-asterisk></app-asterisk></label>
-          <input type="text" id="user_first_name" name="user_first_name" placeholder="e.g. John"
-            [(ngModel)]="user_first_name" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-        focus:invalid:border-pink-500 focus:invalid:ring-pink-500" maxlength="" #firstnameModel="ngModel" required>
-          <div *ngIf="firstnameModel.invalid && firstnameModel.touched"><app-required-common></app-required-common>
-          </div>
-        </div>
-
-        <div class="mt-4">
-          <label for="user_last_name" class="text-sm md:text-[0.875rem] mb-1">Last Name
-            <app-asterisk></app-asterisk></label>
-          <input type="text" id="user_last_name" name="user_last_name" placeholder="e.g. Doe"
-            [(ngModel)]="user_last_name" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-        focus:invalid:border-pink-500 focus:invalid:ring-pink-500" maxlength="" #lastnameModel="ngModel" required>
-          <div *ngIf="lastnameModel.invalid && lastnameModel.touched"><app-required-common></app-required-common></div>
-        </div>
-
-        <div class="mt-4">
-          <label for="user_gender" class="text-sm md:text-[0.875rem] mb-1">Gender <app-asterisk></app-asterisk></label>
-          <select id="user_gender" [(ngModel)]="user_gender" name="user_gender"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            #genderModel="ngModel" required>
-            <option value="" disabled selected>Choose the gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-          <div *ngIf="genderModel.invalid && genderModel.touched"><app-required-common></app-required-common></div>
-        </div>
-
-        <div class="mt-4">
-          <label for="user_email" class="text-sm md:text-[0.875rem] mb-1">Email <app-asterisk></app-asterisk></label>
-          <input type="email" id="user_email" name="user_email" placeholder="e.g. email@gmail.com"
-            [(ngModel)]="user_email" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-        focus:invalid:border-pink-500 focus:invalid:ring-pink-500" maxlength="" #emailModel="ngModel" required>
-          <div *ngIf="emailModel.invalid && emailModel.touched"><app-required-common></app-required-common></div>
-        </div>
-
-        <div class="mt-4">
-          <label for="user_phone" class="text-sm md:text-[0.875rem] mb-1">Phone <app-asterisk></app-asterisk></label>
-          <input type="tel" id="user_phone" name="user_phone" placeholder="e.g. 081312345678" [(ngModel)]="user_phone"
-            class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-        focus:invalid:border-pink-500 focus:invalid:ring-pink-500" minlength="8" maxlength="18" #phoneModel="ngModel"
-            required>
-          <div *ngIf="phoneModel.invalid && phoneModel.touched"><app-required-common></app-required-common></div>
-        </div>
-
-        <div class="mt-4">
-          <label for="user_address" class="text-sm md:text-[0.875rem] mb-1">Address
-            <app-asterisk></app-asterisk></label>
-          <input type="text" id="user_address" name="user_address"
-            placeholder="e.g. Jl. Pembangunan, Durian Runtuh, Sleman, Yogyakarta" [(ngModel)]="user_address" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-        focus:invalid:border-pink-500 focus:invalid:ring-pink-500" maxlength="" #addressModel="ngModel" required>
-          <div *ngIf="addressModel.invalid && addressModel.touched"><app-required-common></app-required-common></div>
-        </div>
-
-      </form>
-
-      <!-- Modal footer -->
-      <div
-        class="w-full flex items-center justify-end p-4 gap-x-3 border-t border-gray-200 rounded-b dark:border-gray-600">
-        <button (click)="closeEditModal()" type="button"
-          class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700">Cancel</button>
-        <button (click)="updateSuperadmin()" type="button"
-          class="text-white bg-[#3A3A3A] hover:bg-black focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Sumbit</button>
-      </div>
-    </div>
-  </div>
-
-  <div tabindex="-1"
-    class="fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
-    <div (click)="$event.stopPropagation()" [@modalScale]
       class="relative p w-full max-w-xl md:max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto mx-4 md:mx-0 outline outline-2 outline-white">
-      <!-- Modal header -->
-      <!-- <div class="sticky top-0 flex items-center justify-between p-4 border-b rounded-t bg-white dark:border-gray-600">
-        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-          Edit
-        </h3>
-      </div> -->
       <!-- Modal body -->
-      <div class="relative w-full h-40 px-8 bg-gray-100">
+      <div class="relative w-full h-40 px-8 bg-gray-200">
         <div class="absolute bottom-0 translate-y-1/2 w-24 p-1 rounded-full aspect-square bg-white ">
-          <div class="w-full aspect-square rounded-full border border-black bg-blue-500"></div>
+          <div
+            class="w-full aspect-square flex items-center justify-center text-3xl font-semibold text-white rounded-full border border-black bg-blue-500">
+            {{initialAvatar}}</div>
         </div>
       </div>
 
-      <div class="flex items-center justify-end space-x-4 px-8 my-4 w-full">
+      <div class="flex items-center justify-end space-x-4 px-8 my-3 w-full">
         <button class="border px-3 py-1 rounded-lg">telpon</button>
         <button class="border px-3 py-1 rounded-lg">WA</button>
       </div>
       <div class="px-8">
-        <h1 class="text-2xl font-semibold">johndoe_10</h1>
-        <p class="text-sm text-neutral-700">johndoe#gmail.com</p>
+        <h1 class="text-xl md:text-3xl font-semibold">{{user_username}}</h1>
+        <p class="text-sm text-neutral-700">{{user_email}}</p>
       </div>
 
-      <form class="my-5 px-8">
-        <table class="w-full bg-red-100">
-          <tr class="align-top">
-            <td><label for="user_username">Username</label></td>
-            <td>
-              <div>
-                <input type="text" id="user_username" name="user_username" placeholder="e.g. johndoe_10"
-                  [(ngModel)]="user_username" class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600
-            focus:invalid:border-pink-500 focus:invalid:ring-pink-500" maxlength="" #usernameModel="ngModel" required>
-                <div *ngIf="usernameModel.invalid && usernameModel.touched"><app-required-common></app-required-common>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr class="align-top">
-            <td>
-              <label for="user_username">Name</label>
-            </td>
-            <td>
-              <div class="w-full flex flex-col gap-4 md:flex-row md:space-x-4 items-start">
-                <div class="flex-1">
-                  <label for="user_first_name" class="block text-sm text-gray-700">First Name</label>
-                  <input type="text" id="user_first_name" name="user_first_name" placeholder="e.g. John"
-                    [(ngModel)]="user_first_name"
-                    class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
-                    maxlength="" #firstnameModel="ngModel" required />
-                  <div *ngIf="firstnameModel.invalid && firstnameModel.touched" class="mt-1">
-                    <app-required-common></app-required-common>
-                  </div>
-                </div>
+      <form class="my-5 px-8 max-w-2xl mx-auto" #editSuperadminForm="ngForm" (ngSubmit)="updateSuperadmin()">
+        <hr>
+        <div class="grid grid-cols-3 items-start my-3">
+          <label for="user_username" class="block text-sm font-medium text-gray-700 col-span-1">
+            Username <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <input type="text" id="user_username" name="user_username" placeholder="e.g. johndoe_10"
+              [(ngModel)]="user_username"
+              class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+              maxlength="" #usernameModel="ngModel" required />
+            <div *ngIf="usernameModel.invalid && usernameModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
+        </div>
 
-                <div class="flex-1">
-                  <label for="user_last_name" class="block text-sm text-gray-700">Last Name</label>
-                  <input type="text" id="user_last_name" name="user_last_name" placeholder="e.g. Doe"
-                    [(ngModel)]="user_last_name"
-                    class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
-                    maxlength="" #lastnameModel="ngModel" required />
-                  <div *ngIf="lastnameModel.invalid && lastnameModel.touched" class="mt-1">
-                    <app-required-common></app-required-common>
-                  </div>
-                </div>
-              </div>
-            </td>
-          </tr>
+        <hr>
 
-        </table>
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_first_name" class="block text-sm font-medium text-gray-700 col-span-1">
+            Name <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="user_first_name" class="block text-sm text-gray-700">First Name</label>
+              <input type="text" id="user_first_name" name="user_first_name" placeholder="e.g. John"
+                [(ngModel)]="user_first_name"
+                class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+                maxlength="" #firstnameModel="ngModel" required />
+              <div *ngIf="firstnameModel.invalid && firstnameModel.touched" class="mt-1 text-sm text-pink-600">
+                <app-required-common></app-required-common>
+              </div>
+            </div>
+
+            <div>
+              <label for="user_last_name" class="block text-sm text-gray-700">Last Name</label>
+              <input type="text" id="user_last_name" name="user_last_name" placeholder="e.g. Doe"
+                [(ngModel)]="user_last_name"
+                class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+                maxlength="" #lastnameModel="ngModel" required />
+              <div *ngIf="lastnameModel.invalid && lastnameModel.touched" class="mt-1 text-sm text-pink-600">
+                <app-required-common></app-required-common>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_gender" class="block text-sm font-medium text-gray-700 col-span-1">
+            Gender <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <select id="user_gender" [(ngModel)]="user_gender" name="user_gender"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              #genderModel="ngModel" required>
+              <option value="" disabled selected>Choose the gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+            <div *ngIf="genderModel.invalid && genderModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_email" class="block text-sm font-medium text-gray-700 col-span-1">
+            Email <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <input type="email" id="user_email" name="user_email" placeholder="e.g. email@gmail.com"
+              [(ngModel)]="user_email"
+              class="border text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+              maxlength="" #emailModel="ngModel" required>
+            <div *ngIf="emailModel.invalid && emailModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_phone" class="block text-sm font-medium text-gray-700 col-span-1">
+            Phone <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <input type="tel" id="user_phone" name="user_phone" placeholder="e.g. 081312345678" [(ngModel)]="user_phone"
+              class="border text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+              minlength="8" maxlength="18" #phoneModel="ngModel" required>
+            <div *ngIf="phoneModel.invalid && phoneModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_address" class="block text-sm font-medium text-gray-700 col-span-1">
+            Address <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <input type="text" id="user_address" name="user_address"
+              placeholder="e.g. Jl. Pembangunan, Durian Runtuh, Sleman, Yogyakarta" [(ngModel)]="user_address"
+              class="border text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+              maxlength="" #addressModel="ngModel" required>
+            <div *ngIf="addressModel.invalid && addressModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
+        </div>
       </form>
+
 
       <!-- Modal footer -->
       <div class="flex items-center border-t border-gray-200 rounded-b dark:border-gray-600">
-        <div>
+        <!-- <div>
           <button>Delete User</button>
-        </div>
+        </div> -->
         <div class="w-full flex items-center justify-end p-4 gap-x-3 ">
-          <button type="button"
+          <button type="button" (click)="closeEditModal()"
             class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700">Cancel</button>
           <button (click)="updateSuperadmin()" type="button"
             class="text-white bg-[#3A3A3A] hover:bg-black focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Save
             Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isModalDetailOpen" tabindex="-1" (click)="closeDetailModal()"
+    class="fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
+    <div (click)="$event.stopPropagation()" [@modalScale]
+      class="relative p w-full max-w-xl md:max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto mx-4 md:mx-0 outline outline-2 outline-white">
+      <!-- Modal body -->
+      <div class="relative w-full h-40 bg-gray-200">
+        <!-- <img class="w-full h-full object-cover"
+          src="https://i.pinimg.com/736x/04/eb/f4/04ebf44dc5815e86cafebe8be1142d39.jpg" alt=""> -->
+        <div class=" px-8">
+          <div class="absolute bottom-0 translate-y-1/2 w-24 p-1 rounded-full aspect-square bg-white ">
+            <div
+              class="w-full aspect-square flex items-center justify-center text-3xl font-semibold text-white rounded-full border border-black bg-blue-500">
+              {{initialAvatar}}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-4 px-8 my-3 w-full">
+        <button class="border px-3 py-1 rounded-lg">telpon</button>
+        <button class="border px-3 py-1 rounded-lg">WA</button>
+      </div>
+      <div class="px-8">
+        <h1 class="text-xl md:text-3xl font-semibold">{{user_username}}</h1>
+        <p class="text-sm text-neutral-700">{{user_email}}</p>
+      </div>
+
+      <div class="my-5 px-8 max-w-2xl mx-auto">
+        <hr>
+        <div class="grid grid-cols-3 items-start my-3">
+          <label for="user_username" class="block text-sm font-medium text-gray-700 col-span-1">
+            Username
+          </label>
+          <div class="col-span-2">
+            <input type="text" id="user_username" name="user_username" placeholder="e.g. johndoe_10"
+              [(ngModel)]="user_username"
+              class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+              disabled />
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_first_name" class="block text-sm font-medium text-gray-700 col-span-1">
+            Name
+          </label>
+          <div class="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="user_first_name" class="block text-sm text-gray-700">First Name</label>
+              <input type="text" id="user_first_name" name="user_first_name" [(ngModel)]="user_first_name"
+                class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+                disabled />
+            </div>
+
+            <div>
+              <label for="user_last_name" class="block text-sm text-gray-700">Last Name</label>
+              <input type="text" id="user_last_name" name="user_last_name" [(ngModel)]="user_last_name"
+                class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+                disabled />
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_gender" class="block text-sm font-medium text-gray-700 col-span-1">
+            Gender
+          </label>
+          <div class="col-span-2">
+            <input type="text" id="user_gender" name="user_gender" [(ngModel)]="user_gender"
+              class="capitalize border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+              disabled />
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_email" class="block text-sm font-medium text-gray-700 col-span-1">
+            Email
+          </label>
+          <div class="col-span-2">
+            <input type="email" id="user_email" name="user_email" [(ngModel)]="user_email"
+              class="border text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+              disabled>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_phone" class="block text-sm font-medium text-gray-700 col-span-1">
+            Phone
+          </label>
+          <div class="col-span-2">
+            <input type="tel" id="user_phone" name="user_phone" [(ngModel)]="user_phone"
+              class="border text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+              disabled>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="user_address" class="block text-sm font-medium text-gray-700 col-span-1">
+            Address
+          </label>
+          <div class="col-span-2">
+            <input type="text" id="user_address" name="user_address" [(ngModel)]="user_address"
+              class="border text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+              maxlength="" disabled>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Modal footer -->
+      <div class="flex items-center border-t border-gray-200 rounded-b dark:border-gray-600">
+        <div class="w-full flex items-center justify-end p-4 gap-x-3 ">
+          <button type="button" (click)="closeDetailModal()"
+            class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700">Close</button>
         </div>
       </div>
     </div>

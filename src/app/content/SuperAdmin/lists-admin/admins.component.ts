@@ -1,83 +1,103 @@
+// ANGULAR
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
-import { ColDef, ICellRendererParams } from 'ag-grid-community';
-import axios from 'axios';
-import { CookieService } from 'ngx-cookie-service';
-import { HeaderComponent } from '../../../layouts/header/header.component';
 import { AgGridAngular } from 'ag-grid-angular';
 import { CommonModule } from '@angular/common';
-import Swal from 'sweetalert2';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { School } from '../lists-school/schools.component';
-import { RequiredCommonComponent } from '../../../shared/components/required-common/required-common.component';
-import { AsteriskComponent } from '../../../shared/components/asterisk/asterisk.component';
 
-interface SchoolAdmin {
-  id: string;
-  username: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  password: string;
-  role: string;
-  role_code: string;
-  phone: string;
-  address: string;
-  status: string;
-  details: Detail;
-}
+// THIRD PARTY
+import { CookieService } from 'ngx-cookie-service';
+import { ColDef, ICellRendererParams } from 'ag-grid-community';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
-interface Detail {
-  school_id: string;
-  school_name: string;
-}
+// COMPONENT
+import { HeaderComponent } from '@layouts/header/header.component';
+import { RequiredCommonComponent } from '@shared/components/required-common/required-common.component';
+import { AsteriskComponent } from '@shared/components/asterisk/asterisk.component';
+
+// SHARED
+import { School, SchoolAdmin, Response } from '@core/interfaces';
+import { ToastService } from '@core/services/toast/toast.service';
+
+import { toastInOutAnimation } from '@shared/utils/toast.animation';
+import { modalScaleAnimation } from '@shared/utils/modal.animation';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
 @Component({
   selector: 'app-admins',
   standalone: true,
   imports: [
-    RequiredCommonComponent,
-    AsteriskComponent,
     CommonModule,
-    AgGridAngular,
-    HeaderComponent,
     FormsModule,
     ReactiveFormsModule,
+    AgGridAngular,
+    HeaderComponent,
+    RequiredCommonComponent,
+    AsteriskComponent,
+    SpinnerComponent,
   ],
   templateUrl: './admins.component.html',
   styleUrl: './admins.component.css',
+  animations: [toastInOutAnimation, modalScaleAnimation],
 })
 export class AdminsComponent implements OnInit {
   token: string | null = '';
+
+  sortBy: string = 'user_id';
+  sortDirection: string = 'asc';
+
+  paginationPage: number = 1;
+  paginationCurrentPage: number = 1;
+  paginationItemsLimit: number = 10;
+  paginationTotalPage: number = 0;
+  showing: string = '';
+  pages: number[] = [];
 
   totalRows: number = 0;
   startRow: number = 1;
   endRow: number = 10;
 
-  id: string = '';
-  username: string = '';
-  first_name: string = '';
-  last_name: string = '';
-  gender: string = '';
-  email: string = '';
-  password: string = '';
-  role: string = '';
-  role_code: string = '';
-  phone: string = '';
-  address: string = '';
-  status: string = '';
+  user_uuid: string = '';
+  user_username: string = '';
+  user_first_name: string = '';
+  user_last_name: string = '';
+  user_gender: string = '';
+  user_email: string = '';
+  user_password: string = '';
+  user_role: string = '';
+  user_role_code: string = '';
+  user_phone: string = '';
+  user_address: string = '';
+  user_status: string = '';
 
-  school_id: string = '';
+  initialAvatar: string = '';
+
+  school_uuid: string = '';
+  school_name: string = '';
+
+  isLoading: boolean = false;
+  isMobile = window.innerWidth <= 768;
 
   isModalAddOpen: boolean = false;
   isModalEditOpen: boolean = false;
+  isModalDetailOpen: boolean = false;
   isModalDeleteOpen: boolean = false;
 
   rowListAllSchool: School[] = [];
   rowListAllSchoolAdmin: SchoolAdmin[] = [];
 
+  columnMapping: { [key: string]: string } = {
+    'user_details.user_first_name': 'user_first_name',
+    'user_details.user_last_name': 'user_last_name',
+    user_username: 'user_username',
+  };
+
+  private columnClickCount: { [key: string]: number } = {};
+
   constructor(
     private cookieService: CookieService,
     private cdRef: ChangeDetectorRef,
+    public toastService: ToastService,
     @Inject('apiUrl') private apiUrl: string,
   ) {
     this.apiUrl = apiUrl;
@@ -87,6 +107,16 @@ export class AdminsComponent implements OnInit {
   ngOnInit(): void {
     this.getAllSchool();
     this.getAllSchooladmin();
+    window.addEventListener('resize', this.updateIsMobile.bind(this));
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('resize', this.updateIsMobile.bind(this));
+  }
+
+  updateIsMobile(): void {
+    this.isMobile = window.innerWidth <= 768;
+    this.cdRef.detectChanges();
   }
 
   themeClass = 'ag-theme-quartz';
@@ -96,6 +126,12 @@ export class AdminsComponent implements OnInit {
     pagination: true,
     paginationPageSize: 10,
     paginationPageSizeSelector: [10, 20, 50, 100],
+    suppressPaginationPanel: true,
+    suppressMovable: true,
+    onSortChanged: this.onSortChanged.bind(this),
+    onGridReady: () => {
+      console.log('Grid sudah siap!');
+    },
   };
 
   colHeaderListAllSchoolAdmin: ColDef<SchoolAdmin>[] = [
@@ -107,14 +143,14 @@ export class AdminsComponent implements OnInit {
       pinned: 'left',
       sortable: false,
     },
-    { headerName: 'Username', field: 'username', pinned: 'left' },
-    { headerName: 'First Name', field: 'first_name' },
-    { headerName: 'Last Name', field: 'last_name' },
-    { headerName: 'Email', field: 'email' },
-    { field: 'phone' },
-    { field: 'address' },
-    { headerName: 'School ID', field: 'details.school_name' },
-    { field: 'status' },
+    { headerName: 'Username', field: 'user_username', pinned: 'left', sortable: true },
+    { headerName: 'First Name', field: 'user_details.user_first_name' },
+    { headerName: 'Last Name', field: 'user_details.user_last_name' },
+    { headerName: 'Email', field: 'user_email' },
+    { headerName: 'School Phone', field: 'user_details.user_phone' },
+    { headerName: 'School Address', field: 'user_details.user_address' },
+    { headerName: 'School Name', field: 'user_details.school_name' },
+    { field: 'user_status', maxWidth: undefined },
     {
       headerName: 'Actions',
       sortable: false,
@@ -140,7 +176,7 @@ export class AdminsComponent implements OnInit {
         `;
         editButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.openEditModal(params.data.id);
+          this.openEditModal(params.data.user_uuid);
         });
 
         const viewButton = document.createElement('button');
@@ -155,7 +191,7 @@ export class AdminsComponent implements OnInit {
         `;
         viewButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.openViewModal(params.data.id);
+          this.openDetailModal(params.data.user_uuid);
         });
 
         const deleteButton = document.createElement('button');
@@ -175,7 +211,7 @@ export class AdminsComponent implements OnInit {
         `;
         deleteButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.onDeleteSchoolAdmin(params.data.id);
+          this.onDeleteSchoolAdmin(params.data.user_uuid);
         });
 
         buttonContainer.appendChild(editButton);
@@ -184,11 +220,9 @@ export class AdminsComponent implements OnInit {
 
         return buttonContainer;
       },
-      pinned: 'right',
+      pinned: this.isMobile ? null : 'right',
     },
   ];
-
-  openViewModal(id: string) {}
 
   defaultColDef: ColDef = {
     flex: 1,
@@ -197,6 +231,7 @@ export class AdminsComponent implements OnInit {
     maxWidth: 250,
     wrapHeaderText: true,
     autoHeaderHeight: true,
+    sortable: false,
   };
 
   totalRowCount(currentPage: number, pageSize: number) {
@@ -213,11 +248,70 @@ export class AdminsComponent implements OnInit {
     }
   }
 
-  onPaginationChanged(event: any) {
-    const currentPage = event.api.paginationGetCurrentPage() + 1;
-    const pageSize = event.api.paginationGetPageSize();
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.paginationTotalPage) {
+      this.paginationPage = page;
+      this.getAllSchooladmin();
+    }
+  }
 
-    this.totalRowCount(currentPage, pageSize);
+  goToNextPage() {
+    if (this.paginationPage < this.paginationTotalPage) {
+      this.paginationPage++;
+      this.getAllSchooladmin();
+    }
+  }
+
+  goToPreviousPage() {
+    if (this.paginationPage > 1) {
+      this.paginationPage--;
+      this.getAllSchooladmin();
+    }
+  }
+
+  changeMaxItemsPerPage(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    this.paginationItemsLimit = +target.value;
+    this.paginationPage = 1;
+    this.getAllSchooladmin();
+  }
+
+  onSortChanged(event: any) {
+    console.log('onSortChanged event:', event);
+
+    if (event && event.columns && event.columns.length > 0) {
+      event.columns.forEach((column: any) => {
+        const colId = column.colId;
+        console.log('Sorting column ID:', colId);
+
+        if (!this.columnClickCount[colId]) {
+          this.columnClickCount[colId] = 0;
+        }
+        this.columnClickCount[colId] += 1;
+
+        if (this.columnClickCount[colId] === 3) {
+          this.sortBy = 'user_id';
+          this.sortDirection = 'asc';
+          this.columnClickCount[colId] = 0;
+        } else {
+          if (this.columnMapping[colId]) {
+            this.sortBy = this.columnMapping[colId];
+          } else {
+            this.sortBy = colId;
+          }
+
+          if (this.columnClickCount[colId] === 1) {
+            this.sortDirection = 'asc';
+          } else if (this.columnClickCount[colId] === 2) {
+            this.sortDirection = 'desc';
+          }
+        }
+      });
+
+      this.getAllSchooladmin();
+    } else {
+      console.error('onSortChanged: event.columns is undefined or empty');
+    }
   }
 
   getAllSchool() {
@@ -228,7 +322,9 @@ export class AdminsComponent implements OnInit {
         },
       })
       .then((response) => {
-        this.rowListAllSchool = response.data;
+        this.rowListAllSchool = response.data.data.data;
+
+        console.log(this.rowListAllSchool);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -236,39 +332,70 @@ export class AdminsComponent implements OnInit {
   }
 
   getAllSchooladmin() {
+    this.isLoading = true;
     axios
       .get(`${this.apiUrl}/api/superadmin/user/as/all`, {
         headers: {
           Authorization: `${this.token}`,
         },
+        params: {
+          page: this.paginationPage,
+          limit: this.paginationItemsLimit,
+
+          sort_by: this.sortBy,
+          direction: this.sortDirection,
+        },
       })
       .then((response) => {
-        this.rowListAllSchoolAdmin = response.data;
+        this.rowListAllSchoolAdmin = response.data.data.data;
+        console.log(this.rowListAllSchoolAdmin);
         
+        this.paginationTotalPage = response.data.data.meta.total_pages;
+        this.pages = Array.from(
+          { length: this.paginationTotalPage },
+          (_, i) => i + 1,
+        );
+        this.showing = response.data.data.meta.showing;
+
+        this.isLoading = false;
+
         this.cdRef.detectChanges();
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
+        this.isLoading = false;
       });
   }
 
   openAddModal() {
+    this.user_username = '';
+    this.user_first_name = '';
+    this.user_last_name = '';
+    this.user_gender = '';
+    this.user_email = 'a@gmail.co';
+    this.user_password = '12345678';
+    // this.user_role = '';
+    // this.user_role_code = '';
+    this.user_phone = '1234567890987';
+    this.user_address = 'a';
+    // this.user_status = '';
+
     this.isModalAddOpen = true;
   }
 
   addSchooladmin(): void {
     const requestData = {
-      username: this.username,
-      first_name: this.first_name,
-      last_name: this.last_name,
-      gender: this.gender,
-      email: this.email,
-      password: this.password,
+      username: this.user_username,
+      first_name: this.user_first_name,
+      last_name: this.user_last_name,
+      gender: this.user_gender,
+      email: this.user_email,
+      password: this.user_password,
       role: 'schooladmin',
-      phone: this.phone,
-      address: this.address,
+      phone: this.user_phone,
+      address: this.user_address,
       details: {
-        school_id: this.school_id,
+        school_uuid: this.school_uuid,
       },
     };
 
@@ -279,29 +406,16 @@ export class AdminsComponent implements OnInit {
         },
       })
       .then((response) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'SUCCESS',
-          text: response.data.message,
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage = response.data?.message || 'Success.';
+        this.showToast(responseMessage, 3000, Response.Success);
 
         this.getAllSchooladmin();
         this.isModalAddOpen = false;
       })
       .catch((error) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'ERROR',
-          text: error.response.data.message,
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
   }
 
@@ -313,43 +427,38 @@ export class AdminsComponent implements OnInit {
     axios
       .get(`${this.apiUrl}/api/superadmin/user/as/${id}`, {
         headers: {
-          // 'Content-Type': 'multiple/form-data',
           Authorization: `${this.token}`,
         },
       })
       .then((response) => {
-        console.log('res', response.data);
+        console.log(id);
 
-        const editData = response.data;
+        const editData = response.data.data;
+        console.log('res', editData);
 
-        this.id = editData.id;
-        this.username = editData.username;
-        this.first_name = editData.first_name;
-        this.last_name = editData.last_name;
-        this.gender = editData.gender;
-        this.email = editData.email;
-        this.password = editData.password;
-        this.role = 'superadmin';
-        this.phone = editData.phone;
-        this.address = editData.address;
-        this.school_id = editData.details.school_id;
+        this.user_uuid = editData.user_uuid;
+        this.user_username = editData.user_username;
+        this.user_first_name = editData.user_details.user_first_name;
+        this.user_last_name = editData.user_details.user_last_name;
+        this.user_gender = editData.user_details.user_gender;
+        this.user_email = editData.user_email;
+        this.user_password = editData.user_password;
+        this.user_role = 'superadmin';
+        this.user_phone = editData.user_details.user_phone;
+        this.user_address = editData.user_details.user_address;
+        this.school_uuid = editData.user_details.school_uuid;
 
-        console.log('respun', response.data);
-        console.log('iniii', this.school_id);
+        this.initialAvatar =
+          this.user_first_name.charAt(0).toUpperCase() +
+          this.user_last_name.charAt(0).toUpperCase();
 
         this.isModalEditOpen = true;
         this.cdRef.detectChanges();
       })
       .catch((error) => {
-        Swal.fire({
-          title: 'Error',
-          text: error.response.data.message,
-          icon: 'error',
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
   }
 
@@ -360,56 +469,87 @@ export class AdminsComponent implements OnInit {
 
   updateSchooladmin() {
     const data = {
-      username: this.username,
-      first_name: this.first_name,
-      last_name: this.last_name,
-      gender: this.gender,
-      email: this.email,
+      username: this.user_username,
+      first_name: this.user_first_name,
+      last_name: this.user_last_name,
+      gender: this.user_gender,
+      email: this.user_email,
       role: 'schooladmin',
-      phone: this.phone,
-      address: this.address,
+      phone: this.user_phone,
+      address: this.user_address,
       details: {
-        school_id: this.school_id,
+        school_uuid: this.school_uuid,
       },
     };
 
-    console.log('ditel', this.school_id);
+    console.log('ditel', this.school_uuid);
 
     console.log('wir', data);
 
     axios
-      .put(`${this.apiUrl}/api/superadmin/user/update/${this.id}`, data, {
+      .put(
+        `${this.apiUrl}/api/superadmin/user/update/${this.user_uuid}`,
+        data,
+        {
+          headers: {
+            Authorization: `${this.token}`,
+          },
+        },
+      )
+      .then((response) => {
+        const responseMessage = response.data?.message || 'Success.';
+        this.showToast(responseMessage, 3000, Response.Success);
+
+        this.getAllSchooladmin();
+      })
+      .catch((error) => {
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
+      });
+
+    this.isModalEditOpen = false;
+    this.cdRef.detectChanges();
+  }
+
+  openDetailModal(user_uuid: string) {
+    axios
+      .get(`${this.apiUrl}/api/superadmin/user/as/${user_uuid}`, {
         headers: {
           Authorization: `${this.token}`,
         },
       })
       .then((response) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'SUCCESS',
-          text: response.data.message,
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const detailData = response.data.data;
 
-        this.getAllSchooladmin();
+        this.user_uuid = detailData.user_uuid;
+        this.user_username = detailData.user_username;
+        this.user_first_name = detailData.user_details.user_first_name;
+        this.user_last_name = detailData.user_details.user_last_name;
+        this.user_gender = detailData.user_details.user_gender;
+        this.user_email = detailData.user_email;
+        this.user_role = 'schooladmin';
+        this.user_phone = detailData.user_details.user_phone;
+        this.user_address = detailData.user_details.user_address;
+        this.school_name = detailData.user_details.school_name;
+        // this.user_picture = detailData.user_details.user_picture;
+
+        this.initialAvatar =
+          this.user_first_name.charAt(0).toUpperCase() +
+          this.user_last_name.charAt(0).toUpperCase();
+
+        this.isModalDetailOpen = true;
+        this.cdRef.detectChanges();
       })
       .catch((error) => {
-        console.error('Error saat update:', error);
-        Swal.fire({
-          title: 'Error',
-          text: error.response?.data?.message || 'Unknown error',
-          icon: 'error',
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
+  }
 
-    this.isModalEditOpen = false;
+  closeDetailModal() {
+    this.isModalDetailOpen = false;
     this.cdRef.detectChanges();
   }
 
@@ -417,7 +557,7 @@ export class AdminsComponent implements OnInit {
     this.isModalDeleteOpen = true;
     this.cdRef.detectChanges();
 
-    this.id = id;
+    this.user_uuid = id;
   }
 
   closeDeleteModal() {
@@ -427,21 +567,14 @@ export class AdminsComponent implements OnInit {
 
   performDeleteSchoolAdmin(id: string) {
     axios
-      .delete(`${this.apiUrl}/api/superadmin/user/delete/${id}`, {
+      .delete(`${this.apiUrl}/api/superadmin/user/as/delete/${id}`, {
         headers: {
           Authorization: `${this.token}`,
         },
       })
       .then((response) => {
-        Swal.fire({
-          title: 'Success',
-          text: response.data.message,
-          icon: 'success',
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage = response.data?.message || 'Success.';
+        this.showToast(responseMessage, 3000, Response.Success);
 
         this.getAllSchool();
         this.isModalDeleteOpen = false;
@@ -449,15 +582,17 @@ export class AdminsComponent implements OnInit {
         this.cdRef.detectChanges();
       })
       .catch((error) => {
-        Swal.fire({
-          title: 'Error',
-          text: error.response.data.message,
-          icon: 'error',
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
+  }
+
+  showToast(message: string, duration: number, type: Response) {
+    this.toastService.add(message, duration, type);
+  }
+
+  removeToast(index: number) {
+    this.toastService.remove(index);
   }
 }

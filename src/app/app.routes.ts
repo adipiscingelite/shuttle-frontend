@@ -16,9 +16,11 @@ import { DashboardAdminComponent } from './content/Admin/dashboard/dashboard.com
 import { ProfileAdminComponent } from './content/Admin/profile/profile.component';
 import { StudentsComponent } from './content/Admin/students/students.component';
 import { DashboardParentComponent } from './content/Parent/dashboard/dashboard.component';
-import { ProfileParentComponent } from './content/Parent/profile/profile.component';
+import { ProfileParentComponent } from './content/Parent/my-profile/profile.component';
 import { DashboardDriverComponent } from './content/Driver/dashboard/dashboard.component';
-import { ProfileDriverComponent } from './content/Driver/profile/profile.component';
+import { ProfileDriverComponent } from './content/Driver/my-profile/profile.component';
+import { AttendanceComponent } from './content/Parent/attendance/attendance.component';
+import { ChildernComponent } from './content/Parent/my-childern/childern.component';
 
 const superAdminChildrenRoutes: Route[] = [
   {
@@ -97,6 +99,14 @@ const parentChildrenRoutes: Route[] = [
   {
     path: 'dashboard',
     component: DashboardParentComponent,
+  },
+  {
+    path: 'attendance',
+    component: AttendanceComponent,
+  },
+  {
+    path: 'my-childern',
+    component: ChildernComponent,
   },
   {
     path: 'profile',
