@@ -1,4 +1,10 @@
 <div>
+  <!-- SPINNER -->
+  <div *ngIf="isLoading"
+    class="absolute top-0 left-0 flex items-center justify-center bg-gray-50 bg-opacity-50 z-50">
+    <app-spinner></app-spinner>
+  </div>
+  
   <h1 class="my-6 text-xl font-semibold uppercase">
     List of Routes
   </h1>
@@ -47,11 +53,6 @@
 
     <!-- TABLE -->
     <div class="relative w-full h-[80vh] my-4">
-      <!-- SPINNER -->
-      <div *ngIf="isLoading"
-        class="absolute top-0 left-0 flex items-center justify-center bg-gray-50 bg-opacity-50 z-50">
-        <app-spinner></app-spinner>
-      </div>
 
       <ag-grid-angular style="width: 100%; height: 100%; overflow-x: scroll;" [class]="themeClass"
         [rowData]="rowListAllRoute" [columnDefs]="colHeaderListRoutes" [defaultColDef]="defaultColDef"

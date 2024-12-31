@@ -372,13 +372,10 @@ export class AdminsComponent implements OnInit {
     this.user_first_name = '';
     this.user_last_name = '';
     this.user_gender = '';
-    this.user_email = 'a@gmail.co';
-    this.user_password = '12345678';
-    // this.user_role = '';
-    // this.user_role_code = '';
-    this.user_phone = '1234567890987';
-    this.user_address = 'a';
-    // this.user_status = '';
+    this.user_email = '';
+    this.user_password = '';
+    this.user_phone = '';
+    this.user_address = '';
 
     this.isModalAddOpen = true;
   }

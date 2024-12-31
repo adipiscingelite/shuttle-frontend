@@ -92,6 +92,7 @@ interface schoolDetail {
   animations: [toastInOutAnimation, modalScaleAnimation],
 })
 export class StudentsComponent implements OnInit {
+  
   // For token
   token: string | null = '';
   // For sorting

@@ -127,8 +127,8 @@
           <img class="w-16 aspect-square rounded-full"
             src="https://i.pinimg.com/474x/28/c2/0b/28c20b3bf4e1a48334b2278d3c7fb447.jpg" alt="">
           <div class="form-header mb-4">
-            <h2 class="text-xl font-semibold text-gray-800">Add a New Superadmin</h2>
-            <p class="text-sm text-gray-600">Fill in the details below to add a new superadmin.</p>
+            <h2 class="text-xl font-semibold text-gray-800">Add a New Driver</h2>
+            <p class="text-sm text-gray-600">Fill in the details below to add a new Driver.</p>
           </div>
         </div>
 
@@ -265,11 +265,11 @@
         <hr>
 
         <div class="grid grid-cols-3 items-start gap-x-4 my-3">
-          <label for="license_number" class="text-sm md:text-[0.875rem] mb-1">License Number
+          <label for="license_number" class="block text-sm font-medium text-gray-700 col-span-1">License Number
             <app-asterisk></app-asterisk></label>
 
           <div class="col-span-2">
-            <input type="text" id="license_number" name="license_number" placeholder="e.g. Jl. 123"
+            <input type="text" id="license_number" name="license_number" placeholder="e.g. 113474424"
               [(ngModel)]="license_number" class="border text-sm rounded-lg p-2 px-3 w-full"
               [ngClass]="{'border-red-500': licenseNumberModel.touched && licenseNumberModel.invalid}" maxlength=""
               #licenseNumberModel="ngModel" required>
@@ -280,7 +280,7 @@
         </div>
 
         <div class="grid grid-cols-3 items-start gap-x-4 my-3">
-          <label for="vehicle_id" class="text-sm md:text-[0.875rem] mb-1">Vehicle</label>
+          <label for="vehicle_id" class="block text-sm font-medium text-gray-700 col-span-1">Vehicle <app-asterisk></app-asterisk></label>
 
           <div class="col-span-2">
             <select id="vehicle_id" [(ngModel)]="vehicle_uuid" name="vehicle_id"
@@ -325,9 +325,19 @@
         </div>
       </div>
 
+
       <div class="flex items-center justify-end space-x-4 px-8 my-3 w-full">
-        <button class="border px-3 py-1 rounded-lg">telpon</button>
-        <button class="border px-3 py-1 rounded-lg">WA</button>
+        <button class="border px-3 py-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"
+            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M4.1 17.813c.057-.206-.066-.491-.184-.697a2.007 2.007 0 0 0-.12-.178 9.366 9.366 0 0 1-1.546-5.156C2.233 6.52 6.596 2.25 11.992 2.25c4.705 0 8.633 3.26 9.55 7.587a9.32 9.32 0 0 1 .208 1.952c0 5.269-4.195 9.606-9.59 9.606-.858 0-2.016-.216-2.647-.393a17.714 17.714 0 0 1-1.425-.474A1.46 1.46 0 0 0 7 20.545l-3.18 1.148a.748.748 0 0 1-.218.057.45.45 0 0 1-.45-.457.744.744 0 0 1 .029-.154l.92-3.326Z">
+            </path>
+            <path fill="currentColor" stroke="none" d="M7.5 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path>
+            <path fill="currentColor" stroke="none" d="M12 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path>
+            <path fill="currentColor" stroke="none" d="M16.5 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path>
+          </svg>
+        </button>
       </div>
       <div class="px-8">
         <h1 class="text-xl md:text-3xl font-semibold">{{user_username}}</h1>
@@ -455,10 +465,10 @@
         <hr>
 
         <div class="grid grid-cols-3 items-start gap-x-4 my-3">
-          <label for="license_number" class="text-sm md:text-[0.875rem] mb-1">License Number
+          <label for="license_number" class="block text-sm font-medium text-gray-700 col-span-1">License Number
             <app-asterisk></app-asterisk></label>
           <div class="col-span-2">
-            <input type="text" id="license_number" name="license_number" placeholder="e.g. Jl. 123"
+            <input type="text" id="license_number" name="license_number" placeholder="e.g. 113474424"
               [(ngModel)]="license_number"
               class="border text-sm rounded-lg p-2 px-3 w-full invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
               [ngClass]="{'border-red-500': licenseNumberModel.touched && licenseNumberModel.invalid}" maxlength=""
@@ -470,7 +480,7 @@
         </div>
 
         <div class="grid grid-cols-3 items-start gap-x-4 my-3">
-          <label for="vehicle_id" class="text-sm md:text-[0.875rem] mb-1">Vehicle</label>
+          <label for="vehicle_id" class="block text-sm font-medium text-gray-700 col-span-1">Vehicle <app-asterisk></app-asterisk></label>
           <div class="col-span-2">
             <select id="vehicle_id" [(ngModel)]="vehicle_uuid" name="vehicle_id"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -519,9 +529,19 @@
         </div>
       </div>
 
+
       <div class="flex items-center justify-end space-x-4 px-8 my-3 w-full">
-        <button class="border px-3 py-1 rounded-lg">telpon</button>
-        <button class="border px-3 py-1 rounded-lg">WA</button>
+        <button class="border px-3 py-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"
+            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M4.1 17.813c.057-.206-.066-.491-.184-.697a2.007 2.007 0 0 0-.12-.178 9.366 9.366 0 0 1-1.546-5.156C2.233 6.52 6.596 2.25 11.992 2.25c4.705 0 8.633 3.26 9.55 7.587a9.32 9.32 0 0 1 .208 1.952c0 5.269-4.195 9.606-9.59 9.606-.858 0-2.016-.216-2.647-.393a17.714 17.714 0 0 1-1.425-.474A1.46 1.46 0 0 0 7 20.545l-3.18 1.148a.748.748 0 0 1-.218.057.45.45 0 0 1-.45-.457.744.744 0 0 1 .029-.154l.92-3.326Z">
+            </path>
+            <path fill="currentColor" stroke="none" d="M7.5 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path>
+            <path fill="currentColor" stroke="none" d="M12 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path>
+            <path fill="currentColor" stroke="none" d="M16.5 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path>
+          </svg>
+        </button>
       </div>
       <div class="px-8">
         <h1 class="text-xl md:text-3xl font-semibold">{{user_username}}</h1>
@@ -673,19 +693,19 @@
           </svg>
         </div>
         <h1 class="my-1 text-2xl font-medium">
-          Hapus Data
+          Delete Data
         </h1>
         <p class="text-sm text-neutral-600">
-          Apakah anda yakin ingin menghapus data ini?
+          Are you sure want to delete this data?
         </p>
         <p class="text-sm text-neutral-600">
-          Aksi ini tidak dapat dibatalkan.
+          This action can not be undone.
         </p>
         <div class="grid grid-cols-2 gap-x-3 mt-6 text-sm font-medium capitalize">
           <button class="px-4 py-2 rounded bg-neutral-200 hover:bg-neutral-300 text-neutral-800 shadow hover:shadow-md"
-            (click)="closeDeleteModal()">Batal</button>
+            (click)="closeDeleteModal()">Cancel</button>
           <button class="px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white shadow hover:shadow-md"
-            (click)="performDeleteDriver(user_uuid)">Hapus</button>
+            (click)="performDeleteDriver(user_uuid)">Delete</button>
         </div>
       </div>
     </div>

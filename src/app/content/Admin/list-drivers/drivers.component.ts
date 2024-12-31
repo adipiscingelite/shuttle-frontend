@@ -473,7 +473,7 @@ export class SchoolAdminDriversComponent implements OnInit {
         this.phone = editData?.user_details?.user_phone || '';
         this.address = editData?.user_details?.user_address || '';
         this.license_number = editData.user_details?.license_number || '';
-        this.vehicle_uuid = editData?.user_details?.vehicle?.vehicle_uuid || '';
+        this.vehicle_uuid = editData?.user_details?.vehicle_uuid || '';
 
         this.isModalEditOpen = true;
         this.cdRef.detectChanges();
@@ -558,7 +558,7 @@ export class SchoolAdminDriversComponent implements OnInit {
         this.address = detailData?.user_details?.user_address || '';
         this.license_number = detailData.user_details?.license_number || '';
         this.vehicle_uuid =
-          detailData?.user_details?.vehicle?.vehicle_uuid || '';
+          detailData?.user_details?.vehicle_uuid || '';
 
           
         this.initialAvatar =

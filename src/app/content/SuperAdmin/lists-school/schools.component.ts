@@ -303,6 +303,8 @@ export class SchoolsComponent implements OnInit {
     this.school_contact = '';
     this.school_email = '';
     this.school_description = '';
+    this.school_latitude = null
+    this.school_longitude = null
 
     this.isModalAddOpen = true;
   }
@@ -332,6 +334,7 @@ export class SchoolsComponent implements OnInit {
 
         this.getAllSchool();
         this.isModalAddOpen = false;
+        this.cdRef.detectChanges()
       })
       .catch((error) => {
         const responseMessage =
@@ -409,6 +412,9 @@ export class SchoolsComponent implements OnInit {
         const responseMessage = response.data?.message || 'Success.';
         this.showToast(responseMessage, 3000, Response.Success);
 
+        this.isModalEditOpen = false;
+        this.cdRef.detectChanges();
+        
         this.getAllSchool();
       })
       .catch((error) => {
@@ -416,9 +422,6 @@ export class SchoolsComponent implements OnInit {
           error.response?.data?.message || 'An unexpected error occurred.';
         this.showToast(responseMessage, 3000, Response.Error);
       });
-
-    this.isModalEditOpen = false;
-    this.cdRef.detectChanges();
   }
 
   onDeleteSchool(school_uuid: string) {

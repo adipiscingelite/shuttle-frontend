@@ -134,7 +134,7 @@ export class DriversComponent implements OnInit {
     { headerName: 'First Name', field: 'user_details.user_first_name', sortable: true },
     { headerName: 'Last Name', field: 'user_details.user_last_name', sortable: true },
     { headerName: 'Email', field: 'user_email' },
-    { field: 'user_details.user_phone' },
+    { headerName: 'Driver Phone', field: 'user_details.user_phone' },
     // { field: 'user_address' },
     // { field: 'details.vehicle_id' },
     // { field: 'status' },
