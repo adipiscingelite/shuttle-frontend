@@ -46,8 +46,8 @@ interface Route {
   route_uuid: string;
   // driver: driverDetail;
   // student: studentDetail;
-  driver_uuid: string;
-  driver_name: string;
+  user_uuid: string;
+  user_username: string;
   student_uuid: string;
   student_name: string;
   school: schoolDetail;
@@ -105,9 +105,11 @@ export class RoutesComponent implements OnInit {
   // For data routes
   route_uuid: string = '';
   driver_uuid: string = '';
+  user_uuid: string = '';
+  user_username: string = '';
   driver_name: string = '';
   student_uuid: string = '';
-  student_name: string = '';
+  student_first_name: string = '';
   school_id: string = '';
   route_name: string = '';
   route_description: string = '';
@@ -188,7 +190,7 @@ export class RoutesComponent implements OnInit {
     {
       headerName: 'Driver Name',
       // field: 'driver.user_username',
-      field: 'driver_name',
+      field: 'user_username',
       maxWidth: 250,
       sortable: true,
     },
@@ -436,6 +438,14 @@ export class RoutesComponent implements OnInit {
       .then((response) => {
         console.log('edit', response);
 
+        const editData = response.data.route
+
+        this.route_name = editData.route_name
+        this.route_description = editData.route_description
+        this.user_uuid = editData.user_uuid
+        this.user_username = editData.user_username
+        this.student_uuid = editData.student_uuid
+        this.student_first_name = editData.student_first_name
 
         // Buka modal
         this.isModalEditOpen = true;
@@ -452,6 +462,15 @@ export class RoutesComponent implements OnInit {
           showConfirmButton: false,
         });
       });
+  }
+
+  closeEditModal() {
+    this.isModalEditOpen = false;
+    this.cdRef.detectChanges();
+  }
+
+  updateRoute(){
+
   }
 
   showToast(message: string, duration: number, type: Response) {

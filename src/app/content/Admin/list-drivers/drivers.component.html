@@ -619,20 +619,12 @@
 
         <div class="grid grid-cols-3 items-start gap-x-4 my-3">
           <label for="gender" class="block text-sm font-medium text-gray-700 col-span-1">
-            Gender <app-asterisk></app-asterisk>
+            Gender
           </label>
           <div class="col-span-2">
-            <select id="gender" [(ngModel)]="gender" name="gender"
-              class="bg-gray-50 border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
-              [ngClass]="{'border-red-500': genderModel.touched && genderModel.invalid}" #genderModel="ngModel"
-              disabled>
-              <option value="" disabled selected>N/A</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-            <div *ngIf="genderModel.invalid && genderModel.touched" class="mt-1 text-sm text-pink-600">
-              <app-required-common></app-required-common>
-            </div>
+            <input type="text" id="gender" name="gender" [(ngModel)]="gender"
+              class="capitalize border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+              disabled />
           </div>
         </div>
 

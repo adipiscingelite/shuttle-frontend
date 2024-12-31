@@ -502,7 +502,7 @@ export class StudentsComponent implements OnInit {
 
   updateStudent() {
     const requestData = {
-      student: {
+      // student: {
         student_first_name: this.student_first_name,
         student_last_name: this.student_last_name,
         student_gender: this.student_gender,
@@ -512,18 +512,18 @@ export class StudentsComponent implements OnInit {
           latitude: this.student_pickup_latitude,
           longitude: this.student_pickup_longitude,
         },
-      },
-      parent: {
-        username: this.parent_username,
-        first_name: this.parent_first_name,
-        last_name: this.parent_last_name,
-        gender: this.parent_gender,
-        role: 'parent',
-        email: this.parent_email,
-        password: this.parent_password,
-        phone: this.parent_phone,
-        address: this.parent_address,
-      },
+      // },
+      // parent: {
+      //   username: this.parent_username,
+      //   first_name: this.parent_first_name,
+      //   last_name: this.parent_last_name,
+      //   gender: this.parent_gender,
+      //   role: 'parent',
+      //   email: this.parent_email,
+      //   password: this.parent_password,
+      //   phone: this.parent_phone,
+      //   address: this.parent_address,
+      // },
     };
 
     console.log('update', requestData);

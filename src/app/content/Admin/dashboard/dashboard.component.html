@@ -24,7 +24,7 @@
           </path>
         </svg>
       </div>
-      <h1 class="text-[2.5rem] font-bold "> totalAdmin </h1>
+      <h1 class="text-[2.5rem] font-bold ">{{totalStudent}}</h1>
       <p class="truncate">Total Student</p>
     </a>
     <a routerLink="/admin/vehicles"
@@ -35,7 +35,7 @@
           <path d="M9 6h2v2H9V6Zm4 0h2v2h-2V6Zm-4 4h2v2H9v-2Zm4 0h2v2h-2v-2Z"></path>
         </svg>
       </div>
-      <h1 class="text-[2.5rem] font-bold "> totalSchool </h1>
+      <h1 class="text-[2.5rem] font-bold ">{{totalDriver}}</h1>
       <p class="truncate">Total Driver</p>
     </a>
     <a routerLink="/admin/drivers"
@@ -50,14 +50,16 @@
           <path d="M15 14h3"></path>
         </svg>
       </div>
-      <h1 class="text-[2.5rem] font-bold "> totalDriver </h1>
+      <h1 class="text-[2.5rem] font-bold ">{{totalVehicle}}</h1>
       <p class="truncate">Total Vehicle</p>
     </a>
     <a routerLink="/admin/routes"
       class="w-auto aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
       <div>
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="m3.75 10.5 1.77-4.132c.29-.673 1.024-1.118 1.845-1.118h9.27c.821 0 1.556.445 1.844 1.118L20.25 10.5"></path>
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+          stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="m3.75 10.5 1.77-4.132c.29-.673 1.024-1.118 1.845-1.118h9.27c.821 0 1.556.445 1.844 1.118L20.25 10.5">
+          </path>
           <path d="M20.25 10.5H3.75v6.75h16.5V10.5Z"></path>
           <path d="M5.25 17.25v1.5h-1.5v-1.5"></path>
           <path d="M20.25 17.25v1.5h-1.5v-1.5"></path>
@@ -65,7 +67,7 @@
           <path d="M17.25 14.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"></path>
         </svg>
       </div>
-      <h1 class="text-[2.5rem] font-bold "> totalVehicle </h1>
+      <h1 class="text-[2.5rem] font-bold ">{{totalRoute}}</h1>
       <p class="truncate">Total Route</p>
     </a>
   </div>
@@ -108,7 +110,8 @@
         <a class="ml-auto px-4 py-1 border bg-gray-50 rounded-lg shadow-md" href="#">Lihat Detail</a>
       </div>
     </div>
-    <div class="hover:select-all">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis, numquam nesciunt maiores reprehenderit nam
+    <div class="hover:select-all">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis, numquam nesciunt
+      maiores reprehenderit nam
       tenetur quas totam a repellendus est eos minima ab sunt deleniti. Tenetur quod aliquam illum quia, itaque amet
       sunt blanditiis expedita assumenda voluptates quaerat adipisci eum rem eius facilis ducimus totam. Iusto
       voluptatem eius, deserunt voluptatibus natus non et nam maiores saepe enim dignissimos alias dolorum laboriosam,

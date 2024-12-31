@@ -481,11 +481,10 @@
             <div>
               <label for="student_pickup_latitude" class="block text-sm text-gray-700">Latitude
                 <app-asterisk></app-asterisk></label>
-              <input type="text" id="student_pickup_latitude" name="student_pickup_latitude"
+              <input type="number" id="student_pickup_latitude" name="student_pickup_latitude"
                 placeholder="e.g. -7.782933863682392" [(ngModel)]="student_pickup_latitude"
-                class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
-                [ngClass]="{'border-red-500': latitudeModel.touched && latitudeModel.invalid}" #latitudeModel="ngModel"
-                required />
+                class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
+                #latitudeModel="ngModel" required />
               <div *ngIf="latitudeModel.invalid && latitudeModel.touched" class="mt-1 text-sm text-pink-600">
                 <app-required-common></app-required-common>
               </div>
@@ -494,10 +493,9 @@
             <div>
               <label for="student_pickup_longitude" class="block text-sm text-gray-700">Longiude
                 <app-asterisk></app-asterisk></label>
-              <input type="text" id="student_pickup_longitude" name="student_pickup_longitude"
+              <input type="number" id="student_pickup_longitude" name="student_pickup_longitude"
                 placeholder="e.g. 110.3670707397556" [(ngModel)]="student_pickup_longitude"
-                class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
-                [ngClass]="{'border-red-500': longitudeModel.touched && longitudeModel.invalid}"
+                class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
                 #longitudeModel="ngModel" required />
               <div *ngIf="longitudeModel.invalid && longitudeModel.touched" class="mt-1 text-sm text-pink-600">
                 <app-required-common></app-required-common>
