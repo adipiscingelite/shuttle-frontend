@@ -1,0 +1,7 @@
+{
+  "/api": {
+    "target": "https://8d77-180-246-127-167.ngrok-free.app",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

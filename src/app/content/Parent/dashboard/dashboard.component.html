@@ -1,104 +1,82 @@
 <div>
-
-  <h1 class="my-6 text-xl font-semibold">
-    Hi, Orang Tua
-  </h1>
+  <app-hello-and-date></app-hello-and-date>
 
   <hr>
 
-  <div class="my-4">
-    <h1 class="text-md text-neutral-700">Putra/Putri Anda: </h1>
-    <div *ngFor="let child of rowListChildern" class="my-5 px-2 py-1 border rounded-lg bg-gray-50 shadow-lg  ">
-      <div
-        class="flex items-center w-full h-full px-5 py-2 gap-8 my-4 bg-gray-100 rounded-md shadow hover:shadow-md hover:scale-[101%]">
-        <div class="h-20 md:h-40 aspect-square">
-          <!-- <img class="h-full aspect-square rounded-full object-contain"
-          src="https://i.pinimg.com/474x/cc/fa/3f/ccfa3fec766c5f333052c68d52223827.jpg" alt=""> -->
-          <div
-            class="h-full aspect-square rounded-full flex items-center justify-center text-3xl font-semibold text-white bg-blue-500">
-            {{ child.first_name.charAt(0).toUpperCase() }}{{ child.last_name.charAt(0).toUpperCase() }}
-          </div>
-        </div>
-
-        <div class="h-full w-[1px] border border-gray-400 rounded-full"></div>
-
-        <div class="flex flex-col h-full w-full px-5 justify-center">
-          <div class="text-neutral-700">
-            <p class="text-sm">{{child.school_name}}</p>
-
-            <h1 class="text-lg font-medium capitalize">{{child.first_name}} {{child.last_name}}</h1>
-            <p class="text-sm text-neutral-600">Unnamed Road, Lorino, Chukotka Autonomous Okrug, Rusia, 689315</p>
+  <div class="grid xl:grid-cols-2 gap-y-5 lg:gap-y-1 lg:gap-x-9 my-5">
+    <div class="px-5">
+      <div class="flex items-center justify-between">
+        <h1 class="text-lg font-medium">Student Location</h1>
+        <button class="text-blue-500 font-medium hover:underline">
+          <a routerLink="/parent/tracking">See detail</a>
+        </button>
+      </div>
+      <p class="text-sm text-neutral-500">Get live updates on your child's location—click 'See detail' to explore</p>
+      <div class="w-full min-h-48 h-auto mt-2 border rounded-xl shadow-md">
+        <div id="map" class="relative">
+          <div *ngIf="isLoading"
+            class="absolute top-0 left-0 w-full h-full flex items-center justify-center rounded-lg bg-white z-[9999]">
+            <div class="ui-loader rounded-lg loader-blk">
+              <svg viewBox="22 22 44 44" class="multiColor-loader">
+                <circle cx="44" cy="44" r="20.2" fill="none" stroke-width="3.6"
+                  class="loader-circle loader-circle-animation">
+                </circle>
+              </svg>
+            </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="md:flex w-full h-auto gap-x-8">
-        <div class="w-full md:w-1/2 flex flex-col overflow-x-scroll ">
-          <div class="flex items-baseline justify-between">
-            <h1 class="text-md md:text-xl font-semibold my-4 px-4 py-1 rounded-full bg-gray-100">Lokasi Putra Anda</h1>
-            <h1 class="text-md font-semibold my-4">{{currentDate}}</h1>
-          </div>
-          <div class=" overflow-x-scroll my-auto px-4">
-            <ol class="flex items-center w-full text-xs text-gray-900 font-medium sm:text-base">
-              <li
-                class="flex w-full relative text-indigo-600  after:content-['']  after:w-full after:h-0.5  after:bg-indigo-600 after:inline-block after:absolute lg:after:top-5 after:top-3 after:left-4">
-                <div class="block whitespace-nowrap z-10">
-                  <span
-                    class="w-6 h-6 bg-indigo-600 border-2 border-transparent rounded-full flex justify-center items-center mx-auto mb-3 text-sm text-white lg:w-10 lg:h-10">✅</span>
-                  Di Rumah
-                </div>
-              </li>
-              <li
-                class="flex w-full relative text-gray-900  after:content-['']  after:w-full after:h-0.5  after:bg-gray-200 after:inline-block after:absolute lg:after:top-5 after:top-3 after:left-4">
-                <div class="block whitespace-nowrap z-10">
-                  <span
-                    class="w-6 h-6 bg-indigo-50 border-2 border-indigo-600 rounded-full flex justify-center items-center mx-auto mb-3 text-sm text-indigo-600 lg:w-10 lg:h-10">2</span>
-                  Perjalanan ke Sekolah
-                </div>
-              </li>
-              <li
-                class="flex w-full relative text-gray-900  after:content-['']  after:w-full after:h-0.5  after:bg-gray-200 after:inline-block after:absolute lg:after:top-5  after:top-3 after:left-4">
-                <div class="block whitespace-nowrap z-10">
-                  <span
-                    class="w-6 h-6 bg-gray-50 border-2 border-gray-200 rounded-full flex justify-center items-center mx-auto mb-3 text-sm  lg:w-10 lg:h-10">3</span>
-                  Sekolah
-                </div>
-              </li>
-              <li
-                class="flex w-full relative text-gray-900  after:content-['']  after:w-full after:h-0.5  after:bg-gray-200 after:inline-block after:absolute lg:after:top-5 after:top-3 after:left-4">
-                <div class="block whitespace-nowrap z-10">
-                  <span
-                    class="w-6 h-6 bg-gray-50 border-2 border-gray-200 rounded-full flex justify-center items-center mx-auto mb-3 text-sm  lg:w-10 lg:h-10">4</span>
-                  Perjalanan ke Rumah
-                </div>
-              </li>
-              <li class="flex w-full relative text-gray-900  ">
-                <div class="block whitespace-nowrap z-10">
-                  <span
-                    class="w-6 h-6 bg-gray-50 border-2 border-gray-200 rounded-full flex justify-center items-center mx-auto mb-3 text-sm  lg:w-10 lg:h-10">5</span>
-                  Di Rumah
-                </div>
-              </li>
-            </ol>
-          </div>
-        </div>
 
-        <div class="md:w-1/2">
-          <h1 class="text-xl font-semibold my-4 px-4 py-1 rounded-full bg-gray-100">Lokasi Driver</h1>
-          <div class=" flex items-center justify-center"><iframe
-              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d14190.199590289012!2d110.36541891003124!3d-7.773315008154526!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sid!2sid!4v1732528663635!5m2!1sid!2sid"
-              width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"></iframe></div>
-        </div>
+    <div class="px-5">
+      <div class="flex items-center justify-between">
+        <h1 class="text-lg font-medium">Attendance Recap</h1>
+        <button class="text-blue-500 font-medium hover:underline">
+          <a routerLink="/parent/attendance">See all</a>
+        </button>
+      </div>
+      <p class="text-sm text-neutral-500">Recent Attendance Overview</p>
+      <div class="w-full min-h-48 mt-2 p-1 md:p-6 border rounded-xl shadow-md">
+        <table class="w-full h-full table-fixed text-sm md:text-base">
+          <thead>
+            <tr class="">
+              <th class="px-4 py-2 text-left">#</th>
+              <th class="px-4 py-2">First Name</th>
+              <th class="px-4 py-2">Date</th>
+              <th class="px-4 py-2">Status</th>
+            </tr>
+          </thead>
+          <tbody class="text-center">
+            <tr>
+              <td class="px-4 py-2 text-left">1</td>
+              <td class="px-4 py-2">John Doe</td>
+              <td class="px-4 py-2">22-12-2024</td>
+              <td class="px-4 py-2">Active</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2 text-left">2</td>
+              <td class="px-4 py-2">John Doe</td>
+              <td class="px-4 py-2">22-12-2024</td>
+              <td class="px-4 py-2">Active</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2 text-left">3</td>
+              <td class="px-4 py-2">John Doe</td>
+              <td class="px-4 py-2">22-12-2024</td>
+              <td class="px-4 py-2">Active</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 </div>
 
 
-<div *ngIf="isModalParentForCheckTheChildDetail"
+<!-- <div *ngIf="isModalParentForCheckTheChildDetail"
   class="flex items-center justify-center bg-gray-900 h-screen w-screen absolute top-0 left-0 opacity-40 z-50">
   <div class="bg-white w-1/2 h-1/2 opacity-100">
 
   </div>
-</div>
+</div> -->

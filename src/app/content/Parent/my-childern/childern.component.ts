@@ -1,18 +1,29 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ToastService } from '@core/services/toast/toast.service';
 import { AsteriskComponent } from '@shared/components/asterisk/asterisk.component';
 import { RequiredCommonComponent } from '@shared/components/required-common/required-common.component';
 import axios from 'axios';
 import { CookieService } from 'ngx-cookie-service';
+import { Response } from '@core/interfaces';
+import { modalScaleAnimation } from '@shared/utils/modal.animation';
+import { toastInOutAnimation } from '@shared/utils/toast.animation';
 interface Childern {
   student_uuid: string;
-  first_name: string;
-  last_name: string;
-  grade: string;
-  gender: string;
+  student_first_name: string;
+  student_last_name: string;
+  student_grade: string;
+  student_gender: string;
+  student_address: string;
+  student_picup_point: StudentPickupPoint;
   school_uuid: string;
   school_name: string;
+}
+
+interface StudentPickupPoint {
+  latitude: string;
+  longitude: string;
 }
 @Component({
   selector: 'app-childern',
@@ -26,17 +37,22 @@ interface Childern {
   ],
   templateUrl: './childern.component.html',
   styleUrl: './childern.component.css',
+  animations: [toastInOutAnimation, modalScaleAnimation],
 })
 export class ChildernComponent implements OnInit {
   token: string | null = '';
 
   student_uuid: string = '';
-  first_name: string = '';
-  last_name: string = '';
-  grade: string = '';
-  gender: string = '';
+  student_first_name: string = '';
+  student_last_name: string = '';
+  student_grade: string = '';
+  student_gender: string = '';
+  student_address: string = '';
   school_uuid: string = '';
   school_name: string = '';
+
+  latitude: string = ''
+  longitude: string = ''
 
   initialAvatar: string = '';
 
@@ -47,6 +63,7 @@ export class ChildernComponent implements OnInit {
   constructor(
     private cookieService: CookieService,
     private cdRef: ChangeDetectorRef,
+    public toastService: ToastService,
     @Inject('apiUrl') private apiUrl: string,
   ) {
     this.apiUrl = apiUrl;
@@ -66,12 +83,13 @@ export class ChildernComponent implements OnInit {
       })
       .then((response) => {
         this.rowListChildern = response.data.data;
+        console.log('edit my childern', response);
 
-        this.rowListChildern.forEach((child) => {
-          const initialAvatar =
-            child.first_name.charAt(0).toUpperCase() +
-            child.last_name.charAt(0).toUpperCase();
-        });
+        // this.rowListChildern.forEach((child) => {
+        //   const initialAvatar =
+        //     child.student_first_name.charAt(0).toUpperCase() +
+        //     child.student_last_name.charAt(0).toUpperCase();
+        // });
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -92,35 +110,81 @@ export class ChildernComponent implements OnInit {
         console.log('pppp', editData);
 
         this.student_uuid = editData.student_uuid;
-        this.first_name = editData.first_name;
-        this.last_name = editData.last_name;
-        this.grade = editData.grade;
-        this.gender = editData.gender;
+        this.student_first_name = editData.student_first_name;
+        this.student_last_name = editData.student_last_name;
+        this.student_grade = editData.student_grade;
+        this.student_gender = editData.student_gender;
+        this.student_address = editData.student_address;
         this.school_uuid = editData.school_uuid;
         this.school_name = editData.school_name;
 
-        this.initialAvatar =
-          this.first_name.charAt(0).toUpperCase() +
-          this.last_name.charAt(0).toUpperCase();
-        console.log('Assigned Values:', {
-          first_name: this.first_name,
-          last_name: this.last_name,
-          initialAvatar: this.initialAvatar,
-        });
+        const studentPickupPoint = JSON.parse(editData.student_pickup_point);
+
+        this.latitude = studentPickupPoint.latitude
+        this.longitude = studentPickupPoint.longitude
 
         this.isModalEditOpen = true;
         this.cdRef.detectChanges();
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
-        // const responseMessage =
-        //   error.response?.data?.message || 'An unexpected error occurred.';
-        // this.showToast(responseMessage, 3000, Response.Error);
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
+      });
+  }
+
+  updateChildern() {
+    const data = {
+      student_uuid: this.student_uuid,
+      student_first_name: this.student_first_name,
+      student_last_name: this.student_last_name,
+      student_grade: this.student_grade,
+      student_gender: this.student_gender,
+      student_address: this.student_address,
+      student_pickup_point : {
+        latitude: this.latitude,
+        longitude: this.longitude
+      },
+      school_uuid: this.school_uuid,
+      school_name: this.school_name,
+    };
+
+    axios
+      .put(
+        `${this.apiUrl}/api/parent/my/childern/update/${this.student_uuid}`,
+        data,
+        {
+          headers: {
+            Authorization: `${this.token}`,
+          },
+        },
+      )
+      .then((response) => {
+        const responseMessage = response.data?.message || 'Success.';
+        this.showToast(responseMessage, 3000, Response.Success);
+
+        this.getAllMyChildern();
+        this.isModalEditOpen = false;
+        this.cdRef.detectChanges();
+      })
+      .catch((error) => {
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
   }
 
   closeEditModal() {
     this.isModalEditOpen = false;
-    // this.cdRef.detectChanges();
+    this.cdRef.detectChanges();
+  }
+
+  showToast(message: string, duration: number, type: Response) {
+    this.toastService.add(message, duration, type);
+  }
+
+  removeToast(index: number) {
+    this.toastService.remove(index);
   }
 }

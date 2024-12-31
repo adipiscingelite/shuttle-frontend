@@ -300,6 +300,9 @@ export class DriversComponent implements OnInit {
         headers: {
           Authorization: `${this.cookieService.get('accessToken')}`,
         },
+        params: {
+          limit: 100000000,
+        },
       })
       .then((response) => {
         this.rowListAllVehicle = response.data.data.data;
@@ -319,6 +322,13 @@ export class DriversComponent implements OnInit {
       .get(`${this.apiUrl}/api/superadmin/user/driver/all`, {
         headers: {
           Authorization: `${this.cookieService.get('accessToken')}`,
+        },
+        params: {
+          page: this.paginationPage,
+          limit: this.paginationItemsLimit,
+ 
+          sort_by: this.sortBy,
+          direction: this.sortDirection,
         },
       })
       .then((response) => {
@@ -358,7 +368,7 @@ export class DriversComponent implements OnInit {
       address: this.user_address,
       details: {
         license_number: this.license_number,
-        vehicle_id: this.vehicle_uuid,
+        vehicle_uuid: this.vehicle_uuid,
       },
     };
 
@@ -541,7 +551,7 @@ export class DriversComponent implements OnInit {
 
   performDeleteDriver(id: string) {
     axios
-      .delete(`${this.apiUrl}/api/superadmin/user/delete/${id}`, {
+      .delete(`${this.apiUrl}/api/superadmin/user/driver/delete/${id}`, {
         headers: {
           Authorization: `${this.token}`,
         },

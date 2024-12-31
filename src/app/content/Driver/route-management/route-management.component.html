@@ -1,0 +1,161 @@
+<div>
+
+  <div id="map" class="relative my-5 border shadow">
+    <div *ngIf="isLoading"
+      class="absolute top-0 left-0 w-full h-full flex items-center justify-center rounded-lg bg-white z-[9999]">
+      <div class="ui-loader rounded-lg loader-blk">
+        <svg viewBox="22 22 44 44" class="multiColor-loader">
+          <circle cx="44" cy="44" r="20.2" fill="none" stroke-width="3.6" class="loader-circle loader-circle-animation">
+          </circle>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <p class="text-xs text-red-500 py-1 ">*Refresh if the map doesn't appear.</p>
+
+  <br>
+  <div class="flex items-center justify-between mb-1">
+    <div class="text-xl font-semibold">List of Students who must be picked up</div>
+    <div>Sort by <span class="bg-gray-700 text-white px-2 py-1  rounded-full">nearest</span></div>
+  </div>
+
+  <hr>
+  <br>
+  <div class="flex items-center justify-between gap-x-6 mt-1 mb-4 px-5 py-3 rounded-lg bg-gray-50 shadow"
+    *ngFor="let siswa of rowContohLokasiAnak">
+    <div class="w-full">
+      <div class="flex items-center justify-between my-2">
+        <div>
+          <!-- Nama Siswa -->
+          <h1 class="text-2xl font-semibold text-gray-800">
+            {{ siswa.student_first_name }} {{ siswa.student_last_name }}
+          </h1>
+
+          <!-- Nama Sekolah -->
+          <div class="flex items-center gap-x-1 text-sm text-gray-500 mt-1 italic">
+            <div>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="red">
+                <path d="M0 0h24v24H0z" fill="none" />
+                <path
+                  d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+              </svg>
+            </div>
+            <p>{{ siswa.school_name }}</p>
+          </div>
+
+          <!-- Alamat -->
+          <p class="text-sm text-gray-600 mt-1">
+            {{ siswa.student_address }}
+          </p>
+
+          <!-- Status dan Distance -->
+          <div class="mt-3 space-y-1">
+            <p class="text-sm">
+              <span class="font-medium text-gray-700">Status: </span>
+              <span class="text-gray-600">
+                <!-- Conditional status display -->
+                <ng-container *ngIf="siswa.shuttle_status.String === 'waiting_to_be_taken_to_school'">
+                  <span class="text-yellow-500">Waiting to be taken to school</span>
+                </ng-container>
+
+                <ng-container *ngIf="siswa.shuttle_status.String === 'at_school'">
+                  <span class="text-green-500">At school</span>
+                </ng-container>
+
+                <ng-container *ngIf="siswa.shuttle_status.String === 'waiting_to_be_taken_to_home'">
+                  <span class="text-blue-500">Waiting to be taken home</span>
+                </ng-container>
+
+                <ng-container *ngIf="siswa.shuttle_status.String === 'home'">
+                  <span class="text-gray-500">At home</span>
+                </ng-container>
+
+                <!-- Default message for unknown status -->
+                <ng-container *ngIf="siswa.shuttle_status.String === null || !siswa.shuttle_status.String">
+                  <span class="text-gray-400">Status unavailable</span>
+                </ng-container>
+
+              </span>
+            </p>
+            <p class="text-sm">
+              <span class="font-medium text-gray-700">Distance:</span>
+              <span class="text-gray-600">
+                {{ siswa.distance != null ? siswa.distance + ' KM from you' : 'Calculating distance...' }}
+              </span>
+            </p>
+          </div>
+        </div>
+
+
+        <button (click)="jemput(siswa.student_uuid)" class="px-4 py-1 rounded-full bg-black text-white"
+          *ngIf="siswa.shuttle_status.String === ''">
+          Start Pickup
+        </button>
+        <button (click)="update(siswa.shuttle_uuid.String, 'going_to_school')"
+          class="px-4 py-1 rounded-full bg-black text-white"
+          *ngIf="siswa.shuttle_status.String === 'waiting_to_be_taken_to_school'">
+          Going to School
+        </button>
+        <button (click)="update(siswa.shuttle_uuid.String, 'at_school')"
+          class="px-4 py-1 rounded-full bg-black text-white" *ngIf="siswa.shuttle_status.String === 'going_to_school'">
+          Arrived to School
+        </button>
+        <button (click)="update(siswa.shuttle_uuid.String, 'waiting_to_be_taken_to_home')"
+          class="px-4 py-1 rounded-full bg-black text-white" *ngIf="siswa.shuttle_status.String === 'at_school'">
+          Start Pickup Home
+        </button>
+        <button (click)="update(siswa.shuttle_uuid.String, 'going_to_home')"
+          class="px-4 py-1 rounded-full bg-black text-white"
+          *ngIf="siswa.shuttle_status.String === 'waiting_to_be_taken_to_home'">
+          Going Home
+        </button>
+        <button (click)="update(siswa.shuttle_uuid.String, 'home')" class="px-4 py-1 rounded-full bg-black text-white"
+          *ngIf="siswa.shuttle_status.String === 'going_to_home'">
+          Arrived Home
+        </button>
+      </div>
+
+      <hr>
+
+      <!-- Details -->
+      <details class="w-full group mt-4">
+        <summary
+          class="flex justify-between items-center font-medium cursor-pointer list-none text-blue-600 hover:underline select-none">
+          <span>Show Details</span>
+          <span class="transition group-open:rotate-180">
+            <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor"
+              stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </span>
+        </summary>
+        <div class="text-neutral-600 mt-3 group-open:animate-fadeIn  px-2">
+          <!-- Menampilkan detail yang relevan tanpa repetisi -->
+          <p class="text-sm">
+            <span class="font-medium text-gray-700">Shuttle ID : </span>
+            <span class="text-gray-600">{{ siswa.shuttle_uuid.String || 'N/A' }}</span>
+          </p>
+          <p class="text-sm mb-2">
+            <span class="font-medium text-gray-700">Pickup Point : </span>
+            <a href="https://www.google.com/maps?q={{ siswa.student_pickup_point.latitude }},{{ siswa.student_pickup_point.longitude }}"
+              target="_blank" class="text-blue-400 underline cursor-pointer flex items-center">
+              {{ siswa.student_pickup_point.latitude }}, {{ siswa.student_pickup_point.longitude }}
+            </a>
+          </p>
+
+          <!-- School Point with Icon -->
+          <p class="text-sm mb-2">
+            <span class="font-medium text-gray-700">School Point : </span>
+            <a href="https://www.google.com/maps?q={{ siswa.school_point.latitude }}, {{ siswa.school_point.longitude }}"
+              target="_blank" class="text-blue-400 underline cursor-pointer flex items-center">
+              {{ siswa.school_point.latitude }}, {{ siswa.school_point.longitude }}
+            </a>
+          </p>
+        </div>
+      </details>
+    </div>
+  </div>
+
+
+</div>
+<!-- </div> -->

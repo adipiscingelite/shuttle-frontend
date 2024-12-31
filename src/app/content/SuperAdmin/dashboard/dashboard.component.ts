@@ -43,7 +43,7 @@ export class DashboardSuperAdminComponent implements OnInit {
         },
       })
       .then((response) => {
-        this.totalAdmin = response.data.length || 0;
+        this.totalAdmin = response.data.data.data.length || 0;
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -59,7 +59,7 @@ export class DashboardSuperAdminComponent implements OnInit {
         },
       })
       .then((response) => {
-        this.totalSchool = response.data.length || 0;
+        this.totalSchool = response.data.data.data.length || 0;
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -75,7 +75,7 @@ export class DashboardSuperAdminComponent implements OnInit {
         },
       })
       .then((response) => {
-        this.totalDriver = response.data.length || 0;
+        this.totalDriver = response.data.data.data.length || 0;
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -91,7 +91,7 @@ export class DashboardSuperAdminComponent implements OnInit {
         },
       })
       .then((response) => {
-        this.totalVehicle = response.data.length || 0;
+        this.totalVehicle = response.data.data.data.length || 0;
       })
       .catch((error) => {
         console.error('Error fetching data:', error);

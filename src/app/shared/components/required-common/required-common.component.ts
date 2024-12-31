@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-required-common',
   standalone: true,
   imports: [],
-  template: `<div class="text-xs text-red-500 mt-[1px]">Kolom ini wajib diisi.</div>`,
+  template: `<div class="text-xs text-red-500 mt-[1px]">This column is mandatory.</div>`,
 })
 export class RequiredCommonComponent {
 

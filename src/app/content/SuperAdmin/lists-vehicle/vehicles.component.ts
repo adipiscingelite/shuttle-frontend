@@ -56,7 +56,7 @@ export class VehiclesComponent implements OnInit {
   vehicle_number: string = '';
   vehicle_type: string = '';
   vehicle_color: string = '';
-  vehicle_seats: number = 0;
+  vehicle_seats: number | null = null;
   vehicle_status: string = '';
 
   school_uuid: string = '';
@@ -111,14 +111,14 @@ export class VehiclesComponent implements OnInit {
       maxWidth: 70,
       pinned: 'left',
     },
-    { field: 'vehicle_name', sortable: true },
-    { field: 'school_name', sortable: true },
-    { field: 'driver_name', sortable: true },
-    { field: 'vehicle_number', sortable: true },
-    { field: 'vehicle_type', sortable: true },
-    { field: 'vehicle_color', sortable: true },
-    { field: 'vehicle_seats', sortable: true },
-    { field: 'vehicle_status' },
+    { headerName: 'Vehicle Name', field: 'vehicle_name', sortable: true },
+    { headerName: 'School Name', field: 'school_name', sortable: true },
+    { headerName: 'Driver Name ', field: 'driver_name', sortable: true },
+    { headerName: 'Vehicle Number', field: 'vehicle_number', sortable: true },
+    { headerName: 'Vehicle Type', field: 'vehicle_type', sortable: true },
+    { headerName: 'Vehicle Color', field: 'vehicle_color', sortable: true },
+    { headerName: 'Vehicle Seats', field: 'vehicle_seats', sortable: true },
+    { headerName: 'Vehicle Status', field: 'vehicle_status' },
     {
       headerName: 'Actions',
       sortable: false,

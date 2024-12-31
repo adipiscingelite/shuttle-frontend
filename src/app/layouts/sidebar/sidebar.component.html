@@ -10,8 +10,8 @@
       <div class="sticky top-0 left-0 space-y-4 bg-gray-100 pb-2 border-b-2 border-neutral-500">
         <div class="w-full h-auto flex items-center space-x-2 rounded-lg shadow-md bg-white px-2 py-3">
           <div class="w-1/4 aspect-square rounded-md">
-            <img class="w-full h-full"
-              src="https://i.pinimg.com/474x/19/8b/17/198b1789c84abfa466e7dd388db5c16d.jpg" alt="">
+            <img class="w-full h-full" src="https://i.pinimg.com/474x/19/8b/17/198b1789c84abfa466e7dd388db5c16d.jpg"
+              alt="">
           </div>
           <div class="w-3/4">
             <p class="text-sm text-gray-600">{{role}}</p>
@@ -21,10 +21,13 @@
 
         <div class="w-full h-auto flex items-center gap-x-4 rounded-lg shadow-md bg-white px-4 py-3 font-medium">
           <div>
-            <img src="https://cdn.iconscout.com/icon/premium/png-512-thumb/indonesia-51-657957.png?f=webp&w=512"
+            <!-- <img src="https://cdn.iconscout.com/icon/premium/png-512-thumb/indonesia-51-657957.png?f=webp&w=512"
+              class="w-5 aspect-square" alt=""> -->
+            <img src="https://cdn.iconscout.com/icon/premium/png-512-thumb/united-kingdom-5-658092.png?f=webp&w=512"
               class="w-5 aspect-square" alt="">
           </div>
-          <p>Bahasa Indonesia</p>
+          <!-- <p>Bahasa Indonesia</p> -->
+          <p>English</p>
         </div>
 
         <form class="form relative">
@@ -105,8 +108,9 @@
 
 
       <div class="w-full h-auto flex justify-center text-xs text-neutral-700 bg-gray-100">
-        &commat; 2024 Copyright
+        Woila App v1.0
       </div>
+
     </div>
   </div>
 </aside>
@@ -120,7 +124,9 @@
     <div class="text-center py-5">
       <div class="w-fit flex justify-self-center p-2 rounded-full bg-red-100 text-red-500">
         <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10Zm0-2a8 8 0 1 0 0-16.001A8 8 0 0 0 12 20Zm-1-5h2v2h-2v-2Zm2-1.645V14h-2v-1.5a1 1 0 0 1 1-1 1.5 1.5 0 1 0-1.471-1.794l-1.962-.393A3.5 3.5 0 1 1 13 13.355Z"></path>
+          <path
+            d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10Zm0-2a8 8 0 1 0 0-16.001A8 8 0 0 0 12 20Zm-1-5h2v2h-2v-2Zm2-1.645V14h-2v-1.5a1 1 0 0 1 1-1 1.5 1.5 0 1 0-1.471-1.794l-1.962-.393A3.5 3.5 0 1 1 13 13.355Z">
+          </path>
         </svg>
       </div>
       <h1 class="my-1 text-2xl font-medium">
@@ -132,7 +138,8 @@
       <div class="grid grid-cols-2 gap-x-3 mt-10 font-medium capitalize">
         <button (click)="closeDeleteModal()"
           class="px-4 py-2 rounded bg-neutral-200 hover:bg-neutral-300 text-neutral-800 shadow hover:shadow-md">Batal</button>
-        <button (click)="performLogout()" class="px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white shadow hover:shadow-md">Logout</button>
+        <button (click)="performLogout()"
+          class="px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white shadow hover:shadow-md">Logout</button>
       </div>
     </div>
   </div>

@@ -61,6 +61,9 @@ export class SchoolsComponent implements OnInit {
   school_email: string = '';
   school_description: string = '';
 
+  school_latitude: number | null = null;
+  school_longitude: number | null = null;
+
   isLoading: boolean = false;
   isMobile = window.innerWidth <= 768;
 
@@ -110,10 +113,10 @@ export class SchoolsComponent implements OnInit {
       maxWidth: 70,
       pinned: 'left',
     },
-    { headerName: 'Nama Sekolah', field: 'school_name', sortable: true },
-    { headerName: 'Alamat Sekolah', field: 'school_address' },
-    { headerName: 'Kontak Sekolah', field: 'school_contact' },
-    { headerName: 'Email Sekolah', field: 'school_email' },
+    { headerName: 'School Name', field: 'school_name', sortable: true },
+    { headerName: 'School Address', field: 'school_address' },
+    { headerName: 'School Phone', field: 'school_contact' },
+    { headerName: 'School Email', field: 'school_email' },
     // { field: 'school_description' },
     {
       headerName: 'Actions',
@@ -281,6 +284,8 @@ export class SchoolsComponent implements OnInit {
         );
         this.showing = response.data.data.meta.showing;
 
+        console.log(response);
+
         this.isLoading = false;
 
         this.cdRef.detectChanges();
@@ -309,6 +314,10 @@ export class SchoolsComponent implements OnInit {
       contact: this.school_contact,
       email: this.school_email,
       description: this.school_description,
+      point: {
+        latitude: this.school_latitude,
+        longitude: this.school_longitude,
+      }
     };
 
     axios
@@ -353,6 +362,11 @@ export class SchoolsComponent implements OnInit {
         this.school_email = editData.school_email;
         this.school_description = editData.school_description;
 
+        const school_point = JSON.parse(editData.school_point);
+
+        this.school_latitude = school_point.latitude
+        this.school_longitude = school_point.longitude
+
         this.isModalEditOpen = true;
         this.cdRef.detectChanges();
       })
@@ -375,6 +389,10 @@ export class SchoolsComponent implements OnInit {
       contact: this.school_contact,
       email: this.school_email,
       description: this.school_description,
+      point: {
+        latitude: this.school_latitude,
+        longitude: this.school_longitude,
+      },
     };
 
     axios

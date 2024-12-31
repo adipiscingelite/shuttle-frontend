@@ -424,7 +424,7 @@ export class SuperadminsComponent implements OnInit {
       })
       .then((response) => {
         const editData = response.data.data;
-        console.log('edit data', editData);
+        console.log('edit data', response);
 
         this.user_uuid = editData.user_uuid;
         this.user_username = editData.user_username;

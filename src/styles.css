@@ -1,6 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
-@import url('https://unpkg.com/ag-grid-community@28.2.0/styles/ag-grid.css');
-@import url('https://unpkg.com/ag-grid-community@28.2.0/styles/ag-theme-alpine.css');
+@import url("https://unpkg.com/ag-grid-community@28.2.0/styles/ag-grid.css");
+@import url("https://unpkg.com/ag-grid-community@28.2.0/styles/ag-theme-alpine.css");
 
 @tailwind base;
 @tailwind components;
@@ -21,8 +21,22 @@
   border: none;
 }
 
-.ag-theme-quartz .ag-paging-row-summary-panel  {
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  appearance: textfield; /* Firefox */
+}
+
+.ag-theme-quartz .ag-paging-row-summary-panel {
   display: none;
+}
+
+* {
+  scroll-behavior: smooth; /* Opsional: untuk transisi scroll lebih halus */
 }
 /* .ag-paging-panel {
   display: block !important;

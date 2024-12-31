@@ -1,0 +1,41 @@
+<div>
+  <h1 class="my-6 text-xl font-semibold uppercase">
+    Attendance Recap List
+  </h1>
+
+  <div class="flex items-center w-full my-4 gap-x-1">
+    <form class="form relative">
+      <input
+        class="input w-full md:w-72 rounded-full pr-8 px-4 py-2 text-sm bg-gray-100 border-2 border-transparent focus:outline-none focus:border-blue-500 placeholder-gray-500 transition-all duration-300 shadow-md"
+        placeholder="Search Item" required="" type="text" id="search-item" name="searchText" />
+      <button type="reset" class="absolute right-3 -translate-y-1/2 top-1/2 p-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-700" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </form>
+
+  </div>
+  <div>
+    <div class="flex items-center gap-x-3">
+      <div class="w-fit bg-gray-50 px-4 py-2 text-sm font-medium border rounded-lg shadow-md">
+        {{showing}}
+      </div>
+
+      <!-- <label for="itemsPerPage" class="ml-4">Limit: </label> -->
+      <select id="itemsPerPage" class="px-2 py-1 border rounded-lg" (change)="changeMaxItemsPerPage($event)">
+        <option [value]="10" [selected]>10</option>
+        <option [value]="20">20</option>
+        <option [value]="50">50</option>
+        <option [value]="100">100</option>
+      </select>
+    </div>
+    <div class="relative w-full h-[80vh] my-4">
+
+      <ag-grid-angular style="width: 100%; height: 100%; overflow-x: scroll;" [class]="themeClass"
+        [rowData]="rowListRecap" [columnDefs]="colHeaderListAllRecap" [defaultColDef]="defaultColDef"
+        [gridOptions]="gridOptions" [pagination]="true"></ag-grid-angular>
+    </div>
+  </div>
+</div>

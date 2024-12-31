@@ -1,0 +1,471 @@
+<div>
+  <!-- <h1 class="font-semibold">Track</h1> -->
+  <!-- <br> -->
+
+  <div *ngIf="!preview" class="w-full">
+
+    <div class="my-6">
+      <h1 class="text-lg font-semibold text-neutral-700">Your Lorem Ipsum: </h1>
+      <p class="text-sm text-gray-600">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Cum minus similique
+        laborum veniam perferendis enim quisquam illum? Excepturi aperiam facilis vitae obcaecati possimus modi minima!
+        Distinctio a laudantium omnis doloribus mollitia, culpa excepturi quibusdam reiciendis necessitatibus veritatis,
+        dolorum harum? Et earum debitis dolores similique porro itaque autem praesentium nulla dolor?</p>
+      <br>
+      <p class="text-sm text-gray-600">Will appear when your child has been picked up by the driver.</p>
+
+      <div *ngFor="let child of rowListChildern" class="my-6 px-3 py-4 border rounded-lg bg-gray-50 shadow-lg">
+        <div class="flex items-center justify-between px-3">
+          <div class="flex items-center gap-x-4">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+              stroke-width="1.8" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M19.5 3.75h-15A2.25 2.25 0 0 0 2.25 6v13.5a2.25 2.25 0 0 0 2.25 2.25h15a2.25 2.25 0 0 0 2.25-2.25V6a2.25 2.25 0 0 0-2.25-2.25Z">
+              </path>
+              <path fill="currentColor" stroke="none" d="M13.875 12a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z">
+              </path>
+              <path fill="currentColor" stroke="none" d="M17.625 12a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z">
+              </path>
+              <path fill="currentColor" stroke="none"
+                d="M13.875 15.75a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z"></path>
+              <path fill="currentColor" stroke="none"
+                d="M17.625 15.75a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z"></path>
+              <path fill="currentColor" stroke="none"
+                d="M6.375 15.75a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z"></path>
+              <path fill="currentColor" stroke="none"
+                d="M10.125 15.75a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z"></path>
+              <path fill="currentColor" stroke="none"
+                d="M6.375 19.5a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z"></path>
+              <path fill="currentColor" stroke="none"
+                d="M10.125 19.5a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z"></path>
+              <path fill="currentColor" stroke="none"
+                d="M13.875 19.5a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z"></path>
+              <path d="M6 2.25v1.5"></path>
+              <path d="M18 2.25v1.5"></path>
+              <path d="M21.75 7.5H2.25"></path>
+            </svg>
+            <h1 class="text-lg font-semibold">{{child.current_date | date: 'd-M-yyyy'}}</h1>
+          </div>
+        </div>
+
+        <div class="flex items-center w-full rounded-lg px-3 py-1 shadow my-4 gap-x-1">
+          <div class="h-20 aspect-square">
+            <div
+              class="h-full aspect-square rounded-full flex items-center justify-center text-3xl font-semibold text-white bg-blue-500">
+              {{ child.student_first_name.charAt(0).toUpperCase() }}{{ child.student_last_name.charAt(0).toUpperCase()
+              }}
+            </div>
+          </div>
+
+          <div class="h-full w-[1px] border border-gray-400 rounded-full"></div>
+          <!-- <div class="w-full md:flex justify-between"> -->
+          <div class="flex flex-col h-full w-full px-5 justify-center">
+            <h1 class="text-lg font-medium capitalize text-neutral-700">{{ child.student_first_name }} {{
+              child.student_last_name }}</h1>
+            <p class="text-sm text-neutral-600">Home - {{ child.school_name }}</p>
+          </div>
+
+          <!-- <div class="flex items-center space-x-2">
+              <button *ngIf="child.shuttle_status === 'waiting' || child.shuttle_status === 'going_to_school'"
+                (click)="detail(child.shuttle_uuid)"
+                class="mt-5 md:w-44 lg:w-56 xl:w-64 py-2 px-4 text-sm font-semibold text-white bg-black rounded-lg hover:bg-gray-800 transition-colors">
+                Real Time Tracking
+              </button>
+            </div> -->
+          <!-- </div> -->
+        </div>
+        <hr>
+        <div class="w-full rounded-lg px-3 py-4 shadow my-4">
+          <div class="">
+            <h1 class="text-sm font-light">Now</h1>
+          </div>
+          <div>
+            <h1 *ngIf="child.shuttle_status === 'waiting'" class="text-2xl font-bold capitalize">
+              Waiting
+            </h1>
+            <h1 *ngIf="child.shuttle_status === 'going_to_school'" class="text-2xl font-bold capitalize">
+              Going to School
+            </h1>
+            <h1 *ngIf="child.shuttle_status === 'home'" class="text-2xl font-bold capitalize">
+              Home
+            </h1>
+            <h1 *ngIf="child.shuttle_status === 'school'" class="text-2xl font-bold capitalize">
+              School
+            </h1>
+          </div>
+
+          <ul class="relative flex flex-row justify-between gap-x-3 mt-4">
+            <!-- Step 1: Home -->
+            <li class="flex items-center gap-x-2 shrink basis-0 flex-1 group">
+              <div class="min-w-7 min-h-7 md:inline-flex justify-center items-center text-xs align-middle">
+                <span class="size-7 flex justify-center items-center shrink-0 font-medium rounded-full" [ngClass]="{
+                    'bg-green-500 text-white': child.shuttle_status !== '',
+                    'bg-gray-800 text-white dark:bg-white dark:text-neutral-800': child.shuttle_status === 'waiting_to_be_taken_to_school'
+                  }">
+                  <ng-container *ngIf="child.shuttle_status !== ''; else stepNumber1">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 20 20">
+                      <path
+                        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
+                    </svg>
+                  </ng-container>
+                  <ng-template #stepNumber1>1</ng-template>
+                </span>
+                <span class="md:ms-2 block text-sm font-medium w-12 md:w-16 truncate" [ngClass]="{
+                    'text-green-500': child.shuttle_status !== 'waiting_to_be_taken_to_school',
+                    'text-gray-800 dark:text-white': child.shuttle_status === 'waiting_to_be_taken_to_school'
+                  }">
+                  Home
+                </span>
+              </div>
+              <div class="w-full h-px flex-1 bg-gray-200 group-last:hidden dark:bg-neutral-700"></div>
+            </li>
+
+            <!-- Step 2: Waiting -->
+            <li class="flex items-center gap-x-2 shrink basis-0 flex-1 group">
+              <div class="min-w-7 min-h-7 md:inline-flex justify-center items-center text-xs align-middle">
+                <span class="size-7 flex justify-center items-center shrink-0 font-medium rounded-full" [ngClass]="{
+                    'bg-green-500 text-white': child.shuttle_status === 'waiting_to_be_taken_to_school' || child.shuttle_status === 'going_to_school' || child.shuttle_status === 'at_school',
+                    'bg-gray-800 text-white dark:bg-white dark:text-neutral-800': child.shuttle_status !== 'going_to_school' && child.shuttle_status !== 'at_school'
+                  }">
+                  <ng-container *ngIf="child.shuttle_status === 'going_to_school'; else stepNumber2">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 20 20">
+                      <path
+                        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
+                    </svg>
+                  </ng-container>
+                  <ng-template #stepNumber2>2</ng-template>
+                </span>
+                <span class="md:ms-2 block text-sm font-medium w-12 md:w-16 truncate" [ngClass]="{
+                    'text-green-500': child.shuttle_status === 'going_to_school' || child.shuttle_status === 'at_school',
+                    'text-gray-800 dark:text-white': child.shuttle_status !== 'going_to_school' && child.shuttle_status !== 'at_school'
+                  }">
+                  Waiting
+                </span>
+              </div>
+              <div class="w-full h-px flex-1 bg-gray-200 group-last:hidden dark:bg-neutral-700"></div>
+            </li>
+
+            <!-- Step 3: Enroute -->
+            <li class="flex items-center gap-x-2 shrink basis-0 flex-1 group">
+              <div class="min-w-7 min-h-7 md:inline-flex justify-center items-center text-xs align-middle">
+                <span class="size-7 flex justify-center items-center shrink-0 font-medium rounded-full" [ngClass]="{
+                    'bg-green-500 text-white': child.shuttle_status === 'going_to_school' || child.shuttle_status === 'at_school',
+                    'bg-gray-800 text-white dark:bg-white dark:text-neutral-800': child.shuttle_status !== 'going_to_school' && child.shuttle_status !== 'at_school'
+                  }">
+                  <ng-container *ngIf="child.shuttle_status === 'at_school'; else stepNumber3">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 20 20">
+                      <path
+                        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
+                    </svg>
+                  </ng-container>
+                  <ng-template #stepNumber3>3</ng-template>
+                </span>
+                <span class="md:ms-2 block text-sm font-medium w-12 md:w-16 truncate" [ngClass]="{
+                    'text-green-500': child.shuttle_status === 'going_to_school' || child.shuttle_status === 'at_school',
+                    'text-gray-800 dark:text-white': child.shuttle_status !== 'going_to_school' && child.shuttle_status !== 'at_school'
+                  }">
+                  Going
+                </span>
+              </div>
+              <div class="w-full h-px flex-1 bg-gray-200 group-last:hidden dark:bg-neutral-700"></div>
+            </li>
+
+            <!-- Step 4: School -->
+            <li class="flex items-center gap-x-2 shrink basis-0 flex-1 group">
+              <div class="min-w-7 min-h-7 md:inline-flex justify-center items-center text-xs align-middle">
+                <span class="size-7 flex justify-center items-center shrink-0 font-medium rounded-full" [ngClass]="{
+                    'bg-green-500 text-white': child.shuttle_status === 'at_school',
+                    'bg-gray-800 text-white dark:bg-white dark:text-neutral-800': child.shuttle_status !== 'at_school'
+                  }">
+                  <ng-container *ngIf="child.shuttle_status === 'at_school'; else stepNumber4">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 20 20">
+                      <path
+                        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
+                    </svg>
+                  </ng-container>
+                  <ng-template #stepNumber4>4</ng-template>
+                </span>
+                <span class="md:ms-2 block text-sm font-medium w-12 md:w-16 truncate" [ngClass]="{
+                    'text-green-500': child.shuttle_status === 'at_school',
+                    'text-gray-800 dark:text-white': child.shuttle_status !== 'at_school'
+                  }">
+                  School
+                </span>
+              </div>
+              <div class="w-full h-px flex-1 bg-gray-200 group-last:hidden dark:bg-neutral-700"></div>
+            </li>
+          </ul>
+
+          <div class="md:flex items-center justify-between mt-4 border-t">
+            <p class="text-sm text-neutral-600">
+              Want to know the exact location of your child?
+            </p>
+            <div class="flex items-center justify-end space-x-2">
+              <button *ngIf="child.shuttle_status === 'waiting_to_be_taken_to_school' || child.shuttle_status === 'going_to_school'"
+                (click)="detail(child.shuttle_uuid)"
+                class="mt-5 md:w-44 lg:w-56 xl:w-64 py-2 px-4 text-sm font-semibold text-white bg-black rounded-lg hover:bg-gray-800 transition-colors">
+                Real Time Tracking
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+
+
+  <div class="container mt-5 md:p-5" *ngIf="preview">
+
+    <div class="relative px-5 py-2 border bg-white rounded-xl shadow-md">
+
+      <ul class="w-full grid grid-cols-4 gap-x-4">
+        <li class="md:flex items-center gap-x-4">
+          <div>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+              stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="m2.49 9.371 18.75-7.096a.375.375 0 0 1 .485.484l-7.097 18.75a.375.375 0 0 1-.703-.016l-3.159-7.785a.75.75 0 0 0-.474-.474l-7.785-3.157a.375.375 0 0 1-.016-.706v0Z">
+              </path>
+              <path d="M21.563 2.438 10.64 13.358"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="font-semibold truncate">Current Location</h1>
+            <p class="text-xs">N/A</p>
+          </div>
+        </li>
+        <li class="md:flex items-center gap-x-4">
+          <div>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"
+              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M3.75 21.75V3.194a.375.375 0 0 1 .188-.323c.366-.215 1.355-.621 3.562-.621 3 0 6.797 2.25 9 2.25a9.353 9.353 0 0 0 3.62-.74.093.093 0 0 1 .13.088V14.13a.187.187 0 0 1-.112.171c-.386.17-1.748.699-3.638.699-2.25 0-6-1.5-9-1.5s-3.75.75-3.75.75">
+              </path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="font-semibold truncate">Destination</h1>
+            <p class="w-full text-xs truncate capitalize">{{ destination }}</p>
+          </div>
+        </li>
+        <li class="md:flex items-center gap-x-4">
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24"
+              width="24">
+              <g>
+                <rect fill="none" height="24" width="24" x="0" />
+              </g>
+              <g>
+                <g>
+                  <g>
+                    <path d="M9.01,14H2v2h7.01v3L13,15l-3.99-4V14z M14.99,13v-3H22V8h-7.01V5L11,9L14.99,13z" />
+                  </g>
+                </g>
+              </g>
+            </svg>
+          </div>
+          <div>
+            <h1 class="font-semibold truncate">Remaining Distance</h1>
+            <p class="text-xs">{{distance}} KM</p>
+          </div>
+        </li>
+        <li class="md:flex items-center gap-x-4">
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+              <path d="M0 0h24v24H0z" fill="none" />
+              <path
+                d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44zm-9.79 6.84a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="font-semibold truncate">Current Speed</h1>
+            <p class="text-xs">N/A</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div id="map" class="relative border shadow">
+      <div *ngIf="isLoading"
+        class="absolute top-0 left-0 w-full h-full flex items-center justify-center rounded-lg bg-white z-[9999]">
+        <div class="ui-loader rounded-lg loader-blk">
+          <svg viewBox="22 22 44 44" class="multiColor-loader">
+            <circle cx="44" cy="44" r="20.2" fill="none" stroke-width="3.6"
+              class="loader-circle loader-circle-animation">
+            </circle>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <p class="text-xs text-red-500 py-1 ">*Refresh if the map doesn't appear.</p>
+
+
+    <div
+      class="my-2 flex flex-col space-y-4 2xl:space-y-0 2xl:space-x-4 px-5 py-2 border bg-white rounded-xl shadow-md">
+      <ul class="w-full flex items-center gap-x-4 overflow-x-scroll">
+        <li class="w-auto">
+          <a class="flex items-center px-5 py-3 w-fit leading-normal cursor-pointer" (click)="toggleTabs(1)"
+            [ngClass]="{'text-neutral-500': openTab !== 1, 'text-black font-semibold border-b-2 border-neutral-600 rounded-b-sm': openTab === 1}">
+            <p>Shuttle Information</p>
+          </a>
+        </li>
+        <li class="w-auto">
+          <a class="flex items-center px-5 py-3 w-fit leading-normal cursor-pointer" (click)="toggleTabs(2)"
+            [ngClass]="{'text-neutral-500': openTab !== 2, 'text-black font-semibold border-b-2 border-neutral-600 rounded-b-sm': openTab === 2}">
+            <p>Driver Information</p>
+          </a>
+        </li>
+        <li class="w-auto">
+          <a class="flex items-center px-5 py-3 w-fit leading-normal cursor-pointer" (click)="toggleTabs(3)"
+            [ngClass]="{'text-neutral-500': openTab !== 3, 'text-black font-semibold border-b-2 border-neutral-600 rounded-b-sm': openTab === 3}">
+            <p>Vehicle Information</p>
+          </a>
+        </li>
+      </ul>
+
+      <div [ngClass]="{'hidden': openTab !== 1, 'block': openTab === 1}" class="px-8">
+
+        <h1 class="text-xl font-medium ">
+          Location
+        </h1>
+        <div class="grid grid-cols-4 gap-x-5 mb-2">
+          <span class="col-span-2 md:col-span-1 text-neutral-700 font-semibold">From</span>
+          <p class="col-span-2 md:col-span-3 text-sm text-black line-clamp-3 md:line-clamp-none">Student's Home
+            ({{address || 'N/A'}})</p>
+        </div>
+
+        <div class="grid grid-cols-4 gap-x-5 mb-2">
+          <span class="col-span-2 md:col-span-1 text-neutral-700 font-semibold">To</span>
+          <p class="col-span-2 md:col-span-3 text-sm text-black">{{destination}}</p>
+        </div>
+
+        <div class="grid grid-cols-4 gap-x-5 mb-2">
+          <span class="col-span-2 md:col-span-1 text-neutral-700 font-semibold">Pick-up Point</span>
+          <p class="col-span-2 md:col-span-3 text-sm text-black">{{pickup_point?.latitude}}, {{pickup_point?.longitude}}
+          </p>
+        </div>
+
+        <div class="grid grid-cols-4 gap-x-5 mb-2">
+          <span class="col-span-2 md:col-span-1 text-neutral-700 font-semibold">Destination Point</span>
+          <p class="col-span-2 md:col-span-3 text-sm text-black">{{school_point?.latitude}}, {{school_point?.longitude}}
+          </p>
+        </div>
+
+        <br>
+        <hr class="my-4">
+
+        <h1 class="text-xl font-medium ">
+          Time
+        </h1>
+        <div class="grid grid-cols-4 gap-x-5 mb-2">
+          <span class="col-span-2 md:col-span-1 text-neutral-700 font-semibold">Date Today</span>
+          <p class="col-span-2 md:col-span-3 text-sm text-black">{{current_date | date: 'd-M-yyyy'}}</p>
+        </div>
+
+        <div class="grid grid-cols-4 gap-x-5 mb-2">
+          <span class="col-span-2 md:col-span-1 text-neutral-700 font-semibold">Start Time</span>
+          <p class="col-span-2 md:col-span-3 text-sm text-black">{{start_time | date: 'HH:mm, d-M-yyyy'}}</p>
+        </div>
+
+        <div class="grid grid-cols-4 gap-x-5 mb-2">
+          <span class="col-span-2 md:col-span-1 text-neutral-700 font-semibold">End Time</span>
+          <p class="col-span-2 md:col-span-3 text-sm text-black">N/A</p>
+        </div>
+
+      </div>
+
+
+      <div [ngClass]="{'hidden': openTab !== 2, 'block': openTab === 2}" class="px-8">
+        <div class="">
+          <div class="flex items-start justify-between">
+            <div class="flex items-start gap-x-5">
+              <img class="w-16 h-16 rounded-full"
+                src="https://i.pinimg.com/474x/d0/21/a4/d021a49fa9da1b90cd5fd414147310e4.jpg" alt="">
+              <div>
+                <h1 class="text-md font-semibold capitalize">{{driver_first_name}} {{driver_last_name}}</h1>
+                <p class="text-sm text-neutral-600 capitalize">{{driver_username}}</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-x-5">
+              <button
+                class="flex items-center gap-x-2 px-6 py-2 rounded-full shadow bg-black text-white cursor-not-allowed">
+                <span>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2">
+                    </path>
+                  </svg>
+                </span>
+                <span class="hidden md:block">Call</span>
+              </button>
+              <button
+                class="flex items-center gap-x-2 px-6 py-2 border border-black shadow rounded-full cursor-not-allowed">
+                <span>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"
+                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M4.101 17.813c.056-.206-.067-.491-.185-.697a2.108 2.108 0 0 0-.12-.178 9.366 9.366 0 0 1-1.546-5.156C2.234 6.52 6.597 2.25 11.992 2.25c4.705 0 8.633 3.26 9.55 7.587a9.32 9.32 0 0 1 .208 1.952c0 5.269-4.195 9.606-9.59 9.606-.858 0-2.016-.216-2.647-.393a17.713 17.713 0 0 1-1.425-.474A1.458 1.458 0 0 0 7 20.545l-3.18 1.148a.751.751 0 0 1-.218.057.45.45 0 0 1-.449-.457.744.744 0 0 1 .028-.154l.92-3.326Z">
+                    </path>
+                  </svg>
+                </span>
+                <span class="hidden md:block">Chat</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between mt-8 text-center">
+            <div>
+              <h1 class="text-neutral-600 text-sm">Gender</h1>
+              <p class="font-semibold">{{driver_gender || 'N/A'}}</p>
+            </div>
+            <div>
+              <h1 class="text-neutral-600 text-sm">Age</h1>
+              <p class="font-semibold">33</p>
+            </div>
+            <div>
+              <h1 class="text-neutral-600 text-sm">Vehicle</h1>
+              <p class="font-semibold">{{vehicle_name || 'N/A'}}</p>
+            </div>
+            <div>
+              <h1 class="text-neutral-600 text-sm">License Plate</h1>
+              <p class="font-semibold">{{vehicle_number || 'N/A'}}</p>
+            </div>
+            <div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div [ngClass]="{'hidden': openTab !== 3, 'block': openTab === 3}" class="px-8">
+        <div class="bg-white p-4 rounded-lg max-w-xs mx-auto">
+          <!-- Vehicle Image -->
+          <div class="mb-4">
+            <img src="https://i.pinimg.com/474x/f2/3b/07/f23b07fe36ae1eef312c0f17caf60617.jpg" alt="Vehicle Image"
+              class="w-full h-32 object-cover rounded-md">
+          </div>
+
+          <h2 class="text-xl font-semibold text-center mb-4">Vehicle Information</h2>
+
+          <div class="mb-2">
+            <span class="font-semibold">Vehicle Type:</span>
+            <p class="text-sm text-gray-600">{{vehicle_type || 'N/A'}}</p>
+          </div>
+
+          <div class="mb-2">
+            <span class="font-semibold">Plate Number:</span>
+            <p class="text-sm text-gray-600">{{vehicle_number || 'N/A'}}</p>
+          </div>
+
+          <div class="mb-2">
+            <span class="font-semibold">Vehicle Color:</span>
+            <p class="text-sm text-gray-600">{{vehicle_color || 'N/A'}}</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

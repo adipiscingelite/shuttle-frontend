@@ -147,8 +147,8 @@ export class AdminsComponent implements OnInit {
     { headerName: 'First Name', field: 'user_details.user_first_name' },
     { headerName: 'Last Name', field: 'user_details.user_last_name' },
     { headerName: 'Email', field: 'user_email' },
-    { headerName: 'School Phone', field: 'user_details.user_phone' },
-    { headerName: 'School Address', field: 'user_details.user_address' },
+    { headerName: 'Phone', field: 'user_details.user_phone' },
+    // { headerName: 'Address', field: 'user_details.user_address' },
     { headerName: 'School Name', field: 'user_details.school_name' },
     { field: 'user_status', maxWidth: undefined },
     {

@@ -43,7 +43,7 @@ export class SidebarComponent implements OnInit {
 
   user_id: string = '';
   email: string = '';
-  user_username: string = ''
+  user_username: string = '';
   first_name: string = '';
   last_name: string = '';
   password: string = '';
@@ -80,6 +80,10 @@ export class SidebarComponent implements OnInit {
     schoolList: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">  <path d="M12 3 1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3Zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9ZM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72Z"></path></svg>`,
     adminList: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">  <path d="M16 15.62a1.12 1.12 0 1 0 0-2.24 1.12 1.12 0 0 0 0 2.24Z"></path>  <path fill-rule="evenodd" d="M16 16.5c-.73 0-2.19.36-2.24 1.08.5.71 1.32 1.17 2.24 1.17.92 0 1.74-.46 2.24-1.17-.05-.72-1.51-1.08-2.24-1.08Z" clip-rule="evenodd"></path>  <path fill-rule="evenodd" d="M17 10.09V5.27L9.5 2 2 5.27v4.91c0 4.54 3.2 8.79 7.5 9.82.55-.13 1.08-.32 1.6-.55A5.973 5.973 0 0 0 16 22c3.31 0 6-2.69 6-6 0-2.97-2.16-5.43-5-5.91ZM10 16c0 .56.08 1.11.23 1.62-.24.11-.48.22-.73.3-3.17-1-5.5-4.24-5.5-7.74v-3.6l5.5-2.4 5.5 2.4v3.51c-2.84.48-5 2.94-5 5.91Zm6 4c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4Z" clip-rule="evenodd"></path></svg>`,
     driverList: `<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"></path><path d="M16.5 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"></path><path d="M5 10h5L9 21H6L5 10Z"></path><path d="M14 10h5l-1 11h-3l-1-11Z"></path></svg>`,
+    maps: `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>`,
+    attendance: `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M-74 29h48v48h-48V29zM0 0h24v24H0V0zm0 0h24v24H0V0z" fill="none"/><path d="M13 12h7v1.5h-7zm0-2.5h7V11h-7zm0 5h7V16h-7zM21 4H3c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 15h-9V6h9v13z"/></svg>`,
+    editChildren: `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>`,
+    shuttleHistory: `<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8v4l2 2"></path><path d="M3.05 11.002a9 9 0 1 1 .5 4"></path><path d="M3.05 20.002v-5h5"></path></svg>`,
   };
 
   getSvgIcon(iconName: string): SafeHtml {
@@ -102,7 +106,7 @@ export class SidebarComponent implements OnInit {
     await this.fetchProfileData();
 
     this.loadMenuByRole(this.role_code);
-    
+
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     console.log('sidebar timezone', timezone);
   }
@@ -111,7 +115,7 @@ export class SidebarComponent implements OnInit {
     try {
       this.profileService.profileData$.subscribe((data) => {
         console.log('sidebar', data.user_role_code);
-        
+
         if (data) {
           this.user_id = data.user_uuid;
           this.email = data.user_email;
@@ -232,12 +236,12 @@ export class SidebarComponent implements OnInit {
           ],
         },
         {
-          title: 'ROUTE ASSIGNMENT',
+          title: 'DRIVER MANAGEMENT',
           items: [
             {
-              name: 'Route Plan',
-              icon: 'routeList',
-              path: '/admin/routes',
+              name: 'Vehicle Lists',
+              icon: 'car',
+              path: '/admin/vehicles',
             },
             {
               name: 'Driver Lists',
@@ -245,14 +249,19 @@ export class SidebarComponent implements OnInit {
               path: '/admin/drivers',
             },
             {
-              name: 'Driver Assignment',
-              icon: 'studentList',
-              path: '/admin/driver/assignment',
-            },
-            {
               name: 'Driver Monitoring',
               icon: 'studentList',
               path: '/admin/driver/monitoring',
+            },
+          ],
+        },
+        {
+          title: 'ROUTE ASSIGNMENT',
+          items: [
+            {
+              name: 'Route and Driver Assignment',
+              icon: 'routeList',
+              path: '/admin/routes',
             },
           ],
         },
@@ -274,13 +283,18 @@ export class SidebarComponent implements OnInit {
           title: 'CHILD MANAGEMENT',
           items: [
             {
-              name: 'Rekap Kehadiran',
-              icon: 'dashboard',
+              name: 'Track Your Children',
+              icon: 'maps',
+              path: '/parent/tracking',
+            },
+            {
+              name: 'Attendance Recap',
+              icon: 'attendance',
               path: '/parent/attendance',
             },
             {
-              name: 'Edit Data Siswa',
-              icon: 'dashboard',
+              name: 'Child Data',
+              icon: 'editChildren',
               path: '/parent/my-childern',
             },
           ],
@@ -303,9 +317,24 @@ export class SidebarComponent implements OnInit {
           title: 'ROUTE MANAGEMENT',
           items: [
             {
-              name: 'Route Management',
-              icon: 'dashboard',
-              path: '/driver/p',
+              name: 'Shuttle',
+              icon: 'car',
+              path: '/driver/shuttle',
+            },
+            {
+              name: 'Shuttle History',
+              icon: 'shuttleHistory',
+              path: '/driver/shuttle-history',
+            },
+          ],
+        },
+        {
+          title: 'STUDENT MANAGEMENT',
+          items: [
+            {
+              name: 'Student Lists',
+              icon: 'studentList',
+              path: '/driver/not-found',
             },
           ],
         },
@@ -317,8 +346,8 @@ export class SidebarComponent implements OnInit {
     this.isModalDeleteOpen = true;
   }
 
-  closeDeleteModal(){
-    this.isModalDeleteOpen = false
+  closeDeleteModal() {
+    this.isModalDeleteOpen = false;
   }
 
   performLogout() {
@@ -334,10 +363,13 @@ export class SidebarComponent implements OnInit {
         },
       )
       .then((response) => {
+        console.log(token);
+
         this.router.navigateByUrl('/login');
-        this.cookieService.deleteAll();
+        this.cookieService.delete('accessToken');
+        this.cookieService.delete('refreshToken');
         this.profileService.resetProfileData();
-        
+
         console.log(response.data.message);
         Swal.fire({
           title: 'Success',
@@ -346,9 +378,9 @@ export class SidebarComponent implements OnInit {
           timer: 1500,
           showConfirmButton: false,
         });
-        
       })
       .catch((error) => {
+        console.log(token);
         if (error.response.status === 401) {
           Swal.fire({
             title: 'Error',

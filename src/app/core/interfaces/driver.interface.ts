@@ -4,6 +4,7 @@ export interface Driver {
   user_email: string;
   user_status: string;
   user_last_active: string;
+  license_number: string;
   created_at: string;
   user_details: DriverDetail;
 }

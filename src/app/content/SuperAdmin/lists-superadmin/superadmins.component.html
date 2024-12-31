@@ -588,19 +588,19 @@
           </svg>
         </div>
         <h1 class="my-1 text-2xl font-medium">
-          Hapus Data
+          Delete Data
         </h1>
         <p class="text-sm text-neutral-600">
-          Apakah anda yakin ingin menghapus data ini?
+          Are you sure want to delete this data?
         </p>
         <p class="text-sm text-neutral-600">
-          Aksi ini tidak dapat dibatalkan.
+          This action can not be undone.
         </p>
         <div class="grid grid-cols-2 gap-x-3 mt-6 text-sm font-medium capitalize">
           <button class="px-4 py-2 rounded bg-neutral-200 hover:bg-neutral-300 text-neutral-800 shadow hover:shadow-md"
-            (click)="closeDeleteModal()">Batal</button>
+            (click)="closeDeleteModal()">Cancel</button>
           <button class="px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white shadow hover:shadow-md"
-            (click)="performDeleteSuperAdmin(user_uuid)">Hapus</button>
+            (click)="performDeleteSuperAdmin(user_uuid)">Delete</button>
         </div>
       </div>
     </div>

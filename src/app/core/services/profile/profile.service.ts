@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import axios from 'axios';
 import { CookieService } from 'ngx-cookie-service';
 import { BehaviorSubject } from 'rxjs';
@@ -11,8 +12,9 @@ export class ProfileService {
   profileData$ = this.profileData.asObservable();
 
   constructor(
-    @Inject('apiUrl') private apiUrl: string,
     private cookieService: CookieService,
+    private router: Router,
+    @Inject('apiUrl') private apiUrl: string,
   ) {
     this.apiUrl = apiUrl;
   }
@@ -37,11 +39,15 @@ export class ProfileService {
         },
       });
       console.log('response', response.data.data);
-      
+      console.log('response', response);
+
       this.profileData.next(response.data.data); // Update dengan data baru
       return response.data.data;
     } catch (error) {
+      this.profileData.next(null); // Reset data ke null
       console.error('Error fetching profile data with Axios:', error);
+      this.router.navigateByUrl('/login');
+
       throw error;
     }
   }
