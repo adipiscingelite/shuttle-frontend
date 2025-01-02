@@ -28,6 +28,7 @@ import { NotificationComponent } from './content/notification/notification.compo
 import { SchoolAdminDriversComponent } from './content/Admin/list-drivers/drivers.component';
 import { RoutesComponent } from './content/Admin/list-routes/routes.component';
 import { VehiclesAdminComponent } from './content/Admin/list-vehicles/vehicles.component';
+import { DriverManagementComponent } from './content/Admin/driver-management/driver-management.component';
 
 const superAdminChildrenRoutes: Route[] = [
   {
@@ -101,6 +102,11 @@ const adminChildrenRoutes: Route[] = [
     data: { breadcrumb: 'Drivers' },
   },
   {
+    path: 'driver-monitoring',
+    component: DriverManagementComponent,
+    data: { breadcrumb: 'Drivers Monitoring' },
+  },
+  {
     path: 'routes',
     component: RoutesComponent,
     data: { breadcrumb: 'Routes' },
@@ -114,6 +120,11 @@ const adminChildrenRoutes: Route[] = [
     path: 'profile',
     component: ProfileAdminComponent,
     data: { breadcrumb: 'Profile' },
+  },
+  {
+    path: 'my/notification',
+    component: NotificationComponent,
+    data: { breadcrumb: 'Notification' },
   },
 ];
 
@@ -155,6 +166,11 @@ const parentChildrenRoutes: Route[] = [
     component: ProfileParentComponent,
     data: { breadcrumb: 'Profile' },
   },
+  {
+    path: 'my/notification',
+    component: NotificationComponent,
+    data: { breadcrumb: 'Notification' },
+  },
 ];
 
 const driverChildrenRoutes: Route[] = [
@@ -182,6 +198,11 @@ const driverChildrenRoutes: Route[] = [
     path: 'profile',
     component: ProfileDriverComponent,
     data: { breadcrumb: 'Profile' },
+  },
+  {
+    path: 'my/notification',
+    component: NotificationComponent,
+    data: { breadcrumb: 'Notification' },
   },
 ];
 

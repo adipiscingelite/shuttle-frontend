@@ -213,7 +213,7 @@ export class SidebarComponent implements OnInit {
         },
       ];
     } else if (role === 'AS') {
-      this.role = 'Admin Sekolah';
+      this.role = 'School Admin';
       this.sections = [
         {
           title: 'MAIN',
@@ -251,7 +251,7 @@ export class SidebarComponent implements OnInit {
             {
               name: 'Driver Monitoring',
               icon: 'studentList',
-              path: '/admin/driver/monitoring',
+              path: '/admin/driver-monitoring',
             },
           ],
         },
@@ -267,7 +267,7 @@ export class SidebarComponent implements OnInit {
         },
       ];
     } else if (role === 'P') {
-      this.role = 'Orang Tua';
+      this.role = 'Parent';
       this.sections = [
         {
           title: 'MAIN',
@@ -365,10 +365,11 @@ export class SidebarComponent implements OnInit {
       .then((response) => {
         console.log(token);
 
-        this.router.navigateByUrl('/login');
-        this.cookieService.delete('accessToken');
-        this.cookieService.delete('refreshToken');
         this.profileService.resetProfileData();
+        this.router.navigateByUrl('/login');
+        this.cookieService.delete('accessToken', '/');
+        this.cookieService.delete('refreshToken', '/');
+        this.router.navigateByUrl('/login');
 
         console.log(response.data.message);
         Swal.fire({

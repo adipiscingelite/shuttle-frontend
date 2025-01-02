@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { CookieService } from 'ngx-cookie-service';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
+import * as L from 'leaflet';
 
 // COMPONENTS
 import { HeaderComponent } from '@layouts/header/header.component';
@@ -64,6 +65,9 @@ export class SchoolsComponent implements OnInit {
   school_latitude: number | null = null;
   school_longitude: number | null = null;
 
+  // for map
+  googleMapUrl: string = '';
+
   isLoading: boolean = false;
   isMobile = window.innerWidth <= 768;
 
@@ -75,6 +79,10 @@ export class SchoolsComponent implements OnInit {
   rowListAllSchool: School[] = [];
 
   private columnClickCount: { [key: string]: number } = {};
+
+  private map: L.Map | undefined;
+  private marker: L.Marker | undefined;
+  private watchId: number | undefined;
 
   constructor(
     private cookieService: CookieService,
@@ -108,7 +116,13 @@ export class SchoolsComponent implements OnInit {
   colHeaderListAllSchool: ColDef<School>[] = [
     {
       headerName: 'No.',
-      valueGetter: 'node.rowIndex + 1',
+      valueGetter: (params: any) => {
+        // Hitung nomor urut berdasarkan posisi pagination
+        return (
+          (this.paginationPage - 1) * this.paginationItemsLimit +
+          (params.node.rowIndex + 1)
+        );
+      },
       width: 50,
       maxWidth: 70,
       pinned: 'left',
@@ -161,7 +175,7 @@ export class SchoolsComponent implements OnInit {
         `;
         viewButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.openViewModal(params.data.school_uuid);
+          this.openDetailModal(params.data.school_uuid);
         });
 
         const deleteButton = document.createElement('button');
@@ -206,8 +220,51 @@ export class SchoolsComponent implements OnInit {
     sortable: false,
   };
 
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.paginationTotalPage) {
+  getVisiblePages(): (number | string)[] {
+    const visiblePages: (number | string)[] = [];
+    const totalPages = this.paginationTotalPage;
+    const currentPage = this.paginationPage;
+
+    visiblePages.push(1);
+
+    if (totalPages <= 7) {
+      for (let i = 2; i < totalPages; i++) {
+        visiblePages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        visiblePages.push(2, 3, 4, '...', totalPages - 1);
+      } else if (currentPage >= totalPages - 2) {
+        visiblePages.push(
+          '...',
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+        );
+      } else {
+        visiblePages.push(
+          '...',
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          '...',
+        );
+      }
+    }
+
+    if (totalPages > 1) {
+      visiblePages.push(totalPages);
+    }
+
+    return visiblePages;
+  }
+
+  goToPage(page: number | string) {
+    if (
+      typeof page === 'number' &&
+      page >= 1 &&
+      page <= this.paginationTotalPage
+    ) {
       this.paginationPage = page;
       this.getAllSchool();
     }
@@ -303,10 +360,12 @@ export class SchoolsComponent implements OnInit {
     this.school_contact = '';
     this.school_email = '';
     this.school_description = '';
-    this.school_latitude = null
-    this.school_longitude = null
+    this.school_latitude = null;
+    this.school_longitude = null;
 
     this.isModalAddOpen = true;
+    this.getCoordinateByMap();
+    this.cdRef.detectChanges();
   }
 
   addSchool(): void {
@@ -319,7 +378,7 @@ export class SchoolsComponent implements OnInit {
       point: {
         latitude: this.school_latitude,
         longitude: this.school_longitude,
-      }
+      },
     };
 
     axios
@@ -334,7 +393,7 @@ export class SchoolsComponent implements OnInit {
 
         this.getAllSchool();
         this.isModalAddOpen = false;
-        this.cdRef.detectChanges()
+        this.cdRef.detectChanges();
       })
       .catch((error) => {
         const responseMessage =
@@ -367,10 +426,11 @@ export class SchoolsComponent implements OnInit {
 
         const school_point = JSON.parse(editData.school_point);
 
-        this.school_latitude = school_point.latitude
-        this.school_longitude = school_point.longitude
+        this.school_latitude = school_point.latitude;
+        this.school_longitude = school_point.longitude;
 
         this.isModalEditOpen = true;
+        this.getCoordinateByMap();
         this.cdRef.detectChanges();
       })
       .catch((error) => {
@@ -414,7 +474,7 @@ export class SchoolsComponent implements OnInit {
 
         this.isModalEditOpen = false;
         this.cdRef.detectChanges();
-        
+
         this.getAllSchool();
       })
       .catch((error) => {
@@ -422,6 +482,43 @@ export class SchoolsComponent implements OnInit {
           error.response?.data?.message || 'An unexpected error occurred.';
         this.showToast(responseMessage, 3000, Response.Error);
       });
+  }
+
+  openDetailModal(student_uuid: string) {
+    axios
+      .get(`${this.apiUrl}/api/superadmin/school/${student_uuid}`, {
+        headers: {
+          Authorization: `${this.cookieService.get('accessToken')}`,
+        },
+      })
+      .then((response) => {
+        const detailData = response.data.data;
+
+        this.school_uuid = detailData.school_uuid;
+        this.school_name = detailData.school_name;
+        this.school_address = detailData.school_address;
+        this.school_contact = detailData.school_contact;
+        this.school_email = detailData.school_email;
+        this.school_description = detailData.school_description;
+
+        const school_point = JSON.parse(detailData.school_point);
+
+        this.school_latitude = school_point.latitude;
+        this.school_longitude = school_point.longitude;
+
+        this.isModalDetailOpen = true;
+        this.cdRef.detectChanges();
+      })
+      .catch((error) => {
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
+      });
+  }
+
+  closeDetailModal() {
+    this.isModalDetailOpen = false;
+    this.cdRef.detectChanges();
   }
 
   onDeleteSchool(school_uuid: string) {
@@ -472,5 +569,96 @@ export class SchoolsComponent implements OnInit {
 
   removeToast(index: number) {
     this.toastService.remove(index);
+  }
+
+  getCoordinateByUrl(): void {
+    const regex = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+    const match = this.googleMapUrl.match(regex);
+
+    if (match) {
+      this.school_latitude = parseFloat(match[1]);
+      this.school_longitude = parseFloat(match[2]);
+    } else {
+      const responseMessage = 'Invalid Google Maps URL';
+      this.showToast(responseMessage, 3000, Response.Error);
+    }
+  }
+
+  private getCoordinateByMap(): void {
+    console.log('plis');
+
+    // if ('geolocation' in navigator) {
+    // Reset map jika sudah ada
+    if (this.map) {
+      this.map.remove(); // Menghapus map lama
+      this.map = undefined; // Menghapus referensi map
+    }
+
+    // Start watching the position
+    this.watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        // Update coordinates on the page
+        const coordinatesElement = document.getElementById('coordinates');
+        if (coordinatesElement) {
+          coordinatesElement.textContent = `Latitude: ${lat}, Longitude: ${lon}`;
+        }
+
+        // Update the map and marker
+        this.map = L.map('map').setView(
+          [-7.76131921887155, 110.36293728044329],
+          12,
+        );
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors',
+        }).addTo(this.map);
+
+        this.map.on('click', (e: L.LeafletMouseEvent) => {
+          const clickedLat = e.latlng.lat;
+          const clickedLng = e.latlng.lng;
+
+          // Update marker position
+          if (this.marker) {
+            this.marker.setLatLng([clickedLat, clickedLng]);
+          } else {
+            this.marker = L.marker([clickedLat, clickedLng]).addTo(this.map!);
+          }
+
+          // Update form inputs
+          this.school_latitude = clickedLat;
+          this.school_longitude = clickedLng;
+        });
+        // Set loading status to false after location is retrieved
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error('Error watching location:', error);
+
+        const coordinatesElement = document.getElementById('coordinates');
+        if (coordinatesElement) {
+          coordinatesElement.textContent = 'Unable to detect location.';
+        }
+
+        // Set loading status to false if there's an error
+        this.isLoading = false;
+      },
+      {
+        enableHighAccuracy: true, // Use high-accuracy mode if available
+        maximumAge: 0, // Prevent using cached location
+        timeout: 10000, // Timeout after 10 seconds if no location is retrieved
+      },
+    );
+    // } else {
+    //   const coordinatesElement = document.getElementById('coordinates');
+    //   if (coordinatesElement) {
+    //     coordinatesElement.textContent =
+    //       'Geolocation is not supported by your browser.';
+    //   }
+
+    //   // Set loading status to false if geolocation is not supported
+    //   this.isLoading = false;
+    // }
   }
 }

@@ -106,7 +106,13 @@ export class VehiclesComponent implements OnInit {
   colHeaderListAllVehicle: ColDef<Vehicle>[] = [
     {
       headerName: 'No.',
-      valueGetter: 'node.rowIndex + 1',
+      valueGetter: (params: any) => {
+        // Hitung nomor urut berdasarkan posisi pagination
+        return (
+          (this.paginationPage - 1) * this.paginationItemsLimit +
+          (params.node.rowIndex + 1)
+        );
+      },
       width: 50,
       maxWidth: 70,
       pinned: 'left',
@@ -159,7 +165,7 @@ export class VehiclesComponent implements OnInit {
         `;
         viewButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.openViewModal(params.data.vehicle_uuid);
+          this.openDetailModal(params.data.vehicle_uuid);
         });
 
         const deleteButton = document.createElement('button');
@@ -202,8 +208,51 @@ export class VehiclesComponent implements OnInit {
     sortable: false,
   };
 
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.paginationTotalPage) {
+  getVisiblePages(): (number | string)[] {
+    const visiblePages: (number | string)[] = [];
+    const totalPages = this.paginationTotalPage;
+    const currentPage = this.paginationPage;
+
+    visiblePages.push(1);
+
+    if (totalPages <= 7) {
+      for (let i = 2; i < totalPages; i++) {
+        visiblePages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        visiblePages.push(2, 3, 4, '...', totalPages - 1);
+      } else if (currentPage >= totalPages - 2) {
+        visiblePages.push(
+          '...',
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+        );
+      } else {
+        visiblePages.push(
+          '...',
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          '...',
+        );
+      }
+    }
+
+    if (totalPages > 1) {
+      visiblePages.push(totalPages);
+    }
+
+    return visiblePages;
+  }
+
+  goToPage(page: number | string) {
+    if (
+      typeof page === 'number' &&
+      page >= 1 &&
+      page <= this.paginationTotalPage
+    ) {
       this.paginationPage = page;
       this.getAllVehicle();
     }
@@ -293,6 +342,14 @@ export class VehiclesComponent implements OnInit {
   }
 
   openAddModal() {
+    this.vehicle_uuid = '';
+    this.vehicle_name = '';
+    this.vehicle_number = '';
+    this.vehicle_type = '';
+    this.vehicle_color = '';
+    this.vehicle_seats = null;
+    this.vehicle_status = '';
+
     this.isModalAddOpen = true;
   }
 
@@ -401,6 +458,40 @@ export class VehiclesComponent implements OnInit {
           error.response?.data?.message || 'An unexpected error occurred.';
         this.showToast(responseMessage, 3000, Response.Error);
       });
+  }
+
+  
+  openDetailModal(student_uuid: string) {
+    axios
+      .get(`${this.apiUrl}/api/superadmin/vehicle/${student_uuid}`, {
+        headers: {
+          Authorization: `${this.cookieService.get('accessToken')}`,
+        },
+      })
+      .then((response) => {
+        const detailData = response.data.data;
+
+        this.vehicle_uuid = detailData.vehicle_uuid;
+        this.vehicle_name = detailData.vehicle_name;
+        this.vehicle_number = detailData.vehicle_number;
+        this.vehicle_type = detailData.vehicle_type;
+        this.vehicle_color = detailData.vehicle_color;
+        this.vehicle_seats = detailData.vehicle_seats;
+        this.vehicle_status = detailData.vehicle_status;
+
+        this.isModalDetailOpen = true;
+        this.cdRef.detectChanges();
+      })
+      .catch((error) => {
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
+      });
+  }
+
+  closeDetailModal() {
+    this.isModalDetailOpen = false;
+    this.cdRef.detectChanges();
   }
 
   onDeleteVehicle(id: string) {

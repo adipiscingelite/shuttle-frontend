@@ -6,7 +6,7 @@
   display: none;
 } */
 #map {
-  height: 400px;
+  height: 100%;
   width: 100%;
   border-radius: 10px;
   z-index: 1;
@@ -15,4 +15,6 @@
 .leaflet-routing-instructions {
   display: none !important;
 }
+
+
 

@@ -108,9 +108,10 @@ export class RoutesComponent implements OnInit {
   user_uuid: string = '';
   user_username: string = '';
   driver_name: string = '';
+  student_name: string = '';
   student_uuid: string = '';
   student_first_name: string = '';
-  school_id: string = '';
+  school_uuid: string = '';
   route_name: string = '';
   route_description: string = '';
 
@@ -255,7 +256,7 @@ export class RoutesComponent implements OnInit {
           `;
         viewButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          // this.openDetailModal(params.data.student_uuid);
+          this.openDetailModal(params.data.route_uuid);
         });
 
         const deleteButton = document.createElement('button');
@@ -275,7 +276,7 @@ export class RoutesComponent implements OnInit {
           `;
         deleteButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          // this.onDeleteStudent(params.data.student_uuid);
+          this.onDeleteRoute(params.data.route_uuid);
         });
 
         buttonContainer.appendChild(editButton);
@@ -397,7 +398,7 @@ export class RoutesComponent implements OnInit {
     const requestData = {
       driver_uuid: this.driver_uuid,
       student_uuid: this.student_uuid,
-      school_id: this.school_id,
+      school_id: this.school_uuid,
       route_name: this.route_name,
       route_description: this.route_description,
     };
@@ -427,7 +428,7 @@ export class RoutesComponent implements OnInit {
     this.isModalAddOpen = false;
     this.cdRef.detectChanges();
   }
-  
+
   openEditModal(route_uuid: string) {
     axios
       .get(`${this.apiUrl}/api/school/route/${route_uuid}`, {
@@ -438,14 +439,16 @@ export class RoutesComponent implements OnInit {
       .then((response) => {
         console.log('edit', response);
 
-        const editData = response.data.route
+        const editData = response.data.route;
 
-        this.route_name = editData.route_name
-        this.route_description = editData.route_description
-        this.user_uuid = editData.user_uuid
-        this.user_username = editData.user_username
-        this.student_uuid = editData.student_uuid
-        this.student_first_name = editData.student_first_name
+        this.route_uuid = editData.route_uuid;
+        this.user_uuid = editData.user_uuid;
+        this.user_username = editData.user_username;
+        this.student_uuid = editData.student_uuid;
+        this.student_name = editData.student_name;
+        this.school_uuid = editData.school_uuid;
+        this.route_name = editData.route_name;
+        this.route_description = editData.route_description;
 
         // Buka modal
         this.isModalEditOpen = true;
@@ -464,13 +467,120 @@ export class RoutesComponent implements OnInit {
       });
   }
 
+  updateRoute() {
+    const requestData = {
+      driver_uuid: this.user_uuid,
+      student_uuid: this.student_uuid,
+      school_uuid: this.school_uuid,
+      route_name: this.route_name,
+      route_description: this.route_description,
+    };
+    console.log('request', requestData);
+
+    axios
+      .put(
+        `${this.apiUrl}/api/school/route/update/${this.route_uuid}`,
+        requestData,
+        {
+          headers: {
+            Authorization: `${this.cookieService.get('accessToken')}`,
+          },
+        },
+      )
+      .then((response) => {
+        const responseMessage = response.data?.message || 'Success.';
+        this.showToast(responseMessage, 3000, Response.Success);
+
+        this.getAllRoute();
+        this.isModalEditOpen = false;
+      })
+      .catch((error) => {
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
+      });
+  }
+
   closeEditModal() {
     this.isModalEditOpen = false;
     this.cdRef.detectChanges();
   }
 
-  updateRoute(){
+  openDetailModal(route_uuid: string) {
+    axios
+      .get(`${this.apiUrl}/api/school/route/${route_uuid}`, {
+        headers: {
+          Authorization: `${this.cookieService.get('accessToken')}`,
+        },
+      })
+      .then((response) => {
+        console.log('detailData', response);
 
+        const detailData = response.data.route;
+
+        this.route_uuid = detailData.route_uuid;
+        this.user_uuid = detailData.user_uuid;
+        this.user_username = detailData.user_username;
+        this.student_uuid = detailData.student_uuid;
+        this.student_name = detailData.student_name;
+        this.school_uuid = detailData.school_uuid;
+        this.route_name = detailData.route_name;
+        this.route_description = detailData.route_description;
+
+        // Buka modal
+        this.isModalDetailOpen = true;
+        this.cdRef.detectChanges(); // Pastikan perubahan terdeteksi di view
+      })
+      .catch((error) => {
+        Swal.fire({
+          title: 'Error',
+          text: error.response.data.message,
+          icon: 'error',
+          timer: 2000,
+          timerProgressBar: true,
+          showCancelButton: false,
+          showConfirmButton: false,
+        });
+      });
+  }
+
+  closeDetailModal() {
+    this.isModalDetailOpen = false;
+    this.cdRef.detectChanges();
+  }
+
+  // Delete route
+  onDeleteRoute(route_uuid: string) {
+    this.isModalDeleteOpen = true;
+    this.route_uuid = route_uuid;
+    this.cdRef.detectChanges();
+  }
+
+  performDeleteRoute(route_uuid: string) {
+    axios
+      .delete(`${this.apiUrl}/api/school/route/delete/${route_uuid}`, {
+        headers: {
+          Authorization: `${this.cookieService.get('accessToken')}`,
+        },
+      })
+      .then((response) => {
+        const responseMessage = response.data?.message || 'Success.';
+        this.showToast(responseMessage, 3000, Response.Success);
+
+        this.getAllRoute();
+        this.isModalDeleteOpen = false;
+        this.cdRef.detectChanges();
+      })
+      .catch((error) => {
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
+      });
+  }
+
+  closeDeleteModal() {
+    this.isModalDeleteOpen = false;
+    this.cdRef.detectChanges();
   }
 
   showToast(message: string, duration: number, type: Response) {

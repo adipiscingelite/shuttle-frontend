@@ -159,7 +159,7 @@ export class VehiclesAdminComponent implements OnInit {
         `;
         viewButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.openViewModal(params.data.vehicle_uuid);
+          this.openDetailModal(params.data.vehicle_uuid);
         });
 
         const deleteButton = document.createElement('button');
@@ -404,6 +404,39 @@ export class VehiclesAdminComponent implements OnInit {
           error.response?.data?.message || 'An unexpected error occurred.';
         this.showToast(responseMessage, 3000, Response.Error);
       });
+  }
+
+  openDetailModal(student_uuid: string) {
+    axios
+      .get(`${this.apiUrl}/api/school/vehicle/${student_uuid}`, {
+        headers: {
+          Authorization: `${this.cookieService.get('accessToken')}`,
+        },
+      })
+      .then((response) => {
+        const detailData = response.data.data;
+
+        this.vehicle_uuid = detailData.vehicle_uuid;
+        this.vehicle_name = detailData.vehicle_name;
+        this.vehicle_number = detailData.vehicle_number;
+        this.vehicle_type = detailData.vehicle_type;
+        this.vehicle_color = detailData.vehicle_color;
+        this.vehicle_seats = detailData.vehicle_seats;
+        this.vehicle_status = detailData.vehicle_status;
+
+        this.isModalDetailOpen = true;
+        this.cdRef.detectChanges();
+      })
+      .catch((error) => {
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
+      });
+  }
+
+  closeDetailModal() {
+    this.isModalDetailOpen = false;
+    this.cdRef.detectChanges();
   }
 
   onDeleteVehicle(id: string) {

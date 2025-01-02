@@ -1,10 +1,8 @@
 <div>
   <div class="my-5">
     <h1 class="text-lg font-semibold text-neutral-700">Manage Your Child's Data</h1>
-    <p class="text-sm text-gray-600">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Cum minus similique
-      laborum veniam perferendis enim quisquam illum? Excepturi aperiam facilis vitae obcaecati possimus modi minima!
-      Distinctio a laudantium omnis doloribus mollitia, culpa excepturi quibusdam reiciendis necessitatibus veritatis,
-      dolorum harum? Et earum debitis dolores similique porro itaque autem praesentium nulla dolor?</p>
+    <p class="text-sm text-gray-600">Here you can view and update the details of your child(ren). You can make changes
+      to their information as needed to ensure everything is accurate.</p>
     <br>
   </div>
 
@@ -22,7 +20,7 @@
           <p class="text-sm">{{child.school_name}}</p>
 
           <h1 class="text-lg font-medium capitalize">{{child.student_first_name}} {{child.student_last_name}}</h1>
-          <p class="text-sm text-neutral-600">Unnamed Road, Lorino, Chukotka Autonomous Okrug, Rusia, 689315</p>
+          <!-- <p class="text-sm text-neutral-600">Unnamed Road, Lorino, Chukotka Autonomous Okrug, Rusia, 689315</p> -->
         </div>
       </div>
 
@@ -160,24 +158,43 @@
             Pickup Point <app-asterisk></app-asterisk>
           </label>
           <div class="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+            <div class="col-span-1">
               <label for="latitude" class="block text-sm text-gray-700">Latitude</label>
-              <input type="number" id="latitude" name="latitude" placeholder="e.g. -7.782933863682392" [(ngModel)]="latitude"
-                class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+              <input type="number" id="latitude" name="latitude" placeholder="e.g. -7.782933863682392"
+                [(ngModel)]="latitude" class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
                 maxlength="" #latitudeModel="ngModel" required />
               <div *ngIf="latitudeModel.invalid && latitudeModel.touched" class="mt-1 text-sm text-pink-600">
                 <app-required-common></app-required-common>
               </div>
-            </div> 
+            </div>
 
-            <div>
+            <div class="col-span-1">
               <label for="longitude" class="block text-sm text-gray-700">Longiude</label>
-              <input type="number" id="longitude" name="longitude" placeholder="e.g. 110.3670707397556" [(ngModel)]="longitude"
-                class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+              <input type="number" id="longitude" name="longitude" placeholder="e.g. 110.3670707397556"
+                [(ngModel)]="longitude" class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
                 maxlength="" #longitudeModel="ngModel" required />
               <div *ngIf="longitudeModel.invalid && longitudeModel.touched" class="mt-1 text-sm text-pink-600">
                 <app-required-common></app-required-common>
               </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="w-full flex justify-center text-sm text-gray-600 md:col-span-2">
+              <span class="bg-white px-4">or</span>
+            </div>
+
+            <!-- Input URL -->
+            <div class="md:col-span-2">
+              <label for="google_map_url" class="block text-sm text-gray-700">
+                Google Maps URL (Beta)
+              </label>
+              <input type="text" id="google_map_url" name="google_map_url" placeholder="Paste Google Maps link here"
+                [(ngModel)]="googleMapUrl"
+                class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
+                (change)="getCoordinateByUrl()" />
+              <p class="text-xs text-gray-500 italic mt-2">
+                Ensure the URL contains latitude and longitude values. This feature is still in beta.
+              </p>
             </div>
           </div>
         </div>

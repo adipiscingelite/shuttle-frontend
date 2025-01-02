@@ -404,7 +404,32 @@ export class SchoolAdminDriversComponent implements OnInit {
 
   // Add driver
   openAddModal() {
+    // For data drivers
+    this.user_uuid = '';
+    this.username = '';
+    this.first_name = '';
+    this.last_name = '';
+    this.gender = '';
+    this.email = '';
+    this.password = '';
+    this.role = '';
+    this.role_code = '';
+    this.phone = '';
+    this.address = '';
+    this.status = '';
+    this.license_number = '';
+
+    // For data school
+    this.school_id = '';
+    this.school_name = '';
+
+    // For data vehicle
+    this.vehicle_uuid = '';
+    this.vehicle_name = '';
+    this.vehicle_number = '';
+
     this.isModalAddOpen = true;
+    this.cdRef.detectChanges();
   }
 
   addDriver() {
@@ -474,6 +499,10 @@ export class SchoolAdminDriversComponent implements OnInit {
         this.address = editData?.user_details?.user_address || '';
         this.license_number = editData.user_details?.license_number || '';
         this.vehicle_uuid = editData?.user_details?.vehicle_uuid || '';
+
+        this.initialAvatar =
+          this.first_name.charAt(0).toUpperCase() +
+          this.last_name.charAt(0).toUpperCase();
 
         this.isModalEditOpen = true;
         this.cdRef.detectChanges();
@@ -557,13 +586,11 @@ export class SchoolAdminDriversComponent implements OnInit {
         this.phone = detailData?.user_details?.user_phone || '';
         this.address = detailData?.user_details?.user_address || '';
         this.license_number = detailData.user_details?.license_number || '';
-        this.vehicle_uuid =
-          detailData?.user_details?.vehicle_uuid || '';
+        this.vehicle_uuid = detailData?.user_details?.vehicle_uuid || '';
 
-          
         this.initialAvatar =
-        this.first_name.charAt(0).toUpperCase() +
-        this.last_name.charAt(0).toUpperCase();
+          this.first_name.charAt(0).toUpperCase() +
+          this.last_name.charAt(0).toUpperCase();
 
         this.isModalDetailOpen = true;
         this.cdRef.detectChanges();

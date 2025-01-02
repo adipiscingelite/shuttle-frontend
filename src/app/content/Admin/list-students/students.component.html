@@ -123,8 +123,8 @@
       <!-- Modal body -->
       <form class="p-6" #addStudentForm="ngForm" (ngSubmit)="addStudent()">
         <div class="flex items-center gap-x-8 my-9">
-          <img class="w-16 aspect-square rounded-full"
-            src="https://i.pinimg.com/474x/28/c2/0b/28c20b3bf4e1a48334b2278d3c7fb447.jpg" alt="">
+          <img class="w-16 aspect-square rounded-full object-cover"
+            src="https://i.pinimg.com/474x/99/bb/d4/99bbd461d7218caf0506be4e9aeab425.jpg" alt="">
           <div class="form-header mb-4">
             <h2 class="text-xl font-semibold text-gray-800">Add a New Student</h2>
             <p class="text-sm text-gray-600">Fill in the details below to add a new Student.</p>
@@ -236,8 +236,9 @@
             Pickup Point <app-asterisk></app-asterisk>
           </label>
           <div class="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label for="student_pickup_latitude" class="block text-sm text-gray-700">Latitude</label>
+            <div class="col-span-1">
+              <label for="student_pickup_latitude" class="block text-sm text-gray-700">Latitude
+                <app-asterisk></app-asterisk></label>
               <input type="number" id="student_pickup_latitude" name="student_pickup_latitude"
                 placeholder="e.g. -7.782933863682392" [(ngModel)]="student_pickup_latitude"
                 class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
@@ -248,8 +249,9 @@
               </div>
             </div>
 
-            <div>
-              <label for="student_pickup_longitude" class="block text-sm text-gray-700">Longiude</label>
+            <div class="col-span-1">
+              <label for="student_pickup_longitude" class="block text-sm text-gray-700">Longitude
+                <app-asterisk></app-asterisk></label>
               <input type="number" id="student_pickup_longitude" name="student_pickup_longitude"
                 placeholder="e.g. 110.3670707397556" [(ngModel)]="student_pickup_longitude"
                 class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
@@ -259,16 +261,30 @@
                 <app-required-common></app-required-common>
               </div>
             </div>
+
+            <!-- Divider -->
+            <div class="w-full flex justify-center text-sm text-gray-600 md:col-span-2">
+              <span class="bg-white px-4">or</span>
+            </div>
+
+            <!-- Input URL -->
+            <div class="md:col-span-2">
+              <label for="google_map_url" class="block text-sm text-gray-700">
+                Google Maps URL (Beta)
+              </label>
+              <input type="text" id="google_map_url" name="google_map_url" placeholder="Paste Google Maps link here"
+                [(ngModel)]="googleMapUrl"
+                class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
+                (change)="getCoordinateByUrl()" />
+              <p class="text-xs text-gray-500 italic mt-2">
+                Ensure the URL contains latitude and longitude values. This feature is still in beta.
+              </p>
+            </div>
           </div>
         </div>
 
-        <!-- Divider -->
-        <!-- <div class="w-full flex justify-center my-4 text-sm text-gray-600">
-          <span class="bg-white px-4">or</span>
-        </div> -->
-
         <!-- Maps -->
-        <!-- <details class="w-full group mt-4">
+        <details class="w-full group mt-4">
           <summary
             class="flex justify-between items-center font-medium cursor-pointer list-none text-blue-600 hover:underline select-none">
             <span>Use map instead</span>
@@ -281,22 +297,25 @@
           </summary>
           <div
             class="text-gray-600 mt-4 group-open:animate-fadeIn px-4 border border-gray-200 rounded-lg p-3 bg-gray-50 shadow-sm">
-            s
             <p class="text-sm">Use the map below to set the pickup location:</p>
             <p class="text-xs text-gray-500 italic mt-2">
               Click anywhere on the map to set the latitude and longitude automatically.
             </p>
             <div class="mt-3">
               <div class="h-64 bg-gray-200 rounded-lg shadow-md flex items-center justify-center">
-                <div #mapContainer class="map"></div>
+                <!-- <div #mapContainer class="map"></div> -->
+                <div id="map" class="relative"></div>
               </div>
             </div>
+            <p class="text-xs text-red-500 py-1 ">*Refresh if the map doesn't appear.</p>
           </div>
-        </details> -->
+        </details>
 
-        <br>
-        <hr>
-        <br>
+        <div class="relative flex py-5 items-center">
+          <div class="flex-grow border-t border-gray-400"></div>
+          <span class="flex-shrink mx-4 text-gray-400">Parent</span>
+          <div class="flex-grow border-t border-gray-400"></div>
+        </div>
 
         <div class="flex items-center gap-x-8 my-9">
           <img class="w-16 aspect-square rounded-full"
@@ -309,72 +328,155 @@
 
         <hr>
 
-        <div class="mt-4">
-          <label for="parent_name" class="text-sm mb-1">Username <app-asterisk></app-asterisk></label>
-          <input type="text" id="parent_name" name="parent_name" placeholder="e.g. parenttono" [(ngModel)]="parent_name"
-            class="border text-sm rounded-lg p-2 px-3 w-full" required />
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="parent_name" class="block text-sm font-medium text-gray-700 col-span-1">
+            Username <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <input type="text" id="parent_name" name="parent_name" placeholder="e.g. parent-student"
+              [(ngModel)]="parent_name" class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
+              [ngClass]="{'border-red-500': usernameParentModel.touched && usernameParentModel.invalid}" maxlength=""
+              #usernameParentModel="ngModel" required />
+            <div *ngIf="usernameParentModel.invalid && usernameParentModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
         </div>
 
         <hr>
 
-        <div class="mt-4">
-          <label for="parent_first_name" class="text-sm mb-1">First Name <app-asterisk></app-asterisk></label>
-          <input type="text" id="parent_first_name" name="parent_first_name" placeholder="e.g. Parent"
-            [(ngModel)]="parent_first_name" class="border text-sm rounded-lg p-2 px-3 w-full" required />
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="parent_first_name" class="block text-sm font-medium text-gray-700 col-span-1">
+            Name <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="parent_first_name" class="block text-sm text-gray-700">
+                First Name <app-asterisk></app-asterisk>
+              </label>
+              <div class="col-span-2">
+                <input type="text" id="parent_first_name" name="parent_first_name" placeholder="e.g. John"
+                  [(ngModel)]="parent_first_name"
+                  class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
+                  [ngClass]="{'border-red-500': firstnameParentModel.touched && firstnameParentModel.invalid}"
+                  maxlength="" #firstnameParentModel="ngModel" required />
+                <div *ngIf="firstnameParentModel.invalid && firstnameParentModel.touched"
+                  class="mt-1 text-sm text-pink-600">
+                  <app-required-common></app-required-common>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label for="parent_last_name" class="block text-sm text-gray-700">
+                Last Name <app-asterisk></app-asterisk>
+              </label>
+              <div class="col-span-2">
+                <input type="text" id="parent_last_name" name="parent_last_name" placeholder="e.g. Doe"
+                  [(ngModel)]="parent_last_name"
+                  class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
+                  [ngClass]="{'border-red-500': lastnameParentModel.touched && lastnameParentModel.invalid}"
+                  maxlength="" #lastnameParentModel="ngModel" required />
+                <div *ngIf="lastnameParentModel.invalid && lastnameParentModel.touched"
+                  class="mt-1 text-sm text-pink-600">
+                  <app-required-common></app-required-common>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
 
         <hr>
 
-        <div class="mt-4">
-          <label for="parent_last_name" class="text-sm mb-1">Last Name <app-asterisk></app-asterisk></label>
-          <input type="text" id="parent_last_name" name="parent_last_name" placeholder="e.g. John"
-            [(ngModel)]="parent_last_name" class="border text-sm rounded-lg p-2 px-3 w-full" required />
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="parent_gender" class="block text-sm font-medium text-gray-700 col-span-1">
+            Gender <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <select id="parent_gender" [(ngModel)]="parent_gender" name="parent_gender"
+              class="bg-gray-50 border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
+              [ngClass]="{'border-red-500': genderParentModel.touched && genderParentModel.invalid}"
+              #genderParentModel="ngModel" required>
+              <option value="" disabled selected>Choose the gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+            <div *ngIf="genderParentModel.invalid && genderParentModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
         </div>
 
         <hr>
 
-        <div class="mt-4">
-          <label for="parent_gender" class="text-sm mb-1">Gender <app-asterisk></app-asterisk></label>
-          <select id="parent_gender" [(ngModel)]="parent_gender" name="parent_gender"
-            class="border text-sm rounded-lg p-2 px-3 w-full" required>
-            <option value="" disabled selected>Choose Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="parent_email" class="block text-sm font-medium text-gray-700 col-span-1">
+            Email <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <input type="email" id="parent_email" name="parent_email" placeholder="e.g. email@gmail.com"
+              [(ngModel)]="parent_email" class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
+              [ngClass]="{'border-red-500': emailParentModel.touched && emailParentModel.invalid}" maxlength=""
+              #emailParentModel="ngModel" required />
+            <div *ngIf="emailParentModel.invalid && emailParentModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
         </div>
 
         <hr>
 
-        <div class="mt-4">
-          <label for="parent_email" class="text-sm mb-1">Email <app-asterisk></app-asterisk></label>
-          <input type="email" id="parent_email" name="parent_email" placeholder="e.g. email@gmail.com"
-            [(ngModel)]="parent_email" class="border text-sm rounded-lg p-2 px-3 w-full" required />
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="parent_password" class="block text-sm font-medium text-gray-700 col-span-1">
+            Password <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <input type="password" id="parent_password" name="parent_password" placeholder="e.g. ********"
+              [(ngModel)]="parent_password"
+              class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
+              [ngClass]="{'border-red-500': passwordParentModel.touched && passwordParentModel.invalid}" maxlength=""
+              #passwordParentModel="ngModel" required />
+            <div *ngIf="passwordParentModel.invalid && passwordParentModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
         </div>
 
         <hr>
 
-        <div class="mt-4">
-          <label for="parent_password" class="text-sm mb-1">Password <app-asterisk></app-asterisk></label>
-          <input type="password" id="parent_password" name="parent_password" placeholder="e.g. ********"
-            [(ngModel)]="parent_password" class="border text-sm rounded-lg p-2 px-3 w-full" required />
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="parent_phone" class="block text-sm font-medium text-gray-700 col-span-1">
+            Phone <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <input type="tel" id="parent_phone" name="parent_phone" placeholder="e.g. 081234567890"
+              [(ngModel)]="parent_phone" class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
+              [ngClass]="{'border-red-500': phoneParentModel.touched && phoneParentModel.invalid}" maxlength=""
+              #phoneParentModel="ngModel" required />
+            <div *ngIf="phoneParentModel.invalid && phoneParentModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
         </div>
 
         <hr>
 
-        <div class="mt-4">
-          <label for="parent_phone" class="text-sm mb-1">Phone <app-asterisk></app-asterisk></label>
-          <input type="tel" id="parent_phone" name="parent_phone" placeholder="e.g. 081234567890"
-            [(ngModel)]="parent_phone" class="border text-sm rounded-lg p-2 px-3 w-full" required />
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="parent_address" class="block text-sm font-medium text-gray-700 col-span-1">
+            Address <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <input type="text" id="parent_address" name="parent_address"
+              placeholder="e.g.  Acasia St, Sleman, Yogyakarta" [(ngModel)]="parent_address"
+              class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
+              [ngClass]="{'border-red-500': addressParentModel.touched && addressParentModel.invalid}" maxlength=""
+              #addressParentModel="ngModel" required />
+            <div *ngIf="addressParentModel.invalid && addressParentModel.touched" class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
         </div>
-
-        <hr>
-
-        <div class="mt-4">
-          <label for="parent_address" class="text-sm mb-1">Address <app-asterisk></app-asterisk></label>
-          <textarea id="parent_address" name="parent_address" placeholder="e.g. Acasia St, Sleman, Yogyakarta"
-            [(ngModel)]="parent_address" class="border text-sm rounded-lg p-2 px-3 w-full" required></textarea>
-        </div>
-
       </form>
 
       <!-- Modal footer -->
@@ -393,17 +495,38 @@
     class="fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
     <div (click)="$event.stopPropagation()" [@modalScale]
       class="relative p w-full max-w-xl md:max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700 max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
+      <div class="relative w-full h-40 bg-gray-200">
+        <!-- <img class="w-full h-full object-cover"
+        src="https://i.pinimg.com/736x/04/eb/f4/04ebf44dc5815e86cafebe8be1142d39.jpg" alt=""> -->
+        <div class=" px-8">
+          <div class="absolute bottom-0 translate-y-1/2 w-24 p-1 rounded-full aspect-square bg-white ">
+            <div
+              class="w-full aspect-square flex items-center justify-center text-3xl font-semibold text-white rounded-full border border-black bg-blue-500">
+              {{initialAvatar}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center justify-end space-x-4 px-8 my-3 w-full">
+        <button class="border px-3 py-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"
+            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M4.1 17.813c.057-.206-.066-.491-.184-.697a2.007 2.007 0 0 0-.12-.178 9.366 9.366 0 0 1-1.546-5.156C2.233 6.52 6.596 2.25 11.992 2.25c4.705 0 8.633 3.26 9.55 7.587a9.32 9.32 0 0 1 .208 1.952c0 5.269-4.195 9.606-9.59 9.606-.858 0-2.016-.216-2.647-.393a17.714 17.714 0 0 1-1.425-.474A1.46 1.46 0 0 0 7 20.545l-3.18 1.148a.748.748 0 0 1-.218.057.45.45 0 0 1-.45-.457.744.744 0 0 1 .029-.154l.92-3.326Z">
+            </path>
+            <path fill="currentColor" stroke="none" d="M7.5 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path>
+            <path fill="currentColor" stroke="none" d="M12 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path>
+            <path fill="currentColor" stroke="none" d="M16.5 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path>
+          </svg>
+        </button>
+        <!-- <button class="border px-3 py-1 rounded-lg">WA</button> -->
+      </div>
+      <div class="px-8">
+        <h1 class="text-xl md:text-3xl font-semibold">{{student_first_name}} {{student_last_name}}</h1>
+        <!-- <p class="text-sm text-neutral-700">{{student_grade}}</p> -->
+      </div>
 
       <!-- Modal body -->
       <form class="p-6" #addStudentForm="ngForm" (ngSubmit)="updateStudent()">
-        <div class="flex items-center gap-x-8 my-9">
-          <img class="w-16 aspect-square rounded-full"
-            src="https://i.pinimg.com/474x/28/c2/0b/28c20b3bf4e1a48334b2278d3c7fb447.jpg" alt="">
-          <div class="form-header mb-4">
-            <h2 class="text-xl font-semibold text-gray-800">Edit Student Information</h2>
-            <p class="text-sm text-gray-600">Modify the details below to update the student's information.</p>
-          </div>
-        </div>
 
         <hr>
 
@@ -510,7 +633,7 @@
             Pickup Point <app-asterisk></app-asterisk>
           </label>
           <div class="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+            <div class="col-span-1">
               <label for="student_pickup_latitude" class="block text-sm text-gray-700">Latitude
                 <app-asterisk></app-asterisk></label>
               <input type="number" id="student_pickup_latitude" name="student_pickup_latitude"
@@ -522,7 +645,7 @@
               </div>
             </div>
 
-            <div>
+            <div class="col-span-1">
               <label for="student_pickup_longitude" class="block text-sm text-gray-700">Longiude
                 <app-asterisk></app-asterisk></label>
               <input type="number" id="student_pickup_longitude" name="student_pickup_longitude"
@@ -533,16 +656,61 @@
                 <app-required-common></app-required-common>
               </div>
             </div>
+
+            <!-- Divider -->
+            <div class="w-full flex justify-center text-sm text-gray-600 md:col-span-2">
+              <span class="bg-white px-4">or</span>
+            </div>
+
+            <!-- Input URL -->
+            <div class="md:col-span-2">
+              <label for="google_map_url" class="block text-sm text-gray-700">
+                Google Maps URL (Beta)
+              </label>
+              <input type="text" id="google_map_url" name="google_map_url" placeholder="Paste Google Maps link here"
+                [(ngModel)]="googleMapUrl"
+                class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
+                (change)="getCoordinateByUrl()" />
+              <p class="text-xs text-gray-500 italic mt-2">
+                Ensure the URL contains latitude and longitude values. This feature is still in beta.
+              </p>
+            </div>
           </div>
         </div>
 
-
+        <!-- Maps -->
+        <details class="w-full group mt-4">
+          <summary
+            class="flex justify-between items-center font-medium cursor-pointer list-none text-blue-600 hover:underline select-none">
+            <span>Use map instead</span>
+            <span class="transition-transform group-open:rotate-180">
+              <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor"
+                stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24">
+                <path d="M6 9l6 6 6-6"></path>
+              </svg>
+            </span>
+          </summary>
+          <div
+            class="text-gray-600 mt-4 group-open:animate-fadeIn px-4 border border-gray-200 rounded-lg p-3 bg-gray-50 shadow-sm">
+            <p class="text-sm">Use the map below to set the pickup location:</p>
+            <p class="text-xs text-gray-500 italic mt-2">
+              Click anywhere on the map to set the latitude and longitude automatically.
+            </p>
+            <div class="mt-3">
+              <div class="h-64 bg-gray-200 rounded-lg shadow-md flex items-center justify-center">
+                <!-- <div #mapContainer class="map"></div> -->
+                <div id="map" class="relative"></div>
+              </div>
+            </div>
+            <p class="text-xs text-red-500 py-1 ">*Refresh if the map doesn't appear.</p>
+          </div>
+        </details>
       </form>
 
       <!-- Modal footer -->
       <div
         class="w-full flex items-center justify-end p-4 gap-x-3 border-t border-gray-200 rounded-b dark:border-gray-600">
-        <button (click)="closeAddModal()" type="button"
+        <button (click)="closeEditModal()" type="button"
           class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700">Cancel</button>
         <button (click)="updateStudent()" type="button"
           class="text-white bg-[#3A3A3A] hover:bg-black focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Save
@@ -672,7 +840,7 @@
             Pickup Point
           </label>
           <div class="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+            <div class="col-span-1">
               <label for="student_pickup_latitude" class="block text-sm text-gray-700">Latitude</label>
               <input type="text" id="student_pickup_latitude" name="student_pickup_latitude"
                 [(ngModel)]="student_pickup_latitude"
@@ -680,7 +848,7 @@
                 disabled />
             </div>
 
-            <div>
+            <div class="col-span-1">
               <label for="student_pickup_longitude" class="block text-sm text-gray-700">Longitude</label>
               <input type="text" id="student_pickup_longitude" name="student_pickup_longitude"
                 [(ngModel)]="student_pickup_longitude"

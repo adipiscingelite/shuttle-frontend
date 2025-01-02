@@ -16,6 +16,21 @@ interface Childern {
   school_uuid: string;
   school_name: string;
 }
+
+interface Recap {
+  shuttle_uuid: string;
+  student_uuid: string;
+  student_first_name: string;
+  student_last_name: string;
+  student_grade: string;
+  student_gender: string;
+  school_uuid: string;
+  school_name: string;
+  status: string;
+  date: string;
+  created_at: string;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -37,6 +52,7 @@ export class DashboardParentComponent implements OnInit {
   isLoading: boolean = false;
 
   rowListChildern: Childern[] = [];
+  rowListRecap: Recap[] = [];
 
   private map: L.Map | undefined;
   private marker: L.Marker | undefined;
@@ -61,6 +77,7 @@ export class DashboardParentComponent implements OnInit {
   ngOnInit(): void {
     this.startWatchingPosition();
     this.getAllMyChildern();
+    this.getAllChildernRecap()
   }
 
   ngOnDestroy(): void {
@@ -96,6 +113,32 @@ export class DashboardParentComponent implements OnInit {
       });
   }
 
+  getAllChildernRecap() {
+    axios
+      .get(`${this.apiUrl}/api/parent/my/childern/recap`, {
+        headers: {
+          Authorization: `${this.cookieService.get('accessToken')}`,
+        },
+      })
+      .then((response) => {
+        console.log('rekap', response);
+  
+        // Sort by `created_at` in descending order
+        this.rowListRecap = response.data.sort(
+          (a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+  
+        // Take only the top 3 records
+        this.rowListRecap = this.rowListRecap.slice(0, 3);
+  
+        console.log(this.rowListRecap);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+        this.rowListRecap = []; // Ensure it's empty in case of error
+      });
+  }
+  
   private startWatchingPosition(): void {
     if ('geolocation' in navigator) {
       // Tampilkan spinner saat menunggu

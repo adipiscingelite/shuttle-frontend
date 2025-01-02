@@ -45,68 +45,7 @@ export class AttendanceComponent implements OnInit {
   startRow: number = 1;
   endRow: number = 10;
 
-  rowListRecap: Recap[] = [
-    // {
-    //   shuttle_uuid: 'SH-001',
-    //   student_uuid: 'STU-001',
-    //   student_name: 'John Smith',
-    //   school_name: 'Green Valley High School',
-    // },
-    // {
-    //   shuttle_uuid: 'SH-002',
-    //   student_uuid: 'STU-002',
-    //   student_name: 'Emily Johnson',
-    //   school_name: 'Blue River Middle School',
-    // },
-    // {
-    //   shuttle_uuid: 'SH-001',
-    //   student_uuid: 'STU-003',
-    //   student_name: 'Michael Brown',
-    //   school_name: 'Green Valley High School',
-    // },
-    // {
-    //   shuttle_uuid: 'SH-003',
-    //   student_uuid: 'STU-004',
-    //   student_name: 'Sophia Davis',
-    //   school_name: 'Sunnydale Elementary School',
-    // },
-    // {
-    //   shuttle_uuid: 'SH-002',
-    //   student_uuid: 'STU-005',
-    //   student_name: 'James Wilson',
-    //   school_name: 'Blue River Middle School',
-    // },
-    // {
-    //   shuttle_uuid: 'SH-003',
-    //   student_uuid: 'STU-006',
-    //   student_name: 'Isabella Martinez',
-    //   school_name: 'Sunnydale Elementary School',
-    // },
-    // {
-    //   shuttle_uuid: 'SH-004',
-    //   student_uuid: 'STU-007',
-    //   student_name: 'Alexander Garcia',
-    //   school_name: 'Hillcrest High School',
-    // },
-    // {
-    //   shuttle_uuid: 'SH-004',
-    //   student_uuid: 'STU-008',
-    //   student_name: 'Mia Rodriguez',
-    //   school_name: 'Hillcrest High School',
-    // },
-    // {
-    //   shuttle_uuid: 'SH-005',
-    //   student_uuid: 'STU-009',
-    //   student_name: 'Ethan Lee',
-    //   school_name: 'Oakwood Academy',
-    // },
-    // {
-    //   shuttle_uuid: 'SH-005',
-    //   student_uuid: 'STU-010',
-    //   student_name: 'Olivia Hernandez',
-    //   school_name: 'Oakwood Academy',
-    // },
-  ];
+  rowListRecap: Recap[] = [  ];
 
   constructor(
     private cookieService: CookieService,

@@ -310,6 +310,41 @@ export class RouteManagementComponent {
         // Update the student's distance property
         student.distance = distanceInKilometers;
 
+        if(student.distance <= 0.1){
+          console.log('distance ',student.distance);
+          console.log('shuttle uuid',student.shuttle_uuid.String);
+          
+          // update(shuttle_id: string, status: string) {
+            axios
+              .put(
+                `${this.apiUrl}/api/driver/shuttle/update/${student.shuttle_uuid.String}`,
+                {
+                  // student_uuid: id,
+                  status: 'going_to_school',
+                },
+                {
+                  headers: {
+                    Authorization: `${this.token}`,
+                  },
+                },
+              )
+              .then((response) => {
+                // const responseMessage = response.data?.message || 'Success.';
+                // this.showToast(responseMessage, 3000, Response.Success);
+        
+                this.getAllShuttleStudent();
+        
+                // this.isModalAddOpen = false;
+                // this.cdRef.detectChanges();
+              })
+              .catch((error) => {
+                // const responseMessage =
+                //   error.response?.data?.message || 'An unexpected error occurred.';
+                // this.showToast(responseMessage, 3000, Response.Error);
+              });
+          // }
+        }
+
         // Add a marker for the student
         L.marker([latitude, longitude], { icon: studentIcon })
           .addTo(this.map!)

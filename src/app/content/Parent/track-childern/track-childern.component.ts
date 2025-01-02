@@ -118,6 +118,9 @@ export class TrackChildernComponent implements OnInit, OnDestroy {
     plateNumber: '',
   };
 
+  currentDate: string;
+  currentTime: string;
+
   preview: boolean = false;
   isLoading: boolean = false;
 
@@ -132,8 +135,6 @@ export class TrackChildernComponent implements OnInit, OnDestroy {
   private studentHouseMarker: L.Marker | undefined; // Destination marker
   private watchId: number | undefined; // ID for geolocation watch
 
-  // Lokasi destinasi
-
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -143,6 +144,10 @@ export class TrackChildernComponent implements OnInit, OnDestroy {
   ) {
     this.apiUrl = apiUrl;
     this.token = this.cookieService.get('accessToken');
+
+    const now = new Date();
+    this.currentDate = now.toLocaleDateString(); // For example: 01/02/2025
+    this.currentTime = now.toLocaleTimeString(); // For example: 12:45:30 PM
   }
 
   ngOnInit(): void {
@@ -186,7 +191,7 @@ export class TrackChildernComponent implements OnInit, OnDestroy {
       .then((response) => {
         this.rowListChildern = response.data;
 
-        console.log(response);
+        console.log('track', response);
 
         this.rowListChildern.forEach((child) => {
           const initialAvatar =
@@ -405,7 +410,7 @@ export class TrackChildernComponent implements OnInit, OnDestroy {
           this.current_date = data.current_date;
           this.start_time = data.created_at;
           this.pickup_point = JSON.parse(data.student_pickup_point); // Parse jika string JSON
-          this.student_first_name = data.student_first_name
+          this.student_first_name = data.student_first_name;
           this.driver_username = data.driver_username;
           this.destinationCoords = {
             lat: this.school_point?.latitude ?? 0,

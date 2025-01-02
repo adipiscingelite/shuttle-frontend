@@ -22,8 +22,8 @@ interface Childern {
 }
 
 interface StudentPickupPoint {
-  latitude: string;
-  longitude: string;
+  latitude: number;
+  longitude: number;
 }
 @Component({
   selector: 'app-childern',
@@ -51,8 +51,11 @@ export class ChildernComponent implements OnInit {
   school_uuid: string = '';
   school_name: string = '';
 
-  latitude: string = ''
-  longitude: string = ''
+  latitude: number | null = null
+  longitude: number | null = null
+  
+  // for map
+  googleMapUrl: string = '';
 
   initialAvatar: string = '';
 
@@ -113,7 +116,7 @@ export class ChildernComponent implements OnInit {
         this.student_first_name = editData.student_first_name;
         this.student_last_name = editData.student_last_name;
         this.student_grade = editData.student_grade;
-        this.student_gender = editData.student_gender;
+        this.student_gender = editData.student_gender.toLowerCase();
         this.student_address = editData.student_address;
         this.school_uuid = editData.school_uuid;
         this.school_name = editData.school_name;
@@ -187,4 +190,19 @@ export class ChildernComponent implements OnInit {
   removeToast(index: number) {
     this.toastService.remove(index);
   }
+
+  
+  getCoordinateByUrl(): void {
+    const regex = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+    const match = this.googleMapUrl.match(regex);
+
+    if (match) {
+      this.latitude = parseFloat(match[1]);
+      this.longitude = parseFloat(match[2]);
+    } else {
+      const responseMessage = 'Invalid Google Maps URL';
+      this.showToast(responseMessage, 3000, Response.Error);
+    }
+  }
+
 }

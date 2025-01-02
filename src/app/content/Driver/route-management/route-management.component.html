@@ -24,7 +24,7 @@
   <div class="flex items-center justify-between gap-x-6 mt-1 mb-4 px-5 py-3 rounded-lg bg-gray-50 shadow"
     *ngFor="let siswa of rowContohLokasiAnak">
     <div class="w-full">
-      <div class="flex items-center justify-between my-2">
+      <div class="md:flex items-center justify-between my-2">
         <div>
           <!-- Nama Siswa -->
           <h1 class="text-2xl font-semibold text-gray-800">
@@ -58,12 +58,20 @@
                   <span class="text-yellow-500">Waiting to be taken to school</span>
                 </ng-container>
 
+                <ng-container *ngIf="siswa.shuttle_status.String === 'going_to_school'">
+                  <span class="text-yellow-500">Going to school</span>
+                </ng-container>
+
                 <ng-container *ngIf="siswa.shuttle_status.String === 'at_school'">
                   <span class="text-green-500">At school</span>
                 </ng-container>
 
                 <ng-container *ngIf="siswa.shuttle_status.String === 'waiting_to_be_taken_to_home'">
                   <span class="text-blue-500">Waiting to be taken home</span>
+                </ng-container>
+
+                <ng-container *ngIf="siswa.shuttle_status.String === 'going_to_home'">
+                  <span class="text-blue-500">Going to home</span>
                 </ng-container>
 
                 <ng-container *ngIf="siswa.shuttle_status.String === 'home'">
@@ -87,25 +95,25 @@
         </div>
 
 
-        <button (click)="jemput(siswa.student_uuid)" class="px-4 py-1 rounded-full bg-black text-white"
+        <button (click)="jemput(siswa.student_uuid)" class="px-4 py-1 my-1 rounded-full bg-black text-white"
           *ngIf="siswa.shuttle_status.String === ''">
           Start Pickup
         </button>
         <button (click)="update(siswa.shuttle_uuid.String, 'going_to_school')"
-          class="px-4 py-1 rounded-full bg-black text-white"
+          class="px-4 py-1 my-1 rounded-full bg-black text-white"
           *ngIf="siswa.shuttle_status.String === 'waiting_to_be_taken_to_school'">
           Going to School
         </button>
         <button (click)="update(siswa.shuttle_uuid.String, 'at_school')"
-          class="px-4 py-1 rounded-full bg-black text-white" *ngIf="siswa.shuttle_status.String === 'going_to_school'">
+          class="px-4 py-1 my-1 rounded-full bg-black text-white" *ngIf="siswa.shuttle_status.String === 'going_to_school'">
           Arrived to School
         </button>
         <button (click)="update(siswa.shuttle_uuid.String, 'waiting_to_be_taken_to_home')"
-          class="px-4 py-1 rounded-full bg-black text-white" *ngIf="siswa.shuttle_status.String === 'at_school'">
+          class="px-4 py-1 my-1 rounded-full bg-black text-white" *ngIf="siswa.shuttle_status.String === 'at_school'">
           Start Pickup Home
         </button>
         <button (click)="update(siswa.shuttle_uuid.String, 'going_to_home')"
-          class="px-4 py-1 rounded-full bg-black text-white"
+          class="px-4 py-1 my-1 rounded-full bg-black text-white"
           *ngIf="siswa.shuttle_status.String === 'waiting_to_be_taken_to_home'">
           Going Home
         </button>

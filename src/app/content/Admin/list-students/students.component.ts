@@ -27,6 +27,7 @@ import { AgGridAngular } from 'ag-grid-angular';
 import { CookieService } from 'ngx-cookie-service';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import * as L from 'leaflet';
 
 // COMPONENTS
 import { HeaderComponent } from '@layouts/header/header.component';
@@ -92,7 +93,6 @@ interface schoolDetail {
   animations: [toastInOutAnimation, modalScaleAnimation],
 })
 export class StudentsComponent implements OnInit {
-  
   // For token
   token: string | null = '';
   // For sorting
@@ -117,6 +117,9 @@ export class StudentsComponent implements OnInit {
   student_pickup_point: string = '';
   student_pickup_latitude: number | null = null;
   student_pickup_longitude: number | null = null;
+
+  // for map
+  googleMapUrl: string = '';
 
   // For data parent
   parent_uuid: string = '';
@@ -149,6 +152,10 @@ export class StudentsComponent implements OnInit {
   // Row data to be displayed in the table
   rowListAllStudent: Student[] = [];
 
+  private map: L.Map | undefined;
+  private marker: L.Marker | undefined;
+  private watchId: number | undefined;
+
   constructor(
     private cookieService: CookieService,
     private cdRef: ChangeDetectorRef,
@@ -160,7 +167,9 @@ export class StudentsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // this.startWatchingPosition();
     this.getAllStudent();
+    // this.extractLatLonFromUrl('https://www.google.com/maps/@-7.761514,110.366105,21z?entry=ttu&g_ep=EgoyMDI0MTIxMS4wIKXMDSoASAFQAw%3D%3D')
   }
 
   themeClass = 'ag-theme-quartz';
@@ -226,12 +235,12 @@ export class StudentsComponent implements OnInit {
       maxWidth: 290,
       sortable: true,
     },
-    {
-      headerName: 'Pickup Point',
-      field: 'student_pickup_point',
-      maxWidth: 250,
-      sortable: true,
-    },
+    // {
+    //   headerName: 'Pickup Point',
+    //   field: 'student_pickup_point',
+    //   maxWidth: 250,
+    //   sortable: true,
+    // },
     {
       headerName: 'Actions',
       headerClass: 'justify-center',
@@ -398,7 +407,30 @@ export class StudentsComponent implements OnInit {
   }
 
   openAddModal() {
+    this.student_uuid = '';
+    this.student_first_name = '';
+    this.student_last_name = '';
+    this.student_gender = '';
+    this.student_grade = '';
+    this.student_address = '';
+    this.student_pickup_point = '';
+    this.student_pickup_latitude = null;
+    this.student_pickup_longitude = null;
+
+    this.parent_uuid = '';
+    this.parent_name = '';
+    this.parent_username = '';
+    this.parent_first_name = '';
+    this.parent_last_name = '';
+    this.parent_email = '';
+    this.parent_password = '';
+    this.parent_role = '';
+    this.parent_gender = '';
+    this.parent_phone = '';
+    this.parent_address = '';
+
     this.isModalAddOpen = true;
+    this.getCoordinateByMap();
   }
 
   addStudent() {
@@ -475,6 +507,10 @@ export class StudentsComponent implements OnInit {
         this.student_pickup_latitude = studentPickUpPoint.latitude;
         this.student_pickup_longitude = studentPickUpPoint.longitude;
 
+        this.initialAvatar =
+          this.student_first_name.charAt(0).toUpperCase() +
+          this.student_last_name.charAt(0).toUpperCase();
+
         this.parent_name = editData.parent_name;
         this.parent_username = editData.parent_username;
         this.parent_first_name = editData.first_name;
@@ -486,6 +522,7 @@ export class StudentsComponent implements OnInit {
 
         // Buka modal
         this.isModalEditOpen = true;
+        this.getCoordinateByMap();
         this.cdRef.detectChanges(); // Pastikan perubahan terdeteksi di view
       })
       .catch((error) => {
@@ -504,15 +541,15 @@ export class StudentsComponent implements OnInit {
   updateStudent() {
     const requestData = {
       // student: {
-        student_first_name: this.student_first_name,
-        student_last_name: this.student_last_name,
-        student_gender: this.student_gender,
-        student_grade: this.student_grade,
-        student_address: this.student_address,
-        student_pickup_point: {
-          latitude: this.student_pickup_latitude,
-          longitude: this.student_pickup_longitude,
-        },
+      student_first_name: this.student_first_name,
+      student_last_name: this.student_last_name,
+      student_gender: this.student_gender,
+      student_grade: this.student_grade,
+      student_address: this.student_address,
+      student_pickup_point: {
+        latitude: this.student_pickup_latitude,
+        longitude: this.student_pickup_longitude,
+      },
       // },
       // parent: {
       //   username: this.parent_username,
@@ -639,5 +676,94 @@ export class StudentsComponent implements OnInit {
 
   removeToast(index: number) {
     this.toastService.remove(index);
+  }
+
+  getCoordinateByUrl(): void {
+    const regex = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+    const match = this.googleMapUrl.match(regex);
+
+    if (match) {
+      this.student_pickup_latitude = parseFloat(match[1]);
+      this.student_pickup_longitude = parseFloat(match[2]);
+    } else {
+      const responseMessage = 'Invalid Google Maps URL';
+      this.showToast(responseMessage, 3000, Response.Error);
+    }
+  }
+
+  private getCoordinateByMap(): void {
+    // if ('geolocation' in navigator) {
+    // Reset map jika sudah ada
+    if (this.map) {
+      this.map.remove(); // Menghapus map lama
+      this.map = undefined; // Menghapus referensi map
+    }
+
+    // Start watching the position
+    this.watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        // Update coordinates on the page
+        const coordinatesElement = document.getElementById('coordinates');
+        if (coordinatesElement) {
+          coordinatesElement.textContent = `Latitude: ${lat}, Longitude: ${lon}`;
+        }
+
+        // Update the map and marker
+        this.map = L.map('map').setView(
+          [-7.76131921887155, 110.36293728044329],
+          12,
+        );
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors',
+        }).addTo(this.map);
+
+        this.map.on('click', (e: L.LeafletMouseEvent) => {
+          const clickedLat = e.latlng.lat;
+          const clickedLng = e.latlng.lng;
+
+          // Update marker position
+          if (this.marker) {
+            this.marker.setLatLng([clickedLat, clickedLng]);
+          } else {
+            this.marker = L.marker([clickedLat, clickedLng]).addTo(this.map!);
+          }
+
+          // Update form inputs
+          this.student_pickup_latitude = clickedLat;
+          this.student_pickup_longitude = clickedLng;
+        });
+        // Set loading status to false after location is retrieved
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error('Error watching location:', error);
+
+        const coordinatesElement = document.getElementById('coordinates');
+        if (coordinatesElement) {
+          coordinatesElement.textContent = 'Unable to detect location.';
+        }
+
+        // Set loading status to false if there's an error
+        this.isLoading = false;
+      },
+      {
+        enableHighAccuracy: true, // Use high-accuracy mode if available
+        maximumAge: 0, // Prevent using cached location
+        timeout: 10000, // Timeout after 10 seconds if no location is retrieved
+      },
+    );
+    // } else {
+    //   const coordinatesElement = document.getElementById('coordinates');
+    //   if (coordinatesElement) {
+    //     coordinatesElement.textContent =
+    //       'Geolocation is not supported by your browser.';
+    //   }
+
+    //   // Set loading status to false if geolocation is not supported
+    //   this.isLoading = false;
+    // }
   }
 }

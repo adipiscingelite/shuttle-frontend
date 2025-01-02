@@ -133,7 +133,10 @@ export class SuperadminsComponent implements OnInit {
   colHeaderListAllUser: ColDef<Superadmin>[] = [
     {
       headerName: 'No.',
-      valueGetter: 'node.rowIndex + 1',
+      valueGetter: (params: any) => {
+        // Hitung nomor urut berdasarkan posisi pagination
+        return (this.paginationPage - 1) * this.paginationItemsLimit + (params.node.rowIndex + 1);
+      },  
       width: 50,
       maxWidth: 70,
       pinned: 'left',
@@ -265,12 +268,56 @@ export class SuperadminsComponent implements OnInit {
     sortable: false,
   };
 
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.paginationTotalPage) {
+  getVisiblePages(): (number | string)[] {
+    const visiblePages: (number | string)[] = [];
+    const totalPages = this.paginationTotalPage;
+    const currentPage = this.paginationPage;
+
+    visiblePages.push(1);
+
+    if (totalPages <= 7) {
+      for (let i = 2; i < totalPages; i++) {
+        visiblePages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        visiblePages.push(2, 3, 4, '...', totalPages - 1);
+      } else if (currentPage >= totalPages - 2) {
+        visiblePages.push(
+          '...',
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+        );
+      } else {
+        visiblePages.push(
+          '...',
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          '...',
+        );
+      }
+    }
+
+    if (totalPages > 1) {
+      visiblePages.push(totalPages);
+    }
+
+    return visiblePages;
+  }
+
+  goToPage(page: number | string) {
+    if (
+      typeof page === 'number' &&
+      page >= 1 &&
+      page <= this.paginationTotalPage
+    ) {
       this.paginationPage = page;
       this.getAllSuperadmin();
     }
   }
+
 
   goToNextPage() {
     if (this.paginationPage < this.paginationTotalPage) {

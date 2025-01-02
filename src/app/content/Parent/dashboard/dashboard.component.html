@@ -38,38 +38,64 @@
       </div>
       <p class="text-sm text-neutral-500">Recent Attendance Overview</p>
       <div class="w-full min-h-48 mt-2 p-1 md:p-6 border rounded-xl shadow-md">
-        <table class="w-full h-full table-fixed text-sm md:text-base">
-          <thead>
-            <tr class="">
-              <th class="px-4 py-2 text-left">#</th>
-              <th class="px-4 py-2">First Name</th>
-              <th class="px-4 py-2">Date</th>
-              <th class="px-4 py-2">Status</th>
-            </tr>
-          </thead>
-          <tbody class="text-center">
-            <tr>
-              <td class="px-4 py-2 text-left">1</td>
-              <td class="px-4 py-2">John Doe</td>
-              <td class="px-4 py-2">22-12-2024</td>
-              <td class="px-4 py-2">Active</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-2 text-left">2</td>
-              <td class="px-4 py-2">John Doe</td>
-              <td class="px-4 py-2">22-12-2024</td>
-              <td class="px-4 py-2">Active</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-2 text-left">3</td>
-              <td class="px-4 py-2">John Doe</td>
-              <td class="px-4 py-2">22-12-2024</td>
-              <td class="px-4 py-2">Active</td>
-            </tr>
-          </tbody>
-        </table>
+        <ng-container *ngIf="rowListRecap && rowListRecap.length > 0; else noData">
+          <table class="w-full h-full table-fixed text-sm md:text-base">
+            <thead>
+              <tr>
+                <th class="px-4 py-2 text-left">#</th>
+                <th class="px-4 py-2">First Name</th>
+                <th class="px-4 py-2">Date</th>
+                <th class="px-4 py-2">Status</th>
+              </tr>
+            </thead>
+            <tbody class="text-center">
+              <tr *ngFor="let recap of rowListRecap; let i = index">
+                <td class="px-4 py-2 text-left">{{ i + 1 }}</td>
+                <td class="px-4 py-2">{{ recap.student_first_name }}</td>
+                <td class="px-4 py-2">{{ recap.created_at | date: 'dd-MM-yyyy' }}</td>
+                <td class="px-4 py-2 capitalize">
+                  <span class="text-gray-600">
+                    <!-- Conditional status display -->
+                    <ng-container *ngIf="recap.status === 'waiting_to_be_taken_to_school'">
+                      <span class="text-yellow-500">Waiting to school</span>
+                    </ng-container>
+
+                    <ng-container *ngIf="recap.status === 'going_to_school'">
+                      <span class="text-green-500">Going to school</span>
+                    </ng-container>
+
+                    <ng-container *ngIf="recap.status === 'at_school'">
+                      <span class="text-green-500">At school</span>
+                    </ng-container>
+
+                    <ng-container *ngIf="recap.status === 'waiting_to_be_taken_to_home'">
+                      <span class="text-blue-500">Waiting to home</span>
+                    </ng-container>
+
+                    <ng-container *ngIf="recap.status === 'home'">
+                      <span class="text-gray-500">At home</span>
+                    </ng-container>
+
+                    <!-- Default message for unknown or empty status -->
+                    <ng-container *ngIf="!recap.status">
+                      <span class="text-gray-400">Unavailable</span>
+                    </ng-container>
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-container>
+
+        <!-- Template if no data -->
+        <ng-template #noData>
+          <div class="text-center text-gray-500 text-sm">
+            <p>No data available</p>
+          </div>
+        </ng-template>
       </div>
     </div>
+
   </div>
 </div>
 
