@@ -2,8 +2,8 @@
   <div class="flex items-center col-span-2 bg-gray-100 border rounded-lg shadow-md select-none">
     <div class="flex align-center justify-center text-left w-1/2">
       <div class="px-3">
-        <h1 class="text-lg sm:text-xl md:text-3xl font-black">Hello Adipiscingelite</h1>
-        <p class="font-semibold">{{greeting}}</p>
+        <h1 class="text-lg sm:text-xl md:text-3xl font-black capitalize">Hi {{first_name}} {{last_name}}</h1>
+        <p class="text-sm md:text-base text-neutral-700">{{greeting}}</p>
       </div>
     </div>
     <div class="w-1/2">
@@ -13,8 +13,8 @@
     mix-blend-mode: multiply; ">
     </div>
   </div>
-  <div class="flex items-center justify-center w-full">
-    <div class="card">
+  <div class="flex flex-col items-center justify-center w-full m-0 p-0 col-span-2 md:col-span-1">
+    <div class="card hidden md:block">
       <div class="numbers">
         <span class="number"></span>
         <span class="number"></span>
@@ -30,13 +30,23 @@
         <span class="number"></span>
       </div>
       <div class="needles">
-        <span class="h"></span>
-        <span class="m"></span>
-        <span class="s"></span>
+        <span class="h" [style.transform]="hourHandRotation"></span>
+        <span class="m" [style.transform]="minuteHandRotation"></span>
+        <span class="s" [style.transform]="secondHandRotation"></span>
         <span class="center"></span>
       </div>
       <div class="pie"></div>
     </div>
-    
+    <div class="mt-4 text-center">
+      <div class="text-2xl font-bold mb-1">
+        {{ digitalTime }}
+      </div>
+      <div class="text-lg">
+        {{ dateInfo }}
+      </div>
+      <!-- <div class="mt-2 text-sm text-gray-600">
+        {{ timezone }}
+      </div> -->
+    </div>
   </div>
 </div>

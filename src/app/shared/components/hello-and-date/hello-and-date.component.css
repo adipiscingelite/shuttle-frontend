@@ -153,8 +153,67 @@
   border-radius: 50%;
 }
 
-@keyframes rotate {
+.date-info {
+  font-family: 'Arial', sans-serif;
+  color: #333;
+}
+
+.timezone {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+/* @keyframes rotate {
   100% {
     transform: translate(-50%, -80%) rotateZ(360deg);
   }
+} */
+
+
+/* .clock {
+  width: 150px;
+  height: 150px;
+  position: relative;
+  border-radius: 50%;
 }
+
+.hand {
+  position: absolute;
+  background-color: rgb(255, 0, 0);
+  transform-origin: 50% 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
+  transition: transform 0.05s ease-in-out;
+}
+
+.hour {
+  height: 35%;
+  width: 4px;
+  background-color: #000;
+}
+
+.minute {
+  height: 45%;
+  width: 3px;
+  background-color: #555;
+}
+
+.second {
+  height: 50%;
+  width: 2px;
+  background-color: red;
+}
+
+
+.clock::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #000;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+} */

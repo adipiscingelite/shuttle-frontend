@@ -58,6 +58,7 @@ export class RouteManagementComponent {
   // Lokasi destinasi
 
   rowContohLokasiAnak: Route[] = [];
+  studentMarkers: L.Marker[] = [];
 
   constructor(
     private router: Router,
@@ -75,38 +76,67 @@ export class RouteManagementComponent {
     this.startWatchingPosition();
   }
 
-  getAllShuttleStudent() {
-    this.isLoading = true;
-    axios
-      .get(`${this.apiUrl}/api/driver/route/all`, {
+  async getAllShuttleStudent() {
+    try {
+      this.isLoading = true;
+
+      const response = await axios.get(`${this.apiUrl}/api/driver/route/all`, {
         headers: {
           Authorization: `${this.cookieService.get('accessToken')}`,
         },
-      })
-      .then((response) => {
-        console.log('pp', response);
-
-        this.rowContohLokasiAnak = response.data.routes.map((route: Route) => ({
-          ...route,
-          school_point:
-            typeof route.school_point === 'string'
-              ? (JSON.parse(route.school_point) as {
-                  latitude: number;
-                  longitude: number;
-                }) // Type assertion
-              : route.school_point,
-          student_pickup_point:
-            typeof route.student_pickup_point === 'string'
-              ? (JSON.parse(route.student_pickup_point) as {
-                  latitude: number;
-                  longitude: number;
-                }) // Type assertion
-              : route.student_pickup_point,
-        }));
-      })
-      .catch((error) => {
-        console.error('Error fetching shuttle students:', error);
       });
+
+      // Mapping data dan menghitung distance
+      this.rowContohLokasiAnak = await Promise.all(
+        response.data.routes.map(async (route: Route) => {
+          const schoolPoint =
+            typeof route.school_point === 'string'
+              ? (JSON.parse(route.school_point) as Location)
+              : route.school_point;
+
+          const studentPickupPoint =
+            typeof route.student_pickup_point === 'string'
+              ? (JSON.parse(route.student_pickup_point) as Location)
+              : route.student_pickup_point;
+
+          // Hitung jarak antara driver (current location) dengan student pickup point
+          const driverLatLng = this.marker?.getLatLng();
+          let distanceInKilometers: number = NaN;
+
+          if (driverLatLng) {
+            const studentLatLng = L.latLng(
+              studentPickupPoint.latitude,
+              studentPickupPoint.longitude,
+            );
+            const distanceInMeters = driverLatLng.distanceTo(studentLatLng);
+            distanceInKilometers = distanceInMeters / 1000; // Jarak dalam kilometer
+          }
+
+          return {
+            ...route,
+            school_point: schoolPoint,
+            student_pickup_point: studentPickupPoint,
+            distance: distanceInKilometers,
+          };
+        }),
+      );
+
+      // Urutkan berdasarkan distance terkecil
+      this.rowContohLokasiAnak.sort((a, b) => {
+        const distA = a.distance || Infinity;
+        const distB = b.distance || Infinity;
+        return distA - distB; // Urutan ascending
+      });
+
+      console.log(
+        'Data siswa terurut berdasarkan jarak:',
+        this.rowContohLokasiAnak,
+      );
+    } catch (error) {
+      console.error('Error fetching shuttle students:', error);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   jemput(id: string) {
@@ -208,39 +238,52 @@ export class RouteManagementComponent {
         this.map = undefined;
       }
 
-      // Start watching the position
+      // Mulai melacak posisi
       this.watchId = navigator.geolocation.watchPosition(
         (position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
 
-          // Update coordinates on the page
+          // Update koordinat di halaman
           const coordinatesElement = document.getElementById('coordinates');
           if (coordinatesElement) {
             coordinatesElement.textContent = `Latitude: ${lat}, Longitude: ${lon}`;
           }
 
-          // Update the map and marker
+          // Update peta dan marker
           this.updateMap(lat, lon);
 
-          // Set loading status to false after location is retrieved
+          // Set loading selesai
           this.isLoading = false;
         },
         (error) => {
           console.error('Error watching location:', error);
 
+          // Tampilkan pesan error sementara
           const coordinatesElement = document.getElementById('coordinates');
           if (coordinatesElement) {
-            coordinatesElement.textContent = 'Unable to detect location.';
+            coordinatesElement.textContent =
+              'Error retrieving location. Retrying...';
           }
 
-          // Set loading status to false if there's an error
+          // Jika error code 3 (timeout), coba refresh otomatis
+          if (error.code === 3) {
+            console.log('Timeout error. Retrying to locate...');
+            this.isLoading = true;
+
+            // Refresh halaman untuk mencoba ulang
+            setTimeout(() => {
+              location.reload();
+            }, 3000); // Refresh setelah 3 detik
+          }
+
+          // Set loading selesai jika ada error lain
           this.isLoading = false;
         },
         {
           enableHighAccuracy: true,
           maximumAge: 0,
-          timeout: 10000,
+          timeout: 5000, // Timeout 10 detik
         },
       );
     } else {
@@ -250,7 +293,7 @@ export class RouteManagementComponent {
           'Geolocation is not supported by your browser.';
       }
 
-      // Set loading status to false if geolocation is not supported
+      // Set loading selesai jika geolocation tidak didukung
       this.isLoading = false;
     }
   }
@@ -310,47 +353,46 @@ export class RouteManagementComponent {
         // Update the student's distance property
         student.distance = distanceInKilometers;
 
-        if(student.distance <= 0.1){
-          console.log('distance ',student.distance);
-          console.log('shuttle uuid',student.shuttle_uuid.String);
-          
-          // update(shuttle_id: string, status: string) {
-            axios
-              .put(
-                `${this.apiUrl}/api/driver/shuttle/update/${student.shuttle_uuid.String}`,
-                {
-                  // student_uuid: id,
-                  status: 'going_to_school',
-                },
-                {
-                  headers: {
-                    Authorization: `${this.token}`,
-                  },
-                },
-              )
-              .then((response) => {
-                // const responseMessage = response.data?.message || 'Success.';
-                // this.showToast(responseMessage, 3000, Response.Success);
-        
-                this.getAllShuttleStudent();
-        
-                // this.isModalAddOpen = false;
-                // this.cdRef.detectChanges();
-              })
-              .catch((error) => {
-                // const responseMessage =
-                //   error.response?.data?.message || 'An unexpected error occurred.';
-                // this.showToast(responseMessage, 3000, Response.Error);
-              });
-          // }
+        if (parseFloat(student.distance) <= 0.3) {
+        }
+
+        if (parseFloat(student.distance) <= 0.15) {
+          console.log('distance ', student.distance);
+          console.log('shuttle uuid', student.shuttle_uuid.String);
+
+          // axios
+          //   .put(
+          //     `${this.apiUrl}/api/driver/shuttle/update/${student.shuttle_uuid.String}`,
+          //     {
+          //       status: 'going_to_school',
+          //     },
+          //     {
+          //       headers: {
+          //         Authorization: `${this.token}`,
+          //       },
+          //     },
+          //   )
+          //   .then((response) => {
+          //     this.getAllShuttleStudent();
+          //   })
+          //   .catch((error) => {});
         }
 
         // Add a marker for the student
         L.marker([latitude, longitude], { icon: studentIcon })
           .addTo(this.map!)
           .bindPopup(
-            `<b>${student.student_first_name}</b><br>UUID: ${student.student_uuid}<br>Lat: ${latitude}, Lon: ${longitude}<br>Distance: ${student.distance} km`,
+            `<b class="capitalize">${student.student_first_name} ${student.student_last_name}</b><br>Distance: ${student.distance} km`,
           );
+
+        // Add a circle around the student's pickup point (radius 10 meters, opacity 50%)
+        L.circle([latitude, longitude], {
+          color: 'red', // Circle color
+          // colorOpacity: 0.5,
+          fillColor: 'red', // Fill color
+          fillOpacity: 0.2, // 50% opacity
+          radius: 30, // 10 meters
+        }).addTo(this.map!);
       }
     });
   }

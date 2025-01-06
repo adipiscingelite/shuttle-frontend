@@ -29,7 +29,7 @@
     </div>
 
 
-    <div class="px-5">
+    <div class="px-1">
       <div class="flex items-center justify-between">
         <h1 class="text-lg font-medium">Attendance Recap</h1>
         <button class="text-blue-500 font-medium hover:underline">
@@ -42,18 +42,18 @@
           <table class="w-full h-full table-fixed text-sm md:text-base">
             <thead>
               <tr>
-                <th class="px-4 py-2 text-left">#</th>
-                <th class="px-4 py-2">First Name</th>
-                <th class="px-4 py-2">Date</th>
-                <th class="px-4 py-2">Status</th>
+                <th class="px-2 py-1 text-left">#</th>
+                <th class="px-2 py-1">First Name</th>
+                <th class="px-2 py-1">Date</th>
+                <th class="px-2 py-1">Status</th>
               </tr>
             </thead>
             <tbody class="text-center">
               <tr *ngFor="let recap of rowListRecap; let i = index">
-                <td class="px-4 py-2 text-left">{{ i + 1 }}</td>
-                <td class="px-4 py-2">{{ recap.student_first_name }}</td>
-                <td class="px-4 py-2">{{ recap.created_at | date: 'dd-MM-yyyy' }}</td>
-                <td class="px-4 py-2 capitalize">
+                <td class="px-2 py-1 text-left">{{ i + 1 }}</td>
+                <td class="px-2 py-1">{{ recap.student_first_name }}</td>
+                <td class="px-2 py-1">{{ recap.created_at | date: 'dd-MM-yyyy' }}</td>
+                <td class="px-2 py-1 capitalize">
                   <span class="text-gray-600">
                     <!-- Conditional status display -->
                     <ng-container *ngIf="recap.status === 'waiting_to_be_taken_to_school'">

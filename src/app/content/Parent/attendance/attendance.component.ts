@@ -26,7 +26,7 @@ interface Recap {
   imports: [CommonModule, AgGridAngular],
   templateUrl: './attendance.component.html',
   styleUrl: './attendance.component.css',
-  providers: [DatePipe]
+  providers: [DatePipe],
 })
 export class AttendanceComponent implements OnInit {
   token: string | null = '';
@@ -45,7 +45,7 @@ export class AttendanceComponent implements OnInit {
   startRow: number = 1;
   endRow: number = 10;
 
-  rowListRecap: Recap[] = [  ];
+  rowListRecap: Recap[] = [];
 
   constructor(
     private cookieService: CookieService,
@@ -85,10 +85,10 @@ export class AttendanceComponent implements OnInit {
       pinned: 'left',
       sortable: false,
     },
-    { headerName: 'First Name', field: 'student_first_name', pinned: 'left' },
-    { headerName: 'First Name', field: 'student_last_name'},
-    { headerName: 'Grade', field: 'student_grade'},
-    { headerName: 'School Name', field: 'school_name'},
+    { headerName: 'First Name', field: 'student_first_name', maxWidth: 250 },
+    { headerName: 'First Name', field: 'student_last_name', maxWidth: 250 },
+    // { headerName: 'Grade', field: 'student_grade' },
+    // { headerName: 'School Name', field: 'school_name' },
     {
       headerName: 'Date',
       field: 'created_at',
@@ -96,12 +96,35 @@ export class AttendanceComponent implements OnInit {
         if (params.data && params.data.created_at) {
           const datePipe = new DatePipe('en-US');
           // Format tanggal sesuai yang Anda inginkan
-          return datePipe.transform(params.data.created_at, 'dd/MM/yyyy HH:mm:ss');
+          return datePipe.transform(
+            params.data.created_at,
+            'dd/MM/yyyy HH:mm:ss',
+          );
         }
         return null; // Jika data tidak ada atau tidak valid, kembalikan null
       },
-    },    
-    { headerName: 'Shuttle Status', field: 'status'},
+      maxWidth: 250,
+    },
+    {
+      headerName: 'Shuttle Status',
+      field: 'status',
+      valueGetter: (params) => {
+        if (params.data && params.data.status) {
+          // Parsing status untuk membuatnya lebih rapi
+          const statusMap: { [key: string]: string } = {
+            home: 'At home',
+            waiting_to_be_taken_to_school: 'Waiting for pickup',
+            going_to_school: 'On the way',
+            at_school: 'At school',
+            waiting_to_be_taken_to_home: 'Waiting to go home',
+            going_to_home: 'Going home',
+          };
+
+          return statusMap[params.data.status] || 'Unknown Status';
+        }
+        return 'Unknown Status';
+      },
+    },
   ];
 
   // shuttle_uuid: string;
@@ -117,7 +140,6 @@ export class AttendanceComponent implements OnInit {
     flex: 1,
     width: 130,
     minWidth: 120,
-    maxWidth: 250,
     wrapHeaderText: true,
     autoHeaderHeight: true,
     sortable: false,

@@ -33,9 +33,10 @@
         </svg>
         <p class="font-medium">0%</p>
       </div>
+      <p class="text-xs md:text-sm text-center">From last month</p>
     </a> -->
     <a routerLink="/superadmin/schools"
-      class="flex flex-col justify-center items-center w-auto h-full aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
+      class="flex flex-col justify-center items-center w-auto h-full p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer text-center">
       <div>
         <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
           stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -55,17 +56,26 @@
       </div>
       <h1 class="text-[2.5rem] font-bold ">{{totalAdmin}}</h1>
       <p class="truncate hidden md:block">Total School Admin</p>
-      <div class="flex items-center justify-center gap-x-2 mt-auto">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-          stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <!-- dashboard.component.html -->
+      <div class="flex items-center justify-center gap-x-2 mt-8">
+        <svg class="w-5 h-5 transition-all duration-300" [ngClass]="{
+            'text-green-500': adminChangePercentage > 0,
+            'text-red-500': adminChangePercentage < 0,
+            'text-gray-500': adminChangePercentage === 0
+          }" [ngStyle]="{
+            transform: adminChangePercentage < 0 ? 'rotate(180deg)' : 'rotate(0deg)'
+          }" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M5.25 11.438 12 4.688l6.75 6.75"></path>
           <path d="M12 5.625v13.688"></path>
         </svg>
-        <p class="font-medium">0%</p>
+        <p class="font-medium">{{ adminChangePercentage }}%</p>
       </div>
+      <p class="text-xs md:text-sm text-center">From last month</p>
     </a>
+
     <a routerLink="/superadmin/schools"
-      class="flex flex-col justify-center items-center w-auto h-full aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
+      class="flex flex-col justify-center items-center w-auto h-full p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer text-center">
       <div>
         <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M21 10h-2V4h1V2H4v2h1v6H3a1 1 0 0 0-1 1v9h20v-9a1 1 0 0 0-1-1Zm-7 8v-4h-4v4H7V4h10v14h-3Z"></path>
@@ -74,17 +84,24 @@
       </div>
       <h1 class="text-[2.5rem] font-bold ">{{totalSchool}}</h1>
       <p class="truncate hidden md:block">Total School</p>
-      <div class="flex items-center justify-center gap-x-2 mt-auto">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-          stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <div class="flex items-center justify-center gap-x-2 mt-8">
+        <svg class="w-5 h-5 transition-all duration-300" [ngClass]="{
+            'text-green-500': schoolChangePercentage > 0,
+            'text-red-500': schoolChangePercentage < 0,
+            'text-gray-500': schoolChangePercentage === 0
+          }" [ngStyle]="{
+            transform: schoolChangePercentage < 0 ? 'rotate(180deg)' : 'rotate(0deg)'
+          }" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M5.25 11.438 12 4.688l6.75 6.75"></path>
           <path d="M12 5.625v13.688"></path>
         </svg>
-        <p class="font-medium">0%</p>
+        <p class="font-medium">{{schoolChangePercentage}}%</p>
       </div>
+      <p class="text-xs md:text-sm text-center">From last month</p>
     </a>
     <a routerLink="/superadmin/drivers"
-      class="flex flex-col justify-center items-center w-auto h-full aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
+      class="flex flex-col justify-center items-center w-auto h-full p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer text-center">
       <div>
         <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
           stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -97,17 +114,24 @@
       </div>
       <h1 class="text-[2.5rem] font-bold ">{{totalDriver}}</h1>
       <p class="truncate hidden md:block">Total Driver</p>
-      <div class="flex items-center justify-center gap-x-2 mt-auto">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-          stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <div class="flex items-center justify-center gap-x-2 mt-8">
+        <svg class="w-5 h-5 transition-all duration-300" [ngClass]="{
+          'text-green-500': driverChangePercentage > 0,
+          'text-red-500': driverChangePercentage < 0,
+          'text-gray-500': driverChangePercentage === 0
+        }" [ngStyle]="{
+          transform: driverChangePercentage < 0 ? 'rotate(180deg)' : 'rotate(0deg)'
+        }" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M5.25 11.438 12 4.688l6.75 6.75"></path>
           <path d="M12 5.625v13.688"></path>
         </svg>
-        <p class="font-medium">0%</p>
+        <p class="font-medium">{{driverChangePercentage}}%</p>
       </div>
+      <p class="text-xs md:text-sm text-center">From last month</p>
     </a>
     <div
-      class="flex flex-col justify-center items-center w-auto h-full aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
+      class="flex flex-col justify-center items-center w-auto h-full p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer text-center">
       <div>
         <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
           stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -122,95 +146,178 @@
       </div>
       <h1 class="text-[2.5rem] font-bold ">{{totalVehicle}}</h1>
       <p class="truncate hidden md:block">Total Vehicle</p>
-      <div class="flex items-center justify-center gap-x-2 mt-auto">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-          stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <div class="flex items-center justify-center gap-x-2 mt-8">
+        <svg class="w-5 h-5 transition-all duration-300" [ngClass]="{
+          'text-green-500': vehicleChangePercentage > 0,
+          'text-red-500': vehicleChangePercentage < 0,
+          'text-gray-500': vehicleChangePercentage === 0
+        }" [ngStyle]="{
+          transform: vehicleChangePercentage < 0 ? 'rotate(180deg)' : 'rotate(0deg)'
+        }" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M5.25 11.438 12 4.688l6.75 6.75"></path>
           <path d="M12 5.625v13.688"></path>
         </svg>
-        <p class="font-medium">0%</p>
+        <p class="font-medium">{{vehicleChangePercentage}}%</p>
       </div>
+      <p class="text-xs md:text-sm text-center">From last month</p>
     </div>
   </div>
 
-  <div class="md:flex items-center justify-center">
+  <div class="grid grid-cols-2 md:grid-cols-4 my-4 px-2 gap-4 md:gap-8 auto-rows-fr">
 
     <!-- <div class="grid grid-cols-2 md:grid-cols-4 my-4 px-2 gap-4 md:gap-8"> -->
-    <div class="relative flex flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
-
+    <div class="relative flex flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md col-span-2 border">
       <div class="pt-6 px-2 pb-6">
-        <div class="w-full h-48">
-          <svg viewBox="0 0 500 200" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <!-- Grid lines -->
-            <line x1="40" y1="10" x2="40" y2="190" stroke="#ddd" stroke-width="1" />
-            <line x1="40" y1="190" x2="490" y2="190" stroke="#ddd" stroke-width="1" />
+        <h1 class="text-2xl font-semibold text-gray-800 mb-4 capitalize">
+          Total Student Growth
+        </h1>
+        <p class="text-sm text-gray-500 mb-6 text-left">
+          Total student growth in 2025
+        </p>
+        <div class="w-full h-full flex justify-center items-center">
+          <div class="w-full h-48">
+            <svg viewBox="0 0 500 215" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+              <!-- Grid lines -->
+              <line x1="40" y1="10" x2="40" y2="190" stroke="#ddd" stroke-width="1" />
+              <line x1="40" y1="190" x2="490" y2="190" stroke="#ddd" stroke-width="1" />
 
-            <!-- Y-axis labels -->
-            <text x="10" y="190" font-size="10" fill="#555">0</text>
-            <text x="10" y="140" font-size="10" fill="#555">100</text>
-            <text x="10" y="90" font-size="10" fill="#555">200</text>
-            <text x="10" y="40" font-size="10" fill="#555">300</text>
+              <!-- Y-axis labels -->
+              <text x="10" y="190" font-size="10" fill="#555">0</text>
+              <text x="10" y="140" font-size="10" fill="#555">100</text>
+              <text x="10" y="90" font-size="10" fill="#555">200</text>
+              <text x="10" y="40" font-size="10" fill="#555">300</text>
 
-            <!-- X-axis labels -->
-            <text x="50" y="200" font-size="10" fill="#555">Jan</text>
-            <text x="90" y="200" font-size="10" fill="#555">Feb</text>
-            <text x="130" y="200" font-size="10" fill="#555">Mar</text>
-            <text x="170" y="200" font-size="10" fill="#555">Apr</text>
-            <text x="210" y="200" font-size="10" fill="#555">May</text>
-            <text x="250" y="200" font-size="10" fill="#555">Jun</text>
-            <text x="290" y="200" font-size="10" fill="#555">Jul</text>
-            <text x="330" y="200" font-size="10" fill="#555">Aug</text>
-            <text x="370" y="200" font-size="10" fill="#555">Sep</text>
-            <text x="410" y="200" font-size="10" fill="#555">Oct</text>
-            <text x="450" y="200" font-size="10" fill="#555">Nov</text>
-            <text x="490" y="200" font-size="10" fill="#555">Dec</text>
+              <!-- X-axis labels -->
+              <ng-container *ngFor="let data of growthData; let i = index">
+                <text [attr.x]="50 + i * 40" y="210" font-size="10" fill="#555" class="pt-1">{{ data.month }}</text>
+              </ng-container>
 
-            <!-- Line Chart -->
-            <polyline fill="none" stroke="#4F46E5" stroke-width="2"
-              points="50,170 90,150 130,120 170,140 210,110 250,80 290,100 330,70 370,90 410,60 450,50 490,30" />
+              <!-- Line Chart -->
+              <polyline fill="none" stroke="#4F46E5" stroke-width="2" [attr.points]="getPoints()"></polyline>
 
-            <!-- Data Points -->
-            <circle cx="50" cy="170" r="3" fill="#4F46E5" />
-            <circle cx="90" cy="150" r="3" fill="#4F46E5" />
-            <circle cx="130" cy="120" r="3" fill="#4F46E5" />
-            <circle cx="170" cy="140" r="3" fill="#4F46E5" />
-            <circle cx="210" cy="110" r="3" fill="#4F46E5" />
-            <circle cx="250" cy="80" r="3" fill="#4F46E5" />
-            <circle cx="290" cy="100" r="3" fill="#4F46E5" />
-            <circle cx="330" cy="70" r="3" fill="#4F46E5" />
-            <circle cx="370" cy="90" r="3" fill="#4F46E5" />
-            <circle cx="410" cy="60" r="3" fill="#4F46E5" />
-            <circle cx="450" cy="50" r="3" fill="#4F46E5" />
-            <circle cx="490" cy="30" r="3" fill="#4F46E5" />
-          </svg>
+              <!-- Data Points with Tooltip -->
+              <ng-container *ngFor="let data of growthData; let i = index">
+                <circle [attr.cx]="50 + i * 40" [attr.cy]="190 - (data.growth * 0.5)" r="6" fill="#4F46E5"
+                  (mouseover)="showTooltip($event, data)" (mouseout)="hideTooltip()" />
+
+              </ng-container>
+            </svg>
+          </div>
         </div>
+
+        <!-- Tooltip Display -->
+        <div *ngIf="tooltipVisible" class="absolute bg-gray-700 text-white text-sm p-2 rounded-lg"
+          [style.left.px]="tooltipX" [style.top.px]="tooltipY">
+          <p><strong>{{ tooltipData.month }}:</strong> {{ tooltipData.growth }} Students</p>
+        </div>
+
       </div>
     </div>
 
-    <div class="w-full max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Today Activity</h2>
-      <p class="text-sm text-gray-500 mb-6">Number of pick-ups today (02 January 2025)</p>
 
-      <!-- Donut Chart -->
-      <div class="relative w-32 h-32 mx-auto">
+    <div
+      class="flex flex-col w-full max-w-md mx-auto p-6 bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg col-span-2 md:col-span-1 border">
+      <!-- Header with Icon -->
+      <div class="flex items-center mb-4">
+        <div class="bg-blue-500 text-white p-3 rounded-full">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+            stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M19.5 3.75h-15A2.25 2.25 0 0 0 2.25 6v13.5a2.25 2.25 0 0 0 2.25 2.25h15a2.25 2.25 0 0 0 2.25-2.25V6a2.25 2.25 0 0 0-2.25-2.25Z">
+            </path>
+            <path fill="currentColor" stroke="none" d="M13.875 12a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z">
+            </path>
+            <path fill="currentColor" stroke="none" d="M17.625 12a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z">
+            </path>
+            <path fill="currentColor" stroke="none"
+              d="M13.875 15.75a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z"></path>
+            <path fill="currentColor" stroke="none"
+              d="M17.625 15.75a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z"></path>
+            <path fill="currentColor" stroke="none" d="M6.375 15.75a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z">
+            </path>
+            <path fill="currentColor" stroke="none"
+              d="M10.125 15.75a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z"></path>
+            <path fill="currentColor" stroke="none" d="M6.375 19.5a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z">
+            </path>
+            <path fill="currentColor" stroke="none" d="M10.125 19.5a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z">
+            </path>
+            <path fill="currentColor" stroke="none" d="M13.875 19.5a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z">
+            </path>
+            <path d="M6 2.25v1.5"></path>
+            <path d="M18 2.25v1.5"></path>
+            <path d="M21.75 7.5H2.25"></path>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-semibold text-gray-800 ml-3">Today's Shuttle</h2>
+      </div>
+
+      <!-- Subtext -->
+      <p class="text-sm text-gray-500 mb-6 text-center">
+        Number of pick-ups today: <span class="font-medium text-blue-600">{{currentDate}}</span>
+      </p>
+
+      <!-- Donut Chart Container -->
+      <div class="relative w-40 h-40 mx-auto">
         <!-- Background Circle -->
-        <div class="absolute top-0 left-0 w-full h-full bg-gray-200 rounded-full"></div>
-
-        <!-- Progress Circle -->
-        <div class="absolute top-0 left-0 w-full h-full bg-blue-500 rounded-full"
-          style="clip-path: circle(50% at 50% 50%); background: conic-gradient(blue 0% 80%, gray 80% 100%);"></div>
-
+        <div class="absolute top-0 left-0 w-full h-full rounded-full border-8 border-gray-200"></div>
+        <!-- Filled Portion -->
+        <div class="absolute top-0 left-0 w-full h-full rounded-full border-8 border-blue-500"></div>
         <!-- Text in the center -->
-        <div class="absolute top-0 left-0 w-full h-full flex justify-center items-center text-white font-bold text-2xl">
-          200
+        <div class="absolute inset-0 flex flex-col justify-center items-center text-gray-800">
+          <span class="font-bold text-4xl">200</span>
+          <span class="text-sm text-gray-500">pick-ups</span>
         </div>
       </div>
+
+      <!-- Footer Note -->
+      <p class="mt-6 text-xs text-gray-400 text-center">
+        Last updated at 10:00 AM
+      </p>
+    </div>
+
+    <div
+      class="w-full max-w-md mx-auto p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-lg col-span-2 md:col-span-1 border">
+      <!-- Header with Icon -->
+      <div class="flex items-center mb-4">
+        <div class="bg-yellow-500 text-white p-3 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 4h10M5 11h14M7 16h10m-8 5h6" />
+          </svg>
+        </div>
+        <h2 class="text-2xl font-semibold text-gray-800 ml-3">Yesterday's Shuttle</h2>
+      </div>
+
+      <!-- Subtext -->
+      <p class="text-sm text-gray-500 mb-6 text-center">
+        Number of pick-ups yesterday: <span class="font-medium text-yellow-600">{{yesterdayDate}}</span>
+      </p>
+
+      <!-- Donut Chart Container -->
+      <div class="relative w-40 h-40 mx-auto">
+        <!-- Background Circle -->
+        <div class="absolute inset-0 rounded-full border-8 border-gray-200"></div>
+        <!-- Progress Circle -->
+        <div class="absolute inset-0 rounded-full border-8 border-yellow-500">
+        </div>
+        <!-- Text in the center -->
+        <div class="absolute inset-0 flex flex-col justify-center items-center">
+          <span class="font-bold text-4xl text-gray-800">200</span>
+          <span class="text-sm text-gray-500">pick-ups</span>
+        </div>
+      </div>
+
+      <!-- Footer Note -->
+      <p class="mt-6 text-xs text-gray-400 text-center">
+        Data updated at 11:00 PM
+      </p>
     </div>
 
     <!-- </div> -->
   </div>
 
-  <h1 class="mt-4 text-xl font-bold">Data Overview</h1>
+  <!-- <h1 class="mt-4 text-xl font-bold">Data Overview</h1>
   <div class="grid grid-cols-2 md:grid-cols-4 my-4 px-2 gap-4 md:gap-8">
     <div
       class="w-auto aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
@@ -241,5 +348,5 @@
       <h1 class="text-[2.5rem] font-bold">06:45</h1>
       <p class="truncate hidden md:block">Rata Rata Waktu Jemput</p>
     </div>
-  </div>
+  </div> -->
 </div>

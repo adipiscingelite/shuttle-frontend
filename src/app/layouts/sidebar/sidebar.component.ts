@@ -322,6 +322,11 @@ export class SidebarComponent implements OnInit {
               path: '/driver/shuttle',
             },
             {
+              name: 'Customize Route',
+              icon: 'routeList',
+              path: '/driver/p',
+            },
+            {
               name: 'Shuttle History',
               icon: 'shuttleHistory',
               path: '/driver/shuttle-history',
@@ -369,6 +374,7 @@ export class SidebarComponent implements OnInit {
         this.router.navigateByUrl('/login');
         this.cookieService.delete('accessToken', '/');
         this.cookieService.delete('refreshToken', '/');
+        window.location.reload();
         this.router.navigateByUrl('/login');
 
         console.log(response.data.message);

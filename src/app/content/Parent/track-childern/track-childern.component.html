@@ -6,22 +6,35 @@
 
     <div class="my-6">
       <h1 class="text-lg font-semibold text-neutral-700">Track Your Child's Pickup Today</h1>
-      <p class="text-sm text-gray-600">This page allows you to monitor your child’s pickup status in real time. You can
+      <p class="hidden md:block text-sm text-gray-600">This page allows you to monitor your child’s pickup status in
+        real time. You can
         see the current location of the shuttle, whether your child is still waiting, on their way to school, or has
         already arrived. The map will update as the driver progresses through the route, providing you with live
         tracking information. Note that this page is for today’s pickup only, as schedules may change daily.
       </p>
+
+      <p class="text-xs block md:hidden">
+        Monitor your child’s pickup status in real time. See their current location and progress on today’s route. Note:
+        This page updates for today only.
+      </p>
       <br>
 
-      <p *ngIf="rowListChildern.length === 0" class="text-sm text-gray-600">The status will appear once your child has
+      <p *ngIf="rowListChildern.length === 0" class="text-sm text-gray-600 hidden md:block">The status will appear once
+        your child has
         been picked up by the driver. If the
         pickup hasn't occurred yet, this page will be empty.</p>
 
+      <p *ngIf="rowListChildern.length === 0" class="text-xs text-gray-600 block md:hidden">The status will appear after
+        your child is picked up. If not yet, this page will be empty.</p>
+
       <div *ngIf="rowListChildern.length === 0" class="h-[40vh] flex items-center justify-center text-gray-600">
         <div class="bg-white border-l-4 border-gray-500 p-4 rounded-lg shadow-md max-w-lg mx-auto">
-          <p class="text-sm text-black">
+          <p class="text-sm text-black hidden md:block">
             If your child hasn’t been picked up yet, please make sure the driver is ready or has already departed. If
             there’s still no update, please contact the relevant authorities.
+          </p>
+          <p class="text-xs text-black block md:hidden">
+            Pickup status is unavailable. Ensure the driver is ready.
           </p>
           <div class="mt-4 text-xs text-gray-500">
             <p>Time: {{ currentTime }}</p>
@@ -362,7 +375,8 @@
 
         <div class="grid grid-cols-4 gap-x-5 mb-2">
           <span class="col-span-2 md:col-span-1 text-neutral-700 font-semibold">Pick-up Point</span>
-          <p class="col-span-2 md:col-span-3 text-sm text-blue-500">{{pickup_point?.latitude}}, {{pickup_point?.longitude}}
+          <p class="col-span-2 md:col-span-3 text-sm text-blue-500">{{pickup_point?.latitude}},
+            {{pickup_point?.longitude}}
           </p>
         </div>
         <a href="https://www.google.com/maps?q={{ pickup_point?.latitude }}, {{ pickup_point?.longitude }}"
@@ -372,7 +386,8 @@
 
         <div class="grid grid-cols-4 gap-x-5 mb-2">
           <span class="col-span-2 md:col-span-1 text-neutral-700 font-semibold">Destination Point</span>
-          <p class="col-span-2 md:col-span-3 text-sm text-blue-500">{{school_point?.latitude}}, {{school_point?.longitude}}
+          <p class="col-span-2 md:col-span-3 text-sm text-blue-500">{{school_point?.latitude}},
+            {{school_point?.longitude}}
           </p>
         </div>
         <a href="https://www.google.com/maps?q={{ school_point?.latitude }}, {{ school_point?.longitude }}"

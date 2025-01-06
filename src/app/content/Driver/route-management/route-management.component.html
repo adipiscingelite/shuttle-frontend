@@ -21,13 +21,12 @@
 
   <hr>
   <br>
-  <div class="flex items-center justify-between gap-x-6 mt-1 mb-4 px-5 py-3 rounded-lg bg-gray-50 shadow"
-    *ngFor="let siswa of rowContohLokasiAnak">
+  <div *ngFor="let siswa of rowContohLokasiAnak; let i = index" class="flex items-center justify-between gap-x-6 mt-1 mb-4 px-5 py-3 rounded-lg bg-gray-50 shadow">
     <div class="w-full">
       <div class="md:flex items-center justify-between my-2">
         <div>
           <!-- Nama Siswa -->
-          <h1 class="text-2xl font-semibold text-gray-800">
+          <h1 class="text-2xl font-semibold text-gray-800 capitalize">
             {{ siswa.student_first_name }} {{ siswa.student_last_name }}
           </h1>
 
@@ -105,7 +104,8 @@
           Going to School
         </button>
         <button (click)="update(siswa.shuttle_uuid.String, 'at_school')"
-          class="px-4 py-1 my-1 rounded-full bg-black text-white" *ngIf="siswa.shuttle_status.String === 'going_to_school'">
+          class="px-4 py-1 my-1 rounded-full bg-black text-white"
+          *ngIf="siswa.shuttle_status.String === 'going_to_school'">
           Arrived to School
         </button>
         <button (click)="update(siswa.shuttle_uuid.String, 'waiting_to_be_taken_to_home')"
