@@ -46,7 +46,7 @@ export class VehiclesComponent implements OnInit {
 
   paginationPage: number = 1;
   paginationCurrentPage: number = 1;
-  paginationItemsLimit: number = 10;
+  paginationItemsLimit: number = 1;
   paginationTotalPage: number = 0;
   showing: string = '';
   pages: number[] = [];
@@ -72,6 +72,7 @@ export class VehiclesComponent implements OnInit {
   rowListAllVehicle: Vehicle[] = [];
 
   private columnClickCount: { [key: string]: number } = {};
+  gridApi: any;
 
   constructor(
     private cookieService: CookieService,
@@ -93,7 +94,7 @@ export class VehiclesComponent implements OnInit {
     ensureDomOrder: true,
     enableAccessibility: false,
     pagination: true,
-    paginationPageSize: 10,
+    // paginationPageSize: 10,
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
     suppressMovable: true,
@@ -315,24 +316,27 @@ export class VehiclesComponent implements OnInit {
         params: {
           page: this.paginationPage,
           limit: this.paginationItemsLimit,
-
           sort_by: this.sortBy,
           direction: this.sortDirection,
         },
       })
       .then((response) => {
         this.rowListAllVehicle = response.data.data.data;
-
         console.log(this.rowListAllVehicle);
+  
+        // Set pagination total pages
         this.paginationTotalPage = response.data.data.meta.total_pages;
-        this.pages = Array.from(
-          { length: this.paginationTotalPage },
-          (_, i) => i + 1,
-        );
+        this.pages = Array.from({ length: this.paginationTotalPage }, (_, i) => i + 1);
         this.showing = response.data.data.meta.showing;
-
+  
+        // Update ag-Grid pagination page size and refresh data
+        if (this.gridApi) {
+          this.gridApi.paginationSetPageSize(this.paginationItemsLimit);  // Update page size for grid
+          this.gridApi.setRowData(this.rowListAllVehicle);  // Set the new row data
+          this.gridApi.paginationGoToPage(this.paginationPage - 1);  // Go to the correct page
+        }
+  
         this.isLoading = false;
-
         this.cdRef.detectChanges();
       })
       .catch((error) => {
@@ -340,6 +344,7 @@ export class VehiclesComponent implements OnInit {
         this.isLoading = false;
       });
   }
+  
 
   openAddModal() {
     this.vehicle_uuid = '';

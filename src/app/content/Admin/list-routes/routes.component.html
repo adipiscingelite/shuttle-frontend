@@ -2,6 +2,7 @@
   <h1 class="my-6 text-xl font-semibold uppercase">
     List of Routes
   </h1>
+  buatkan endpoint get all siswa by sekolah yg belum di assign ke driver dan route berdasarkan school_uuid
 
   <div class="flex items-center w-full my-4 gap-x-1">
     <form class="form relative">
@@ -136,12 +137,12 @@
       </div>
       <!-- Modal body -->
       <form class="p-6" #addDriverForm="ngForm" (ngSubmit)="addRoute()">
-        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Create a New Route</h3>
-        <p class="mb-4 text-gray-600">Provide the necessary details to set up a new route for your drivers and students.
-          Ensure all required fields
-          are filled accurately.</p>
-
-        <br>
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Create a New Route for Your Drivers and Students
+        </h3>
+        <p class="mb-4 text-sm text-gray-600">
+          Provide the necessary details to set up a new route, including selecting the driver and assigning students.
+          Ensure all required fields are filled accurately before proceeding.
+        </p>
 
         <div class="mt-4">
           <label for="route_name" class="text-sm md:text-[0.875rem] mb-1">Route Name
@@ -152,6 +153,15 @@
             #routeNameModel="ngModel" required>
           <div *ngIf="routeNameModel.invalid && routeNameModel.touched"><app-required-common></app-required-common>
           </div>
+        </div>
+
+        <div class="mt-4">
+          <label for="route_description" class="text-sm md:text-[0.875rem] mb-1">Route Description
+            <app-asterisk></app-asterisk></label>
+          <input type="text" id="route_description" name="route_description" placeholder="e.g. Route Description"
+            [(ngModel)]="route_description" class="border text-sm rounded-lg p-2 px-3 w-full"
+            [ngClass]="{'border-red-500': routeDescriptionModel.touched && routeDescriptionModel.invalid}" maxlength=""
+            #routeDescriptionModel="ngModel">
         </div>
 
         <div class="mt-4">
@@ -169,30 +179,41 @@
           </div>
         </div>
 
-        <div class="mt-4">
-          <label for="student_uuid" class="text-sm md:text-[0.875rem] mb-1">Student
-            <app-asterisk></app-asterisk></label>
-          <select id="student_uuid" [(ngModel)]="student_uuid" name="student_uuid"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            [ngClass]="{'border-red-500': studentIdModel.touched && studentIdModel.invalid}" #studentIdModel="ngModel"
-            required>
-            <option value="" disabled selected>Choose the Student</option>
-            <option *ngFor="let student of rowListAllStudent" [value]="student.student_uuid">
-              {{ student.student_first_name }}
-            </option>
-          </select>
-          <div *ngIf="studentIdModel.invalid && studentIdModel.touched"><app-required-common></app-required-common>
-          </div>
-        </div>
+        <form [formGroup]="infoHAForm">
+          <div formArrayName="students">
+            <h1 class="text-xl font-semibold">Students</h1>
+            <div *ngFor="let field of infoHAListArray.controls; let i = index" [formGroupName]="i"
+              class="mt-2 p-2 border rounded-lg shadow">
+              <div class="mt-4">
+                <label for="student_uuid" class="text-sm md:text-[0.875rem] mb-1">Student</label>
+                <div class="flex items-center gap-x-3">
+                  <select id="student_uuid" formControlName="student_uuid" required
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    <option value="" disabled [selected]="!field.get('student_uuid')?.value">Choose the Student</option>
+                    <option *ngFor="let student of rowListAllFreeStudent" [value]="student.student_uuid">
+                      {{ student.student_first_name }} {{ student.student_last_name }}
+                    </option>
+                  </select>
 
-        <div class="mt-4">
-          <label for="route_description" class="text-sm md:text-[0.875rem] mb-1">Route Description
-            <app-asterisk></app-asterisk></label>
-          <input type="text" id="route_description" name="route_description" placeholder="e.g. Route Description"
-            [(ngModel)]="route_description" class="border text-sm rounded-lg p-2 px-3 w-full"
-            [ngClass]="{'border-red-500': routeDescriptionModel.touched && routeDescriptionModel.invalid}" maxlength=""
-            #routeDescriptionModel="ngModel">
-        </div>
+                  <button *ngIf="infoHAListArray.length > 1" type="button" (click)="removeInfoHAField(i)"
+                    class="p-1 w-10 h-10 aspect-square text-gray-100 bg-red-400 hover:bg-red-500 hover:text-white rounded-lg shadow flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round"
+                      stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M5 12h14"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button *ngIf="isAddButtonEnabled()" type="button" (click)="addInfoHAField()"
+              class="mt-4 px-2 py-1 text-gray-100 bg-blue-400 hover:bg-blue-500 hover:text-white rounded-lg shadow">
+              Add Student
+            </button>
+
+          </div>
+        </form>
+
 
       </form>
 
@@ -234,58 +255,108 @@
           are filled accurately.</p>
 
         <br>
-
         <div class="mt-4">
-          <label for="route_name" class="text-sm md:text-[0.875rem] mb-1">Route Name
-            <app-asterisk></app-asterisk></label>
-          <input type="text" id="route_name" name="route_name" placeholder="e.g. Child Route" [(ngModel)]="route_name"
-            class="border text-sm rounded-lg p-2 px-3 w-full"
-            [ngClass]="{'border-red-500': routeNameModel.touched && routeNameModel.invalid}" maxlength=""
-            #routeNameModel="ngModel" required>
-          <div *ngIf="routeNameModel.invalid && routeNameModel.touched"><app-required-common></app-required-common>
-          </div>
+          <label for="route_description" class="text-sm md:text-[0.875rem] mb-1">
+            Route Description
+            <app-asterisk></app-asterisk>
+          </label>
+          <input type="text" id="route_description" name="route_description" placeholder="e.g. Route Description"
+            [(ngModel)]="route_description" class="border text-sm rounded-lg p-2 px-3 w-full">
         </div>
 
         <div class="mt-4">
-          <label for="user_uuid" class="text-sm md:text-[0.875rem] mb-1">Driver <app-asterisk></app-asterisk></label>
-          <select id="user_uuid" [(ngModel)]="user_uuid" name="user_uuid"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            [ngClass]="{'border-red-500': driverIdModel.touched && driverIdModel.invalid}" #driverIdModel="ngModel"
-            required>
+          <label for="driver_uuid" class="text-sm md:text-[0.875rem] mb-1">
+            Driver
+            <app-asterisk></app-asterisk>
+          </label>
+          <select id="driver_uuid" [(ngModel)]="driver_uuid" name="driver_uuid"
+            class="bg-gray-50 border text-sm rounded-lg w-full p-2.5">
             <option value="" disabled selected>Choose the driver</option>
             <option *ngFor="let driver of rowListAllDriver" [value]="driver.user_uuid">
-              {{ driver.user_username }}{{ driver.user_uuid }}
+              {{ driver.user_username }}
             </option>
           </select>
-          <div *ngIf="driverIdModel.invalid && driverIdModel.touched"><app-required-common></app-required-common>
+        </div>
+
+        <h1 class="text-xl font-semibold mt-6">Students</h1>
+
+        <!-- Existing Students Section -->
+        <div class="mt-4">
+          <h2 class="text-lg font-semibold text-gray-800">Existing Students</h2>
+          <p class="text-sm text-gray-500 mb-4">These students are already part of the current student list. You can remove or reorder them as needed.</p>
+          <div cdkDropList (cdkDropListDropped)="onDrop($event)"
+            class="mt-4 p-1 md:p-4 border rounded-lg shadow-lg bg-white">
+            <div *ngFor="let student of students; let i = index" cdkDrag
+              class="flex items-center gap-x-4 mb-2 p-3 min-h-24 bg-gray-50 rounded-lg shadow-sm">
+              <!-- Button Drag Section -->
+              <div class="flex items-center justify-center cursor-move bg-gray-100 rounded-lg shadow p-2" cdkDragHandle>
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16M4 14h16"></path>
+                </svg>
+              </div>
+
+              <!-- Text Section -->
+              <div class="flex-1 bg-gray-100 p-2 rounded-lg" cdkDragDisabled>
+                <p class="text-sm font-semibold">{{ student.student_first_name }} {{ student.student_last_name }}</p>
+                <p class="text-sm text-gray-500">Status: {{ student.student_status }}</p>
+                <p class="text-sm text-gray-500">Order: {{ student.student_order }}</p>
+              </div>
+
+              <!-- Remove Button -->
+              <button type="button" (click)="removeStudent(i)"
+                class="p-2 w-10 h-10 text-gray-100 bg-red-400 hover:bg-red-500 hover:text-white rounded-lg shadow-md flex items-center justify-center"
+                cdkDragDisabled>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12h14"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="w-full h-24 flex items-center justify-center" *ngIf="students.length === 0">
+              <h1>No data available</h1>
+            </div>
           </div>
         </div>
 
-        <div class="mt-4">
-          <label for="student_uuid" class="text-sm md:text-[0.875rem] mb-1">Student
-            <app-asterisk></app-asterisk></label>
-          <select id="student_uuid" [(ngModel)]="student_uuid" name="student_uuid"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mb-2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            [ngClass]="{'border-red-500': studentIdModel.touched && studentIdModel.invalid}" #studentIdModel="ngModel"
-            required>
-            <option value="" disabled selected>Choose the Student</option>
-            <option *ngFor="let student of rowListAllStudent" [value]="student.student_uuid">
-              {{ student.student_first_name }}
-            </option>
-          </select>
-          <div *ngIf="studentIdModel.invalid && studentIdModel.touched"><app-required-common></app-required-common>
-          </div>
-        </div>
+        <!-- Add New Students Section -->
+        <div class="mt-6">
+          <h2 class="text-lg font-semibold text-gray-800">Add New Students</h2>
+          <p class="text-sm text-gray-500 mb-4">Add new students to the route by selecting from the available list below.</p>
+          <form [formGroup]="infoHAForm">
+            <div formArrayName="students">
+              <div *ngFor="let field of infoHAListArray.controls; let i = index" [formGroupName]="i"
+                class="mt-4 p-4 border rounded-lg shadow-lg bg-white">
+                <div class="mt-4">
+                  <label for="student_uuid" class="text-sm mb-1">Student</label>
+                  <div class="flex items-center gap-x-3">
+                    <select id="student_uuid" formControlName="student_uuid" required
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                      <option value="" disabled [selected]="!field.get('student_uuid')?.value">Choose the Student
+                      </option>
+                      <option *ngFor="let student of getFilteredStudents(i)" [value]="student.student_uuid">
+                        {{ student.student_first_name }} {{ student.student_last_name }}
+                      </option>
 
-        <div class="mt-4">
-          <label for="route_description" class="text-sm md:text-[0.875rem] mb-1">Route Description
-            <app-asterisk></app-asterisk></label>
-          <input type="text" id="route_description" name="route_description" placeholder="e.g. Route Description"
-            [(ngModel)]="route_description" class="border text-sm rounded-lg p-2 px-3 w-full"
-            [ngClass]="{'border-red-500': routeDescriptionModel.touched && routeDescriptionModel.invalid}" maxlength=""
-            #routeDescriptionModel="ngModel">
+                    </select>
+                    <button *ngIf="infoHAListArray.length > 1" type="button" (click)="removeInfoHAField(i)"
+                      class="p-2 w-10 h-10 text-gray-100 bg-red-400 hover:bg-red-500 hover:text-white rounded-lg shadow-md flex items-center justify-center">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 12h14"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <button *ngIf="isAddButtonEnabled()" type="button" (click)="addInfoHAField()"
+                class="mt-4 px-4 py-2 text-white bg-blue-400 hover:bg-blue-500 rounded-lg shadow-lg">
+                Add Student
+              </button>
+            </div>
+          </form>
         </div>
-
       </form>
 
       <!-- Modal footer -->
@@ -316,6 +387,7 @@
       <div class="my-5 px-8 max-w-2xl mx-auto">
         <hr>
 
+        <!-- Route Name -->
         <div class="grid grid-cols-3 items-start gap-x-4 my-3">
           <label for="route_name" class="block text-sm font-medium text-gray-700 col-span-1">
             Route Name <app-asterisk></app-asterisk>
@@ -333,6 +405,7 @@
 
         <hr>
 
+        <!-- Driver Name -->
         <div class="grid grid-cols-3 items-start gap-x-4 my-3">
           <label for="user_username" class="block text-sm font-medium text-gray-700 col-span-1">
             Driver Name <app-asterisk></app-asterisk>
@@ -350,6 +423,7 @@
 
         <hr>
 
+        <!-- Student Name -->
         <div class="grid grid-cols-3 items-start gap-x-4 my-3">
           <label for="student_name" class="block text-sm font-medium text-gray-700 col-span-1">
             Student Name <app-asterisk></app-asterisk>
@@ -367,6 +441,7 @@
 
         <hr>
 
+        <!-- Route Description -->
         <div class="grid grid-cols-3 items-start gap-x-4 my-3">
           <label for="route_description" class="block text-sm font-medium text-gray-700 col-span-1">
             Route Description <app-asterisk></app-asterisk>
@@ -384,8 +459,10 @@
           </div>
         </div>
 
-        <!-- Tambahkan field lainnya seperti Driver Name, Student Name, dll -->
+        <!-- Additional Fields if needed -->
+
       </div>
+
 
       <!-- Modal Footer -->
       <div class="flex items-center border-t border-gray-200 rounded-b dark:border-gray-600">

@@ -144,7 +144,7 @@ export class HelloAndDateComponent implements OnInit, OnDestroy {
     const paddedMinutes = timeData.minutes.toString().padStart(2, '0');
     const paddedSeconds = timeData.seconds.toString().padStart(2, '0');
 
-    this.digitalTime = `${paddedHours}:${paddedMinutes}:${paddedSeconds} ${timeData.ampm}`;
+    this.digitalTime = `${paddedHours}:${paddedMinutes} ${timeData.ampm}`;
     this.dateInfo = `${timeData.dayName}, ${timeData.dayDate} ${timeData.monthName} ${timeData.year}`;
   }
 }

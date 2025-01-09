@@ -6,7 +6,7 @@
 
   <div class="grid grid-cols-2 md:grid-cols-4 my-4 px-2 gap-4 md:gap-8 auto-rows-fr">
     <a routerLink="/admin/students"
-      class="flex flex-col justify-center items-center w-auto h-full aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
+      class="flex flex-col justify-center items-center w-auto h-full p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
       <div>
         <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
           stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -26,36 +26,24 @@
       </div>
       <h1 class="text-[2.5rem] font-bold ">{{totalStudent}}</h1>
       <p class="truncate">Total Student</p>
-      <div class="flex items-center justify-center gap-x-2 mt-auto">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-          stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <div class="flex items-center justify-center gap-x-2 mt-8">
+        <svg class="w-5 h-5 transition-all duration-300" [ngClass]="{
+          'text-green-500': studentChangePercentage > 0,
+          'text-red-500': studentChangePercentage < 0,
+          'text-gray-500': studentChangePercentage === 0
+        }" [ngStyle]="{
+          transform: studentChangePercentage < 0 ? 'rotate(180deg)' : 'rotate(0deg)'
+        }" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M5.25 11.438 12 4.688l6.75 6.75"></path>
           <path d="M12 5.625v13.688"></path>
         </svg>
-        <p class="font-medium">0%</p>
+        <p class="font-medium">{{studentChangePercentage}}%</p>
       </div>
+      <p class="text-xs md:text-sm text-center">From last month</p>
     </a>
     <a routerLink="/admin/vehicles"
-      class="flex flex-col justify-center items-center w-auto h-full aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
-      <div>
-        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M21 10h-2V4h1V2H4v2h1v6H3a1 1 0 0 0-1 1v9h20v-9a1 1 0 0 0-1-1Zm-7 8v-4h-4v4H7V4h10v14h-3Z"></path>
-          <path d="M9 6h2v2H9V6Zm4 0h2v2h-2V6Zm-4 4h2v2H9v-2Zm4 0h2v2h-2v-2Z"></path>
-        </svg>
-      </div>
-      <h1 class="text-[2.5rem] font-bold ">{{totalDriver}}</h1>
-      <p class="truncate">Total Driver</p>
-      <div class="flex items-center justify-center gap-x-2 mt-auto">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-          stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M5.25 11.438 12 4.688l6.75 6.75"></path>
-          <path d="M12 5.625v13.688"></path>
-        </svg>
-        <p class="font-medium">0%</p>
-      </div>
-    </a>
-    <a routerLink="/admin/drivers"
-      class="flex flex-col justify-center items-center w-auto h-full aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
+      class="flex flex-col justify-center items-center w-auto h-full p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
       <div>
         <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
           stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -68,17 +56,50 @@
       </div>
       <h1 class="text-[2.5rem] font-bold ">{{totalVehicle}}</h1>
       <p class="truncate">Total Vehicle</p>
-      <div class="flex items-center justify-center gap-x-2 mt-auto">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-          stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <div class="flex items-center justify-center gap-x-2 mt-8">
+        <svg class="w-5 h-5 transition-all duration-300" [ngClass]="{
+        'text-green-500': vehicleChangePercentage > 0,
+        'text-red-500': vehicleChangePercentage < 0,
+        'text-gray-500': vehicleChangePercentage === 0
+      }" [ngStyle]="{
+        transform: vehicleChangePercentage < 0 ? 'rotate(180deg)' : 'rotate(0deg)'
+      }" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M5.25 11.438 12 4.688l6.75 6.75"></path>
           <path d="M12 5.625v13.688"></path>
         </svg>
-        <p class="font-medium">0%</p>
+        <p class="font-medium">{{vehicleChangePercentage}}%</p>
       </div>
+      <p class="text-xs md:text-sm text-center">From last month</p>
+    </a>
+    <a routerLink="/admin/drivers"
+      class="flex flex-col justify-center items-center w-auto h-full p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
+      <div>
+        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 10h-2V4h1V2H4v2h1v6H3a1 1 0 0 0-1 1v9h20v-9a1 1 0 0 0-1-1Zm-7 8v-4h-4v4H7V4h10v14h-3Z"></path>
+          <path d="M9 6h2v2H9V6Zm4 0h2v2h-2V6Zm-4 4h2v2H9v-2Zm4 0h2v2h-2v-2Z"></path>
+        </svg>
+      </div>
+      <h1 class="text-[2.5rem] font-bold ">{{totalDriver}}</h1>
+      <p class="truncate">Total Driver</p>
+      <div class="flex items-center justify-center gap-x-2 mt-8">
+        <svg class="w-5 h-5 transition-all duration-300" [ngClass]="{
+          'text-green-500': driverChangePercentage > 0,
+          'text-red-500': driverChangePercentage < 0,
+          'text-gray-500': driverChangePercentage === 0
+        }" [ngStyle]="{
+          transform: driverChangePercentage < 0 ? 'rotate(180deg)' : 'rotate(0deg)'
+        }" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5.25 11.438 12 4.688l6.75 6.75"></path>
+          <path d="M12 5.625v13.688"></path>
+        </svg>
+        <p class="font-medium">{{driverChangePercentage}}%</p>
+      </div>
+      <p class="text-xs md:text-sm text-center">From last month</p>
     </a>
     <a routerLink="/admin/routes"
-      class="flex flex-col justify-center items-center w-auto h-full aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
+      class="flex flex-col justify-center items-center w-auto h-full p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
       <div>
         <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
           stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -93,14 +114,21 @@
       </div>
       <h1 class="text-[2.5rem] font-bold ">{{totalRoute}}</h1>
       <p class="truncate">Total Route</p>
-      <div class="flex items-center justify-center gap-x-2 mt-auto">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-          stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <div class="flex items-center justify-center gap-x-2 mt-8">
+        <svg class="w-5 h-5 transition-all duration-300" [ngClass]="{
+          'text-green-500': routeChangePercentage > 0,
+          'text-red-500': routeChangePercentage < 0,
+          'text-gray-500': routeChangePercentage === 0
+        }" [ngStyle]="{
+          transform: routeChangePercentage < 0 ? 'rotate(180deg)' : 'rotate(0deg)'
+        }" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M5.25 11.438 12 4.688l6.75 6.75"></path>
           <path d="M12 5.625v13.688"></path>
         </svg>
-        <p class="font-medium">0%</p>
+        <p class="font-medium">{{routeChangePercentage}}%</p>
       </div>
+      <p class="text-xs md:text-sm text-center">From last month</p>
     </a>
   </div>
 

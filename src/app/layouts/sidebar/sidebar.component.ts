@@ -105,6 +105,10 @@ export class SidebarComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.fetchProfileData();
 
+    const token = this.cookieService.get('accessToken');
+
+    console.log(token);
+
     this.loadMenuByRole(this.role_code);
 
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -248,21 +252,26 @@ export class SidebarComponent implements OnInit {
               icon: 'car',
               path: '/admin/drivers',
             },
-            {
-              name: 'Driver Monitoring',
-              icon: 'studentList',
-              path: '/admin/driver-monitoring',
-            },
+            // {
+            //   name: 'Driver Monitoring',
+            //   icon: 'studentList',
+            //   path: '/admin/driver-monitoring',
+            // },
           ],
         },
         {
           title: 'ROUTE ASSIGNMENT',
           items: [
             {
-              name: 'Route and Driver Assignment',
+              name: 'Route List',
               icon: 'routeList',
               path: '/admin/routes',
             },
+            // {
+            //   name: 'Driver and Student Assignment',
+            //   icon: 'routeList',
+            //   path: '/admin/not-found',
+            // },
           ],
         },
       ];
@@ -321,11 +330,11 @@ export class SidebarComponent implements OnInit {
               icon: 'car',
               path: '/driver/shuttle',
             },
-            {
-              name: 'Customize Route',
-              icon: 'routeList',
-              path: '/driver/p',
-            },
+            // {
+            //   name: 'Customize Route',
+            //   icon: 'routeList',
+            //   path: '/driver/p',
+            // },
             {
               name: 'Shuttle History',
               icon: 'shuttleHistory',
@@ -371,10 +380,14 @@ export class SidebarComponent implements OnInit {
         console.log(token);
 
         this.profileService.resetProfileData();
-        this.router.navigateByUrl('/login');
+
         this.cookieService.delete('accessToken', '/');
         this.cookieService.delete('refreshToken', '/');
-        window.location.reload();
+
+        if (this.router.url !== '/login') {
+          window.location.reload();
+        }
+
         this.router.navigateByUrl('/login');
 
         console.log(response.data.message);
@@ -389,6 +402,12 @@ export class SidebarComponent implements OnInit {
       .catch((error) => {
         console.log(token);
         if (error.response.status === 401) {
+          this.cookieService.delete('accessToken', '/');
+          this.cookieService.delete('refreshToken', '/');
+          this.cookieService.deleteAll();
+          alert(token);
+
+          this.router.navigateByUrl('/login');
           Swal.fire({
             title: 'Error',
             text: error.response.data.message,
@@ -401,6 +420,9 @@ export class SidebarComponent implements OnInit {
             icon: 'error',
           });
         }
+
+        this.cookieService.delete('accessToken', '/');
+        this.cookieService.delete('refreshToken', '/');
       });
   }
 }

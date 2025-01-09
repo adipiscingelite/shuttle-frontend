@@ -1,14 +1,19 @@
 <div class="h-full">
   <div class="bg-white pb-8">
     <div class="w-full h-[250px]">
-      <img src="https://i.pinimg.com/474x/e5/ce/50/e5ce50f326895b9962862d91a81795fa.jpg"
-        class="w-full h-full object-cover rounded-tl-xl rounded-tr-xl">
+      <!-- <img src="https://i.pinimg.com/474x/e5/ce/50/e5ce50f326895b9962862d91a81795fa.jpg"
+        class="w-full h-full object-cover rounded-tl-xl rounded-tr-xl"> -->
+      <div class="w-full h-full bg-gray-300 rounded-t-xl"></div>
     </div>
     <div class="flex flex-col items-center -mt-20">
-      <img alt="Foto Profil" src="https://i.pinimg.com/474x/ab/72/68/ab72684d262a18aac97d650e8b4f66c3.jpg"
+      <img *ngIf="user_picture" alt="Foto Profil"
+        src="https://i.pinimg.com/474x/ab/72/68/ab72684d262a18aac97d650e8b4f66c3.jpg"
         class="w-40 aspect-square object-cover rounded-full border border-black shadow-lg" loading="lazy">
+      <div *ngIf="!user_picture"
+        class="w-40 aspect-square flex items-center justify-center text-3xl font-semibold text-white bg-blue-600 rounded-full border border-black shadow-lg">
+        {{initialAvatar}}</div>
       <div class="flex items-center space-x-2 mt-2">
-        <p class="text-2xl">Driver Jawa</p>
+        <p class="text-2xl">{{user_username}}</p>
         <span class="bg-blue-500 rounded-full p-1" title="Verified">
           <svg xmlns="http://www.w3.org/2000/svg" class="text-gray-100 h-2.5 w-2.5" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
@@ -17,130 +22,116 @@
         </span>
       </div>
       <!-- <p class="text-gray-700">  user.role_title  </p> -->
-      <p class="text-sm text-gray-500">driver%gmail.com</p>
+      <p class="text-sm text-gray-500">{{user_email}}</p>
     </div>
 
   </div>
 
-  <div class="my-2 flex flex-col space-y-4 2xl:space-y-0 2xl:space-x-4">
-    <ul id="hehehe" class="flex flex-row list-none pt-3 mb-2 font-medium border-b border-neutral-600 shadow-sm">
-      <li class="w-auto">
+  <div class="my-2 flex flex-col space-y-4 2xl:space-y-0 2xl:space-x-4 select-none">
+    <ul id="hehehe"
+      class="flex flex-row list-none pt-3 mb-2 font-medium border-b border-neutral-600 shadow-sm overflow-x-scroll">
+      <li class="w-auto flex-shrink-0">
         <a class="flex items-center px-5 py-3 w-fit leading-normal cursor-pointer" (click)="toggleTabs(1)"
           [ngClass]="{'text-neutral-500': openTab !== 1, 'text-black font-semibold border-b-2 border-neutral-600 rounded-b-sm': openTab === 1}">
-          <p>Detail Saya</p>
+          <p>My Profile</p>
         </a>
       </li>
-      <li class="w-auto">
+      <li class="w-auto flex-shrink-0">
         <a class="flex items-center px-5 py-3 w-fit leading-normal cursor-pointer" (click)="toggleTabs(2)"
           [ngClass]="{'text-neutral-500': openTab !== 2, 'text-black font-semibold border-b-2 border-neutral-600 rounded-b-sm': openTab === 2}">
           <p>Password</p>
         </a>
       </li>
-      <li class="w-auto">
+      <!-- <li class="w-auto flex-shrink-0">
         <a class="flex items-center px-5 py-3 w-fit leading-normal cursor-pointer" (click)="toggleTabs(3)"
           [ngClass]="{'text-neutral-500': openTab !== 3, 'text-black font-semibold border-b-2 border-neutral-600 rounded-b-sm': openTab === 3}">
-          <p>Kendaraan</p>
+          <p>Vehicle</p>
         </a>
       </li>
-      <li class="w-auto">
+      <li class="w-auto flex-shrink-0">
         <a class="flex items-center px-5 py-3 w-fit leading-normal cursor-pointer" (click)="toggleTabs(4)"
           [ngClass]="{'text-neutral-500': openTab !== 4, 'text-black font-semibold border-b-2 border-neutral-600 rounded-b-sm': openTab === 4}">
-          <p>SIM</p>
+          <p>driver's license</p>
         </a>
-      </li>
+      </li> -->
     </ul>
 
     <div [ngClass]="{'hidden': openTab !== 1, 'block': openTab === 1}" class="px-8">
-      <h1 class="text-lg font-semibold">Detail Saya</h1>
-      <p class="text-xs">Berisi informasi umum tentang Anda</p>
+      <h1 class="text-lg font-semibold">My Profile</h1>
+      <p class="text-xs">Contains general information about you</p>
 
 
       <table class="my-5 text-sm">
         <tr class="">
-          <td class="py-2 pr-8">Nama Panggilan</td>
+          <td class="py-2 pr-8">Username</td>
           <td class="px-1">:</td>
-          <td class="pl-3">Kucing</td>
+          <td class="pl-3">{{user_username}}</td>
         </tr>
         <tr class="">
-          <td class="py-2 pr-8">Nama Lengkap</td>
+          <td class="py-2 pr-8">Full Name</td>
           <td class="px-1">:</td>
-          <td class="pl-3">Kucing Hitput</td>
+          <td class="pl-3">{{user_first_name}}{{user_last_name}}</td>
+        </tr>
+        <tr class="">
+          <td class="py-2 pr-8">Gender</td>
+          <td class="px-1">:</td>
+          <td class="pl-3">{{user_gender}}</td>
+        </tr>
+        <tr class="">
+          <td class="py-2 pr-8">Role</td>
+          <td class="px-1">:</td>
+          <td class="pl-3">{{user_role}}</td>
         </tr>
         <tr class="">
           <td class="py-2 pr-8">Email</td>
           <td class="px-1">:</td>
-          <td class="pl-3">kucing%gmail.com</td>
-        </tr>
-        <tr class="">
-          <td class="py-2 pr-8">Tempat, Tanggal Lahir</td>
-          <td class="px-1">:</td>
-          <td class="pl-3">Sleman, 10 Januari 2024</td>
+          <td class="pl-3">{{user_email}}</td>
         </tr>
       </table>
     </div>
     <div [ngClass]="{'hidden': openTab !== 2, 'block': openTab === 2}" class="px-8">
       <h1 class="text-lg font-semibold">Password</h1>
-      <p class="text-xs">Berisi informasi tentang password Anda. Anda juga bisa langsung mengubah password Anda disini
+      <p class="text-xs">Contains information about your password. You can also change your password directly here
       </p>
 
       <form action="">
         <table class="my-5 text-sm tracking-wide">
           <tr class="">
-            <td class="py-2 pr-8">Password Saat Ini</td>
+            <td class="py-2 pr-8 text-sm md:text-base">Current Password</td>
             <td class="pl-3">
               <input placeholder="Enter your password..."
-                class="px-3 w-[240px] text-[14px] bg-gray-100 p-2 border border-white/10 rounded-md outline-none ring-2 ring-blue-500/0 focus:ring-blue-500"
-                name="password" type="password" value="****" autocomplete="current-password" aria-label="Enter your old password" required />
+                class="px-3 w-40 md:w-64 text-[14px] bg-gray-100 p-2 border border-white/10 rounded-md outline-none ring-2 ring-blue-500/0 focus:ring-blue-500"
+                name="password" type="password" value="****" autocomplete="current-password"
+                aria-label="Enter your old password" required />
             </td>
           </tr>
           <tr class="">
-            <td class="py-2 pr-8">New Password</td>
+            <td class="py-2 pr-8 text-sm md:text-base">New Password</td>
             <td class="pl-3">
               <input placeholder="Enter your password..."
-                class="px-3 w-[240px] text-[14px] bg-gray-100 p-2 border border-white/10 rounded-md outline-none ring-2 ring-blue-500/0 focus:ring-blue-500"
-                name="password" type="password" autocomplete="new-password" aria-label="Enter a new password" required />
+                class="px-3 w-40 md:w-64 text-[14px] bg-gray-100 p-2 border border-white/10 rounded-md outline-none ring-2 ring-blue-500/0 focus:ring-blue-500"
+                name="password" type="password" autocomplete="new-password" aria-label="Enter a new password"
+                required />
             </td>
           </tr>
           <tr class="">
-            <td class="py-2 pr-8">Confirm New Password</td>
+            <td class="py-2 pr-8 text-sm md:text-base">Confirm New Password</td>
             <td class="pl-3">
               <input placeholder="Enter your password..."
-                class="px-3 w-[240px] text-[14px] bg-gray-100 p-2 border border-white/10 rounded-md outline-none ring-2 ring-blue-500/0 focus:ring-blue-500"
-                name="password" type="password" autocomplete="new-password" aria-label="Confirm your new password" required />
+                class="px-3 w-40 md:w-64 text-[14px] bg-gray-100 p-2 border border-white/10 rounded-md outline-none ring-2 ring-blue-500/0 focus:ring-blue-500"
+                name="password" type="password" autocomplete="new-password" aria-label="Confirm your new password"
+                required />
             </td>
           </tr>
         </table>
       </form>
     </div>
-    <div [ngClass]="{'hidden': openTab !== 3, 'block': openTab === 3}" class="px-8">
-      <h1 class="text-lg font-semibold">Kendaraan</h1>
-      <p class="text-xs">Berisi informasi umum tentang kendaraan Anda
-      </p>
 
-      <table class="my-5 text-sm">
-        <tr class="">
-          <td class="py-2 pr-8">Jenis Kendaraan</td>
-          <td class="px-1">:</td>
-          <td class="pl-3">Toyota Hiace Premio</td>
-        </tr>
-        <tr class="">
-          <td class="py-2 pr-8">Nomor Polisi</td>
-          <td class="px-1">:</td>
-          <td class="pl-3">AB 1234 OK</td>
-        </tr>
-        <tr class="">
-          <td class="py-2 pr-8">Warna Kendaraan</td>
-          <td class="px-1">:</td>
-          <td class="pl-3">Hytam</td>
-        </tr>
-        <tr class="">
-          <td class="py-2 pr-8">Bahan Bakar</td>
-          <td class="px-1">:</td>
-          <td class="pl-3">Bensin</td>
-        </tr>
-      </table>
+    <div class="flex justify-end">
+      <button
+        class="px-4 py-2 rounded-full shadow hover:shadow-md border bg-black hover:bg-gray-50 text-white hover:text-black font-medium">
+        Customize Profile
+      </button>
     </div>
-    <div [ngClass]="{'hidden': openTab !== 4, 'block': openTab === 4}">empat</div>
   </div>
-
 </div>

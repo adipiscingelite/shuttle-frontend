@@ -1,13 +1,28 @@
 // ANGULAR
 import { CommonModule, DatePipe } from '@angular/common';
 import {
+  CdkDragDrop,
+  DragDropModule,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
+
+import {
   ChangeDetectorRef,
   Component,
   Inject,
   OnInit,
   OnDestroy,
+  AfterViewInit,
 } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import {
   trigger,
   state,
@@ -42,6 +57,29 @@ import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { toastInOutAnimation } from '@shared/utils/toast.animation';
 import { modalScaleAnimation } from '@shared/utils/modal.animation';
 
+interface Routes {
+  route_name_uuid: string;
+  route_name: string;
+  route_description: string;
+  // created_at: string;
+  route_assignment: RouteAssignment[];
+}
+
+interface RouteAssignment {
+  driver_uuid: string;
+  driver_first_name: string;
+  driver_last_name: string;
+  students: Student[];
+}
+
+interface Student {
+  student_uuid: string;
+  student_first_name: string;
+  student_last_name: string;
+  student_status: string;
+  student_order: number;
+}
+
 interface Route {
   route_uuid: string;
   // driver: driverDetail;
@@ -63,6 +101,7 @@ interface driverDetail {
 interface studentDetail {
   student_uuid: string;
   student_first_name: string;
+  student_last_name: string;
 }
 
 interface schoolDetail {
@@ -76,6 +115,7 @@ interface schoolDetail {
   imports: [
     AgGridAngular,
     CommonModule,
+    DragDropModule,
     FormsModule,
     ReactiveFormsModule,
     AgGridAngular,
@@ -87,7 +127,7 @@ interface schoolDetail {
   styleUrl: './routes.component.css',
   animations: [toastInOutAnimation, modalScaleAnimation],
 })
-export class RoutesComponent implements OnInit {
+export class RoutesComponent implements OnInit, AfterViewInit {
   // For token
   token: string | null = '';
   // For sorting
@@ -104,7 +144,10 @@ export class RoutesComponent implements OnInit {
 
   // For data routes
   route_uuid: string = '';
+  route_name_uuid: string = '';
   driver_uuid: string = '';
+  driver_first_name: string = '';
+  driver_last_name: string = '';
   user_uuid: string = '';
   user_username: string = '';
   driver_name: string = '';
@@ -128,31 +171,43 @@ export class RoutesComponent implements OnInit {
   isModalDeleteOpen: boolean = false;
 
   // Row list data routes
-  rowListAllRoute: Route[] = [];
+  rowListAllRoute: Routes[] = [];
 
   // Row list data driver
   rowListAllDriver: driverDetail[] = [];
 
   // Row list data student
   rowListAllStudent: studentDetail[] = [];
+  rowListAllFreeStudent: studentDetail[] = [];
 
   // Row list data school
   rowListAllSchool: schoolDetail[] = [];
+  students: Student[] = [];
 
   constructor(
     private cookieService: CookieService,
     private cdRef: ChangeDetectorRef,
+    private fb: FormBuilder,
     public toastService: ToastService,
     @Inject('apiUrl') private apiUrl: string,
   ) {
     this.apiUrl = apiUrl;
     this.token = this.cookieService.get('accessToken');
+
+    this.infoHAForm = this.fb.group({
+      students: this.fb.array([]),
+    });
   }
 
   ngOnInit(): void {
     this.getAllRoute();
     this.getAllDriver();
     this.getAllStudent();
+    this.getAllFreeStudent();
+  }
+
+  ngAfterViewInit(): void {
+    this.cdRef.detectChanges();
   }
 
   themeClass = 'ag-theme-quartz';
@@ -173,12 +228,11 @@ export class RoutesComponent implements OnInit {
   };
 
   // Column Definitions
-  colHeaderListRoutes: ColDef<Route>[] = [
+  colHeaderListRoutes: ColDef<Routes>[] = [
     {
       headerName: 'No.',
       valueGetter: 'node.rowIndex + 1',
       width: 50,
-      maxWidth: 70,
       pinned: 'left',
       sortable: false,
     },
@@ -188,20 +242,20 @@ export class RoutesComponent implements OnInit {
       maxWidth: 250,
       sortable: true,
     },
-    {
-      headerName: 'Driver Name',
-      // field: 'driver.user_username',
-      field: 'user_username',
-      maxWidth: 250,
-      sortable: true,
-    },
-    {
-      headerName: 'Student Name',
-      // field: 'student.student_first_name',
-      field: 'student_name',
-      maxWidth: 250,
-      sortable: true,
-    },
+    // {
+    //   headerName: 'Driver Name',
+    //   // field: 'driver.user_username',
+    //   field: 'user_username',
+    //   maxWidth: 250,
+    //   sortable: true,
+    // },
+    // {
+    //   headerName: 'Student Name',
+    //   // field: 'student.student_first_name',
+    //   field: 'student_name',
+    //   maxWidth: 250,
+    //   sortable: true,
+    // },
     // { headerName: 'School',
     //   field: 'school.school_name',
     //   maxWidth: 250,
@@ -210,7 +264,6 @@ export class RoutesComponent implements OnInit {
     {
       headerName: 'Route Description',
       field: 'route_description',
-      maxWidth: 250,
       sortable: true,
     },
     {
@@ -241,7 +294,7 @@ export class RoutesComponent implements OnInit {
           `;
         editButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.openEditModal(params.data.route_uuid);
+          this.openEditModal(params.data.route_name_uuid);
         });
 
         const viewButton = document.createElement('button');
@@ -256,7 +309,7 @@ export class RoutesComponent implements OnInit {
           `;
         viewButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.openDetailModal(params.data.route_uuid);
+          this.openDetailModal(params.data.route_name_uuid);
         });
 
         const deleteButton = document.createElement('button');
@@ -276,7 +329,7 @@ export class RoutesComponent implements OnInit {
           `;
         deleteButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.onDeleteRoute(params.data.route_uuid);
+          this.onDeleteRoute(params.data.route_name_uuid);
         });
 
         buttonContainer.appendChild(editButton);
@@ -327,6 +380,47 @@ export class RoutesComponent implements OnInit {
     this.getAllStudent();
   }
 
+  // input dinamis coy
+  infoHAForm: FormGroup;
+
+  getInfoHAField(): FormGroup {
+    return this.fb.group({
+      student_uuid: ['', Validators.required], // Nilai default kosong dengan validasi
+    });
+    this.cdRef.detectChanges();
+  }
+
+  // Fungsi untuk menambahkan student baru
+  // To add a new student to the FormArray
+  addInfoHAField() {
+    const studentControl = this.fb.group({
+      student_uuid: ['', Validators.required],
+    });
+    this.infoHAListArray.push(studentControl);
+
+    this.cdRef.detectChanges();
+  }
+
+  // To remove a student from the FormArray
+  removeInfoHAField(i: number) {
+    this.infoHAListArray.removeAt(i);
+  }
+
+  // Mendapatkan FormArray untuk binding di template
+  get infoHAListArray(): FormArray {
+    return this.infoHAForm.get('students') as FormArray;
+  }
+
+  // Submit form
+  data(): void {
+    console.log(this.infoHAForm.value);
+  }
+
+  isAddButtonEnabled(): boolean {
+    // Memeriksa apakah semua form group dalam infoHAListArray valid
+    return this.infoHAListArray.controls.every((group) => group.valid);
+  }
+
   // Get all routes
   getAllRoute() {
     this.isLoading = true;
@@ -337,7 +431,7 @@ export class RoutesComponent implements OnInit {
         },
       })
       .then((response) => {
-        this.rowListAllRoute = response.data.routes;
+        this.rowListAllRoute = response.data.data.data;
         console.log('route', response);
         this.paginationTotalPage = response.data.data.meta.total_page;
         this.pages = Array.from(
@@ -388,20 +482,60 @@ export class RoutesComponent implements OnInit {
         console.error('Error fetching data:', error);
       });
   }
+  // Get all student
+  getAllFreeStudent() {
+    axios
+      .get(`${this.apiUrl}/api/school/student/free/all`, {
+        headers: {
+          Authorization: `${this.cookieService.get('accessToken')}`,
+        },
+      })
+      .then((response) => {
+        this.rowListAllFreeStudent = response.data.students;
+        console.log('free student', this.rowListAllFreeStudent);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+  }
 
   openAddModal() {
+    this.route_name = '';
+    this.route_description = '';
+    this.driver_uuid = '';
+
+    this.infoHAForm.reset();
+    this.infoHAListArray.clear();
+
     this.isModalAddOpen = true;
+    setTimeout(() => {
+      this.addInfoHAField();
+    }, 0);
+    this.cdRef.detectChanges();
   }
 
   //Add route
   addRoute() {
+    const studentsData = this.infoHAListArray.controls.map(
+      (control) => control.value,
+    );
+
+    console.log(studentsData);
+
     const requestData = {
-      driver_uuid: this.driver_uuid,
-      student_uuid: this.student_uuid,
-      school_id: this.school_uuid,
       route_name: this.route_name,
       route_description: this.route_description,
+      route_assignment: [
+        {
+          driver_uuid: this.driver_uuid,
+          students: studentsData.map((student, index) => ({
+            student_uuid: student.student_uuid,
+            student_order: (index + 1).toString(),
+          })),
+        },
+      ],
     };
+
     console.log('request', requestData);
     axios
       .post(`${this.apiUrl}/api/school/route/add`, requestData, {
@@ -414,6 +548,7 @@ export class RoutesComponent implements OnInit {
         this.showToast(responseMessage, 3000, Response.Success);
 
         this.getAllRoute();
+        this.getAllFreeStudent();
         this.isModalAddOpen = false;
         this.cdRef.detectChanges();
       })
@@ -428,58 +563,124 @@ export class RoutesComponent implements OnInit {
     this.isModalAddOpen = false;
     this.cdRef.detectChanges();
   }
-
-  openEditModal(route_uuid: string) {
+  openEditModal(route_name_uuid: string) {
     axios
-      .get(`${this.apiUrl}/api/school/route/${route_uuid}`, {
-        headers: {
-          Authorization: `${this.cookieService.get('accessToken')}`,
-        },
+      .get(`${this.apiUrl}/api/school/route/${route_name_uuid}`, {
+        headers: { Authorization: `${this.cookieService.get('accessToken')}` },
       })
       .then((response) => {
-        console.log('edit', response);
+        const editData = response.data;
+        console.log(editData);
 
-        const editData = response.data.route;
-
-        this.route_uuid = editData.route_uuid;
-        this.user_uuid = editData.user_uuid;
-        this.user_username = editData.user_username;
-        this.student_uuid = editData.student_uuid;
-        this.student_name = editData.student_name;
-        this.school_uuid = editData.school_uuid;
+        const editDataRouteAssignment = response.data.route_assignment[0];
+        // Mengisi data ke form
+        this.route_name_uuid = editData.route_name_uuid;
         this.route_name = editData.route_name;
         this.route_description = editData.route_description;
+        this.driver_uuid = editDataRouteAssignment.driver_uuid;
 
-        // Buka modal
+        // Mengisi array students
+        this.students = editDataRouteAssignment.students.map(
+          (student: Student) => ({
+            student_uuid: student.student_uuid,
+            student_first_name: student.student_first_name,
+            student_last_name: student.student_last_name,
+            student_status: student.student_status,
+            student_order: +student.student_order, // Pastikan order berupa angka
+          }),
+        );
+
+        // Urutkan data berdasarkan student_order
+        this.students = this.students.sort(
+          (a, b) => a.student_order - b.student_order,
+        );
+
+        this.infoHAForm.reset();
+        this.infoHAListArray.clear();
+
         this.isModalEditOpen = true;
-        this.cdRef.detectChanges(); // Pastikan perubahan terdeteksi di view
+        this.cdRef.detectChanges();
       })
       .catch((error) => {
-        Swal.fire({
-          title: 'Error',
-          text: error.response.data.message,
-          icon: 'error',
-          timer: 2000,
-          timerProgressBar: true,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
+        console.error('Error fetching route data:', error);
       });
   }
 
+  onDrop(event: CdkDragDrop<Student[]>) {
+    const previousIndex = event.previousIndex;
+    const currentIndex = event.currentIndex;
+
+    // Pindahkan item dalam array
+    moveItemInArray(this.students, previousIndex, currentIndex);
+
+    // Setelah pemindahan, urutkan ulang berdasarkan student_order
+    this.students = this.students.sort(
+      (a, b) => a.student_order - b.student_order,
+    );
+
+    // Jika perlu, perbarui data lainnya
+    this.students = this.students.map((student, index) => ({
+      ...student,
+      student_order: index + 1, // Update student order sesuai index
+    }));
+  }
+
+  // Add new student
+  addStudent() {
+    this.students.push({
+      student_uuid: '',
+      student_first_name: 'New',
+      student_last_name: 'Student',
+      student_status: 'present',
+      student_order: this.students.length + 1,
+    });
+  }
+
+  // Remove student
+  removeStudent(index: number) {
+    console.log('Before removing:', this.students);
+    this.students.splice(index, 1);
+    console.log('After removing:', this.students);
+
+    // Update order
+    this.students.forEach((student, idx) => {
+      student.student_order = idx + 1;
+    });
+
+    this.cdRef.detectChanges();
+  }
+
   updateRoute() {
+    // Gabungkan data siswa lama dan siswa baru
+    const allStudents = [...this.students, ...this.infoHAForm.value.students];
+
+    // Filter siswa duplikat (opsional, jika `student_uuid` wajib unik)
+    const uniqueStudents = allStudents.filter(
+      (value, index, self) =>
+        index === self.findIndex((t) => t.student_uuid === value.student_uuid),
+    );
+
+    // Pastikan urutan benar
+    uniqueStudents.forEach((student, index) => {
+      student.student_order = index + 1; // Urutkan ulang berdasarkan posisi
+    });
+
     const requestData = {
-      driver_uuid: this.user_uuid,
-      student_uuid: this.student_uuid,
-      school_uuid: this.school_uuid,
+      driver_uuid: this.driver_uuid,
       route_name: this.route_name,
       route_description: this.route_description,
+      students: uniqueStudents.map((student) => ({
+        student_uuid: student.student_uuid,
+        // student_first_name: student.student_first_name,
+        student_order: student.student_order, // Pastikan ini sesuai
+      })),
     };
+
     console.log('request', requestData);
 
     axios
       .put(
-        `${this.apiUrl}/api/school/route/update/${this.route_uuid}`,
+        `${this.apiUrl}/api/school/route/update/${this.route_name_uuid}`,
         requestData,
         {
           headers: {
@@ -492,6 +693,7 @@ export class RoutesComponent implements OnInit {
         this.showToast(responseMessage, 3000, Response.Success);
 
         this.getAllRoute();
+        this.getAllFreeStudent();
         this.isModalEditOpen = false;
       })
       .catch((error) => {
@@ -515,17 +717,16 @@ export class RoutesComponent implements OnInit {
       })
       .then((response) => {
         console.log('detailData', response);
+        const detailData: RouteAssignment = response.data;
 
-        const detailData = response.data.route;
-
-        this.route_uuid = detailData.route_uuid;
-        this.user_uuid = detailData.user_uuid;
-        this.user_username = detailData.user_username;
-        this.student_uuid = detailData.student_uuid;
-        this.student_name = detailData.student_name;
-        this.school_uuid = detailData.school_uuid;
-        this.route_name = detailData.route_name;
-        this.route_description = detailData.route_description;
+        // Assign values to component variables
+        // this.route_name_uuid = detailData.route_name_uuid;
+        this.driver_first_name = detailData.driver_first_name;
+        this.driver_last_name = detailData.driver_last_name;
+        this.driver_uuid = detailData.driver_uuid;
+        // this.route_name = detailData.route_name;
+        // this.route_description = detailData.route_description;
+        this.students = detailData.students;
 
         // Buka modal
         this.isModalDetailOpen = true;
@@ -589,5 +790,22 @@ export class RoutesComponent implements OnInit {
 
   removeToast(index: number) {
     this.toastService.remove(index);
+  }
+
+  getFilteredStudents(currentIndex: number): any[] {
+    const selectedUUIDs = this.infoHAListArray.controls
+      .map(
+        (control, index) =>
+          index !== currentIndex && control.get('student_uuid')?.value,
+      )
+      .filter((uuid) => uuid);
+
+    const existingUUIDs = this.students.map((student) => student.student_uuid);
+
+    return this.rowListAllFreeStudent.filter(
+      (student) =>
+        !selectedUUIDs.includes(student.student_uuid) &&
+        !existingUUIDs.includes(student.student_uuid),
+    );
   }
 }

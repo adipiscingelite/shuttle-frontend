@@ -124,7 +124,7 @@ export class AdminsComponent implements OnInit {
   gridOptions = {
     ensureDomOrder: true,
     pagination: true,
-    paginationPageSize: 10,
+    // paginationPageSize: 10,
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
     suppressMovable: true,
@@ -152,7 +152,6 @@ export class AdminsComponent implements OnInit {
     {
       headerName: 'Username',
       field: 'user_username',
-      pinned: 'left',
       sortable: true,
     },
     { headerName: 'First Name', field: 'user_details.user_first_name' },

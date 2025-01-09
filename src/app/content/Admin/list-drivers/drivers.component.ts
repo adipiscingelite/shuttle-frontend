@@ -122,6 +122,7 @@ export class SchoolAdminDriversComponent implements OnInit {
 
   // For loading
   isLoading: boolean = false;
+  isMobile = window.innerWidth <= 768;
 
   // For CRUD Modal
   isModalAddOpen: boolean = false;
@@ -294,7 +295,7 @@ export class SchoolAdminDriversComponent implements OnInit {
 
         return buttonContainer;
       },
-      pinned: 'right',
+      pinned: this.isMobile ? null : 'right',
     },
   ];
 

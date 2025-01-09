@@ -56,6 +56,7 @@ interface Student {
   student_pickup_latitude: number;
   student_pickup_longitude: number;
   parent_name: string;
+  student_status: string;
 }
 
 interface Parent {
@@ -114,6 +115,7 @@ export class StudentsComponent implements OnInit {
   student_gender: string = '';
   student_grade: string = '';
   student_address: string = '';
+  student_status: string = '';
   student_pickup_point: string = '';
   student_pickup_latitude: number | null = null;
   student_pickup_longitude: number | null = null;
@@ -139,6 +141,7 @@ export class StudentsComponent implements OnInit {
 
   // For loading
   isLoading: boolean = false;
+  isMobile = window.innerWidth <= 768;
 
   // For CRUD Modal
   isModalAddOpen: boolean = false;
@@ -235,6 +238,37 @@ export class StudentsComponent implements OnInit {
       maxWidth: 290,
       sortable: true,
     },
+    {
+      headerName: 'Attendance Status',
+      field: 'student_status',
+      sortable: true,
+      cellRenderer: (params: any) => {
+        const status = params.value;
+        let statusColor = '';
+        let bgColor = '';
+
+        switch (status.toLowerCase()) {
+          case 'present':
+            statusColor = 'text-green-500';
+            bgColor = 'bg-green-100';
+            break;
+          case 'sick':
+            statusColor = 'text-red-500';
+            bgColor = 'bg-red-100';
+            break;
+          case 'excused':
+            statusColor = 'text-red-500';
+            bgColor = 'bg-red-100';
+            break;
+          default:
+            statusColor = 'text-gray-500';
+            bgColor = 'bg-gray-100';
+        }
+
+        return `<span class="${statusColor} capitalize font-semibold px-3 py-1 ${bgColor} rounded-full">${status}</span>`;
+      },
+    },
+
     // {
     //   headerName: 'Pickup Point',
     //   field: 'student_pickup_point',
@@ -313,7 +347,7 @@ export class StudentsComponent implements OnInit {
 
         return buttonContainer;
       },
-      pinned: 'right',
+      pinned: this.isMobile ? null : 'right',
     },
   ];
 
@@ -441,6 +475,7 @@ export class StudentsComponent implements OnInit {
         student_gender: this.student_gender,
         student_grade: this.student_grade,
         student_address: this.student_address,
+        // student_status: 'present',
         student_pickup_point: {
           latitude: this.student_pickup_latitude,
           longitude: this.student_pickup_longitude,
@@ -494,6 +529,7 @@ export class StudentsComponent implements OnInit {
         console.log('edit', response);
 
         const editData = response.data.data;
+        
 
         // Set data ke dalam variabel komponen yang terikat dengan form
         this.student_uuid = editData.student_uuid;
@@ -502,6 +538,7 @@ export class StudentsComponent implements OnInit {
         this.student_gender = editData.student_gender.toLowerCase();
         this.student_grade = editData.student_grade;
         this.student_address = editData.student_address;
+        this.student_status = editData.student_status;
 
         const studentPickUpPoint = JSON.parse(editData.student_pickup_point);
         this.student_pickup_latitude = studentPickUpPoint.latitude;
@@ -546,6 +583,7 @@ export class StudentsComponent implements OnInit {
       student_gender: this.student_gender,
       student_grade: this.student_grade,
       student_address: this.student_address,
+      student_status: this.student_status,
       student_pickup_point: {
         latitude: this.student_pickup_latitude,
         longitude: this.student_pickup_longitude,

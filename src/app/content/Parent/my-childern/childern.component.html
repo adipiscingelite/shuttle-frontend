@@ -1,34 +1,116 @@
 <div>
-  <div class="my-5">
-    <h1 class="text-lg font-semibold text-neutral-700">Manage Your Child's Data</h1>
-    <p class="text-sm text-gray-600">Here you can view and update the details of your child(ren). You can make changes
-      to their information as needed to ensure everything is accurate.</p>
-    <br>
-  </div>
-
-  <div class="my-4">
-    <div *ngFor="let child of rowListChildern"
-      class="flex items-start w-full h-full px-5 py-2 md:gap-x-2 lg:gap-x-5 xl:gap-x-6 my-4 bg-gray-100 rounded-md shadow hover:shadow-md hover:scale-[101%]">
-      <div class="h-24 md:h-32 aspect-square rounded-full">
-        <img class="rounded-full" src="https://i.pinimg.com/474x/75/29/93/7529939a5645116bfbd9044ed049ff37.jpg" alt="">
+  <div class="md:grid grid-cols-7 md:gap-x-5 gap-y-5">
+    <div class="md:col-span-5">
+      <div class="md:h-24 my-5">
+        <h1 class="text-lg font-semibold text-neutral-700">Manage Your Child's Data</h1>
+        <p class="text-sm text-gray-600">Here you can view and update the details of your child(ren). You can make
+          changes to their information as needed to ensure everything is accurate.</p>
       </div>
 
-      <div class="h-full w-[1px] border border-gray-400 rounded-full"></div>
+      <div class="my-4">
+        <div *ngFor="let child of rowListChildern"
+          class="w-full h-full px-5 py-4 my-4 bg-white rounded-lg shadow border">
+          <!-- Header Section -->
+          <div class="flex items-start gap-4">
+            <div class="h-24 md:h-32 w-24 md:w-32 aspect-square rounded-full border-4 border-white shadow-lg overflow-hidden">
+              <img class="object-cover w-full h-full" src="https://i.pinimg.com/736x/75/f1/29/75f129482b96092769f354c0b8d21dc0.jpg"
+                alt="Profile Picture">
+            </div>
+            <div class="flex flex-col flex-grow justify-center">
+              <p class="text-sm text-gray-500">{{child.school_name}}</p>
+              <h1 class="text-lg font-medium capitalize text-neutral-800">{{child.student_first_name}} {{child.student_last_name}}</h1>
+              <div class="hidden md:block text-sm text-gray-600 overflow-hidden max-w-xs">
+                <span class="block truncate">{{child.student_address || 'N/A'}}</span>
+              </div>
+            </div>
+            <button (click)="openEditModal(child.student_uuid)"
+              class="px-4 py-2 flex items-center gap-x-2 rounded-full bg-blue-500 text-white font-semibold hover:bg-blue-600">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M16.862 3.487l3.651 3.651m-2.337 2.337L10.5 17.151a2.121 2.121 0 01-.894.53l-3.5 1.167 1.167-3.5c.099-.299.264-.577.53-.894l7.676-7.676m5.63-1.83a2.828 2.828 0 00-4-4L14.5 2.5l6 6 .993-.993z" />
+              </svg>
+              Edit
+            </button>
+          </div>
 
-      <div class="flex flex-col h-full w-full px-5 justify-center">
-        <div class="text-neutral-700">
-          <p class="text-sm">{{child.school_name}}</p>
+          <hr class="my-3 border-gray-200">
 
-          <h1 class="text-lg font-medium capitalize">{{child.student_first_name}} {{child.student_last_name}}</h1>
-          <!-- <p class="text-sm text-neutral-600">Unnamed Road, Lorino, Chukotka Autonomous Okrug, Rusia, 689315</p> -->
+          <!-- Status Section -->
+          <h1 class="text-xl font-semibold text-gray-800 mb-4">
+            Update Status
+          </h1>
+          <p class="text-sm text-gray-600 mb-2">
+            You can easily update your child's status, whether it's due to sickness, absence, or any other reason.
+          </p>
+          <form (ngSubmit)="updateChildernStatus(child.student_uuid)">
+            <div class="mt-3">
+              <select
+                class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-sm text-gray-600 focus:outline-none focus:ring focus:ring-blue-200 hover:bg-gray-50"
+                [(ngModel)]="child.student_status" name="student_status">
+                <option value="present">Ready to Attend</option>
+                <option value="sick">Sick</option>
+                <option value="excused">Excused</option>
+                <!-- <option value="other">Other...</option> -->
+              </select>
+
+              <!-- <input *ngIf="child.student_status === 'other'" 
+                    type="text" 
+                    [(ngModel)]="child.customStatus" 
+                   placeholder="Enter custom status"
+                   class="w-full px-3 py-2 mt-2 bg-gray-100 border border-gray-300 rounded-md text-sm text-gray-600" /> -->
+            </div>
+
+            <!-- Only show the Save button if the status has changed for the current child -->
+            <div class="flex justify-end mt-3" *ngIf="child.student_status !== statusMap[child.student_uuid]">
+              <button type="submit"
+                class="px-4 py-2 bg-blue-500 text-white text-sm font-semibold rounded-md shadow hover:bg-blue-600 focus:outline-none">
+                Save Status
+              </button>
+            </div>
+          </form>
         </div>
       </div>
+    </div>
 
-      <div class="ml-auto my-auto">
-        <button (click)="openEditModal(child.student_uuid)"
-          class="px-3 md:px-6 xl:px-8 py-1 lg:py-2 rounded-full bg-[#3a3a3a] text-white font-semibold">Edit</button>
+
+
+    <div class="md:col-span-2">
+      <div class="md:h-24 my-5">
+        <h1 class="text-lg font-semibold text-neutral-700">Quick Preview</h1>
+        <p class="text-sm text-gray-600">Here you can view a brief list of your child(ren)'s status.</p>
+        <br>
+      </div>
+
+      <div *ngFor="let child of rowListChildern"
+        class="p-4 bg-white mb-5 rounded-lg shadow-lg hover:shadow-2xl transition-all ease-in-out border">
+        <div class="flex justify-between items-center space-x-4">
+          <div class="flex items-center space-x-2">
+            <!-- Profile Image -->
+            <div class="h-10 w-10 rounded-full border-2 border-gray-300 overflow-hidden">
+              <img class="object-cover w-full h-full"
+                src="https://i.pinimg.com/736x/75/f1/29/75f129482b96092769f354c0b8d21dc0.jpg" alt="Profile Picture">
+            </div>
+            <h1 class="text-lg font-medium capitalize text-neutral-800">
+              {{child.student_first_name}} {{child.student_last_name}}
+            </h1>
+          </div>
+
+          <!-- Status Section with color coding -->
+          <div class="flex items-center">
+            <span [ngClass]="{
+                'text-green-500': child.student_status === 'present',
+                'text-yellow-500': child.student_status === 'excused',
+                'text-red-500': child.student_status === 'sick',
+                'text-gray-500': child.student_status !== 'present' && child.student_status !== 'excused' && child.student_status !== 'sick'
+              }" class="font-semibold text-sm py-1 px-3 rounded-full bg-opacity-20 capitalize">
+              {{child.student_status}}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
+
   </div>
 
 
@@ -71,7 +153,7 @@
           <div
             class="w-full aspect-square flex items-center justify-center text-3xl font-semibold text-white rounded-full border border-black bg-blue-500">
             <img class="w-full aspect-square rounded-full"
-              src="https://i.pinimg.com/474x/75/29/93/7529939a5645116bfbd9044ed049ff37.jpg" alt="">
+              src="https://i.pinimg.com/736x/75/f1/29/75f129482b96092769f354c0b8d21dc0.jpg" alt="">
           </div>
         </div>
       </div>

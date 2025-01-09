@@ -66,7 +66,7 @@ export class AttendanceComponent implements OnInit {
   gridOptions = {
     ensureDomOrder: true,
     pagination: true,
-    paginationPageSize: 10,
+    // paginationPageSize: 10,
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
     suppressMovable: true,

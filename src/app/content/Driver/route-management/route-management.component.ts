@@ -86,6 +86,9 @@ export class RouteManagementComponent {
         },
       });
 
+      console.log(response);
+      
+
       // Mapping data dan menghitung distance
       this.rowContohLokasiAnak = await Promise.all(
         response.data.routes.map(async (route: Route) => {
@@ -352,6 +355,7 @@ export class RouteManagementComponent {
 
         // Update the student's distance property
         student.distance = distanceInKilometers;
+        
 
         if (parseFloat(student.distance) <= 0.3) {
         }

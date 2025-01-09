@@ -93,7 +93,7 @@ export class VehiclesAdminComponent implements OnInit {
     ensureDomOrder: true,
     enableAccessibility: false,
     pagination: true,
-    paginationPageSize: 10,
+    // paginationPageSize: 10,
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
     suppressMovable: true,

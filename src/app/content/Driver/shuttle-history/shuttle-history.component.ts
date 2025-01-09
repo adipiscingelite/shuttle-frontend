@@ -80,8 +80,8 @@ export class ShuttleHistoryComponent implements OnInit {
       pinned: 'left',
       sortable: false,
     },
-    { headerName: 'ID', field: 'shuttle_uuid'},
-    { headerName: 'First Name', field: 'student_first_name'},
+    { headerName: 'ID', field: 'shuttle_uuid' },
+    { headerName: 'First Name', field: 'student_first_name' },
     { headerName: 'First Name', field: 'student_last_name' },
     { headerName: 'Grade', field: 'student_grade' },
     { headerName: 'School Name', field: 'school_name' },
@@ -100,7 +100,26 @@ export class ShuttleHistoryComponent implements OnInit {
         return null; // Jika data tidak ada atau tidak valid, kembalikan null
       },
     },
-    { headerName: 'Shuttle Status', field: 'status' },
+    {
+      headerName: 'Shuttle Status',
+      field: 'status',
+      valueGetter: (params) => {
+        if (params.data && params.data.status) {
+          // Parsing status untuk membuatnya lebih rapi
+          const statusMap: { [key: string]: string } = {
+            home: 'At home',
+            waiting_to_be_taken_to_school: 'Waiting for pickup',
+            going_to_school: 'On the way',
+            at_school: 'At school',
+            waiting_to_be_taken_to_home: 'Waiting to go home',
+            going_to_home: 'Going home',
+          };
+
+          return statusMap[params.data.status] || 'Unknown Status';
+        }
+        return 'Unknown Status';
+      },
+    },
   ];
 
   defaultColDef: ColDef = {
