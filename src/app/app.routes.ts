@@ -29,6 +29,7 @@ import { SchoolAdminDriversComponent } from './content/Admin/list-drivers/driver
 import { RoutesComponent } from './content/Admin/list-routes/routes.component';
 import { VehiclesAdminComponent } from './content/Admin/list-vehicles/vehicles.component';
 import { DriverManagementComponent } from './content/Admin/driver-management/driver-management.component';
+import { TripReportComponent } from './content/Driver/trip-report/trip-report.component';
 
 const superAdminChildrenRoutes: Route[] = [
   {
@@ -194,6 +195,16 @@ const driverChildrenRoutes: Route[] = [
     component: ShuttleHistoryComponent,
     data: { breadcrumb: 'Shuttle History' },
   },
+  {
+    path: 'trip-report',
+    component: TripReportComponent,
+    data: { breadcrumb: 'Report' },
+  },
+  // {
+  //   path: 'absence',
+  //   component: AbsenceComponent,
+  //   data: { breadcrumb: 'Request Absence' },
+  // },
   {
     path: 'profile',
     component: ProfileDriverComponent,

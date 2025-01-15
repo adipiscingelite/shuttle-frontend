@@ -176,7 +176,7 @@
           Total student growth in 2025
         </p>
         <span>
-          
+
         </span>
         <div class="w-full h-full flex justify-center items-center">
           <div class="w-full h-48">
@@ -187,9 +187,8 @@
 
               <!-- Y-axis labels -->
               <text x="10" y="190" font-size="10" fill="#555">0</text>
-              <text x="10" y="140" font-size="10" fill="#555">100</text>
-              <text x="10" y="90" font-size="10" fill="#555">200</text>
-              <text x="10" y="40" font-size="10" fill="#555">300</text>
+              <text x="10" y="100" font-size="10" fill="#555">50</text>
+              <text x="10" y="40" font-size="10" fill="#555">100</text>
 
               <!-- X-axis labels -->
               <ng-container *ngFor="let data of growthData; let i = index">
@@ -201,9 +200,9 @@
 
               <!-- Data Points with Tooltip -->
               <ng-container *ngFor="let data of growthData; let i = index">
-                <circle [attr.cx]="50 + i * 40" [attr.cy]="190 - (data.growth * 0.5)" r="6" fill="#4F46E5"
+                <!-- Scale factor is updated to map 0-100 range to the SVG height -->
+                <circle [attr.cx]="50 + i * 40" [attr.cy]="190 - (data.growth * 1.8)" r="6" fill="#4F46E5"
                   (mouseover)="showTooltip($event, data)" (mouseout)="hideTooltip()" />
-
               </ng-container>
             </svg>
           </div>
@@ -215,9 +214,47 @@
           <p><strong>{{ tooltipData.month }}:</strong> {{ tooltipData.growth }} Students</p>
         </div>
 
+
       </div>
     </div>
 
+    <div
+      class="w-full max-w-md mx-auto p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-lg col-span-2 md:col-span-1 border">
+      <!-- Header with Icon -->
+      <div class="flex items-center mb-4">
+        <div class="bg-yellow-500 text-white p-3 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 4h10M5 11h14M7 16h10m-8 5h6" />
+          </svg>
+        </div>
+        <h2 class="text-2xl font-semibold text-gray-800 ml-3">Yesterday's Shuttle</h2>
+      </div>
+
+      <!-- Subtext -->
+      <p class="text-sm text-gray-500 mb-6 text-center">
+        Number of pick-ups yesterday: <span class="font-medium text-yellow-600">{{shuttle_date_yesterday}} </span>
+      </p>
+
+      <!-- Donut Chart Container -->
+      <div class="relative w-40 h-40 mx-auto">
+        <!-- Background Circle -->
+        <div class="absolute inset-0 rounded-full border-8 border-gray-200"></div>
+        <!-- Progress Circle -->
+        <div class="absolute inset-0 rounded-full border-8 border-yellow-500">
+        </div>
+        <!-- Text in the center -->
+        <div class="absolute inset-0 flex flex-col justify-center items-center">
+          <span class="font-bold text-4xl text-gray-800">{{shuttle_yesterday}}</span>
+          <span class="text-sm text-gray-500">pick-ups</span>
+        </div>
+      </div>
+
+      <!-- Footer Note -->
+      <p class="mt-6 text-xs text-gray-400 text-center">
+        Data updated at N/A
+      </p>
+    </div>
 
     <div
       class="flex flex-col w-full max-w-md mx-auto p-6 bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg col-span-2 md:col-span-1 border">
@@ -257,7 +294,7 @@
 
       <!-- Subtext -->
       <p class="text-sm text-gray-500 mb-6 text-center">
-        Number of pick-ups today: <span class="font-medium text-blue-600">{{currentDate}}</span>
+        Number of pick-ups today: <span class="font-medium text-blue-600">{{shuttle_date_today}}</span>
       </p>
 
       <!-- Donut Chart Container -->
@@ -268,54 +305,18 @@
         <div class="absolute top-0 left-0 w-full h-full rounded-full border-8 border-blue-500"></div>
         <!-- Text in the center -->
         <div class="absolute inset-0 flex flex-col justify-center items-center text-gray-800">
-          <span class="font-bold text-4xl">200</span>
+          <span class="font-bold text-4xl">{{shuttle_today}}</span>
           <span class="text-sm text-gray-500">pick-ups</span>
         </div>
       </div>
 
       <!-- Footer Note -->
       <p class="mt-6 text-xs text-gray-400 text-center">
-        Last updated at 10:00 AM
+        Last updated at N/A
       </p>
     </div>
 
-    <div
-      class="w-full max-w-md mx-auto p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-lg col-span-2 md:col-span-1 border">
-      <!-- Header with Icon -->
-      <div class="flex items-center mb-4">
-        <div class="bg-yellow-500 text-white p-3 rounded-full">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-            stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 4h10M5 11h14M7 16h10m-8 5h6" />
-          </svg>
-        </div>
-        <h2 class="text-2xl font-semibold text-gray-800 ml-3">Yesterday's Shuttle</h2>
-      </div>
 
-      <!-- Subtext -->
-      <p class="text-sm text-gray-500 mb-6 text-center">
-        Number of pick-ups yesterday: <span class="font-medium text-yellow-600">{{yesterdayDate}}</span>
-      </p>
-
-      <!-- Donut Chart Container -->
-      <div class="relative w-40 h-40 mx-auto">
-        <!-- Background Circle -->
-        <div class="absolute inset-0 rounded-full border-8 border-gray-200"></div>
-        <!-- Progress Circle -->
-        <div class="absolute inset-0 rounded-full border-8 border-yellow-500">
-        </div>
-        <!-- Text in the center -->
-        <div class="absolute inset-0 flex flex-col justify-center items-center">
-          <span class="font-bold text-4xl text-gray-800">200</span>
-          <span class="text-sm text-gray-500">pick-ups</span>
-        </div>
-      </div>
-
-      <!-- Footer Note -->
-      <p class="mt-6 text-xs text-gray-400 text-center">
-        Data updated at 11:00 PM
-      </p>
-    </div>
 
     <!-- </div> -->
   </div>

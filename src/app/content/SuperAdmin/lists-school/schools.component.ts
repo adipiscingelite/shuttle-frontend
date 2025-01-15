@@ -363,6 +363,8 @@ export class SchoolsComponent implements OnInit {
     this.school_latitude = null;
     this.school_longitude = null;
 
+    this.googleMapUrl = '';
+
     this.isModalAddOpen = true;
     this.getCoordinateByMap();
     this.cdRef.detectChanges();
@@ -428,6 +430,7 @@ export class SchoolsComponent implements OnInit {
 
         this.school_latitude = school_point.latitude;
         this.school_longitude = school_point.longitude;
+        this.googleMapUrl = '';
 
         this.isModalEditOpen = true;
         this.getCoordinateByMap();

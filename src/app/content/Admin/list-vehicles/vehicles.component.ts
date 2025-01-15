@@ -51,6 +51,10 @@ export class VehiclesAdminComponent implements OnInit {
   showing: string = '';
   pages: number[] = [];
 
+  totalRows: number = 0;
+  startRow: number = 1;
+  endRow: number = 10;
+
   vehicle_uuid: string = '';
   vehicle_name: string = '';
   vehicle_number: string = '';
@@ -96,7 +100,7 @@ export class VehiclesAdminComponent implements OnInit {
     // paginationPageSize: 10,
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
-    suppressMovable: true,
+    suppressMovableColumns: true,
     onSortChanged: this.onSortChanged.bind(this),
     onGridReady: () => {
       console.log('Grid sudah siap!');
@@ -201,9 +205,65 @@ export class VehiclesAdminComponent implements OnInit {
     autoHeaderHeight: true,
     sortable: false,
   };
+  totalRowCount(currentPage: number, pageSize: number) {
+    if (this.rowListAllVehicle && this.rowListAllVehicle.length > 0) {
+      const totalRows = this.rowListAllVehicle.length;
+      this.totalRows = totalRows;
 
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.paginationTotalPage) {
+      this.startRow = (currentPage - 1) * pageSize + 1;
+      this.endRow = Math.min(currentPage * pageSize, this.totalRows);
+    } else {
+      this.totalRows = 0;
+      this.startRow = 0;
+      this.endRow = 0;
+    }
+  }
+
+  getVisiblePages(): (number | string)[] {
+    const visiblePages: (number | string)[] = [];
+    const totalPages = this.paginationTotalPage;
+    const currentPage = this.paginationPage;
+
+    visiblePages.push(1);
+
+    if (totalPages <= 7) {
+      for (let i = 2; i < totalPages; i++) {
+        visiblePages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        visiblePages.push(2, 3, 4, '...', totalPages - 1);
+      } else if (currentPage >= totalPages - 2) {
+        visiblePages.push(
+          '...',
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+        );
+      } else {
+        visiblePages.push(
+          '...',
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          '...',
+        );
+      }
+    }
+
+    if (totalPages > 1) {
+      visiblePages.push(totalPages);
+    }
+
+    return visiblePages;
+  }
+
+  goToPage(page: number | string) {
+    if (
+      typeof page === 'number' &&
+      page >= 1 &&
+      page <= this.paginationTotalPage
+    ) {
       this.paginationPage = page;
       this.getAllVehicle();
     }
@@ -274,14 +334,13 @@ export class VehiclesAdminComponent implements OnInit {
       .then((response) => {
         this.rowListAllVehicle = response.data.data.data;
 
-        console.log(this.rowListAllVehicle);
+        console.log('ini', response);
         this.paginationTotalPage = response.data.data.meta.total_pages;
         this.pages = Array.from(
           { length: this.paginationTotalPage },
           (_, i) => i + 1,
         );
         this.showing = response.data.data.meta.showing;
-
         this.isLoading = false;
 
         this.cdRef.detectChanges();
@@ -297,6 +356,26 @@ export class VehiclesAdminComponent implements OnInit {
   }
 
   addVehicle(): void {
+    // const requestData = {
+    //   vehicle: {
+    //     name: "Bus Sekolah A",
+    //     number: "B 1234 XY",
+    //     type: "Bus",
+    //     color: "Putih",
+    //     seats: 30,
+    //     status: "Aktif",
+    //     driver: {
+    //       user_username: "john_doe",
+    //       firstName: "John",
+    //       lastName: "Doe",
+    //       gender: "Laki-laki",
+    //       email: "john.doe@example.com",
+    //       password: "password123",
+    //       phone: "081234567890",
+    //       address: "Jl. Raya No. 1"
+    //     }
+    //   }
+    // }
     const requestData = {
       vehicle_name: this.vehicle_name,
       vehicle_number: this.vehicle_number,
@@ -344,7 +423,7 @@ export class VehiclesAdminComponent implements OnInit {
       .then((response) => {
         const editData = response.data.data;
         console.log('edit data', editData);
-        
+
         this.school_uuid = editData.school_uuid;
         this.vehicle_uuid = editData.vehicle_uuid;
         this.vehicle_name = editData.vehicle_name;
@@ -379,6 +458,8 @@ export class VehiclesAdminComponent implements OnInit {
       vehicle_seats: this.vehicle_seats,
       vehicle_status: this.vehicle_status,
     };
+
+    console.log('req update', data);
 
     axios
       .put(

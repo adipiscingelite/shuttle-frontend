@@ -1,1 +1,241 @@
-<p>dashboard works!</p>
+<div class="w-full grid grid-row-2 md:grid-cols-3 gap-y-2 md:gap-x-5 my-5">
+  <div class="flex items-center col-span-2 bg-gray-100 border rounded-lg shadow-md select-none">
+    <div class="flex align-center justify-center text-left w-1/2">
+      <div class="px-3">
+        <h1 class="text-lg sm:text-xl md:text-3xl font-black">Hello Adipiscingelite</h1>
+        <p class="font-semibold">It's good to see you again</p>
+      </div>
+    </div>
+    <div class="w-1/2">
+      <img
+        src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRzYzZb7edBwpWbJwfSgcVcoUnK18hxvO3ZNjzdX9weJf603zRW"
+        class="w-full md:w-auto md:h-full aspect-square" alt="Hello" style="
+    mix-blend-mode: multiply; ">
+      <!-- <ng-lottie [options]="options" (animationCreated)="animationCreated($event)" />  -->
+    </div>
+  </div>
+
+  <div class="flex flex-col max-w-md bg-white rounded-lg p-6 shadow-lg md:col-span-1 col-span-2">
+    <!-- Card Header with Icon -->
+    <!-- <div class="flex items-center mb-4">
+      <div class="rounded-full bg-indigo-100 p-3 mr-4">
+        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-semibold text-gray-800">Leave Request for Absence</h3>
+    </div>
+      <a routerLink="/driver/shuttle" routerLinkActive="router-link-active"><button class="text-blue-600 text-sm">View
+          All</button></a>
+    </div> -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center">
+        <div class="rounded-full bg-gray-100 p-3 mr-4">
+          <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800">Pickup List</h3>
+      </div>
+    </div>
+
+    <div class="mb-3 space-y-4 max-h-60 md:max-h-40 overflow-y-auto">
+      <!-- Looping over data -->
+      <div *ngFor="let siswa of rowContohLokasiAnak"
+        class="flex items-center justify-between p-3 border border-gray-200 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+
+        <div class="flex items-center space-x-4">
+          <!-- Gambar Profil (opsional) -->
+          <!-- <img src="https://via.placeholder.com/40" alt="{{ siswa.student_first_name }}" class="w-10 h-10 rounded-full object-cover" /> -->
+
+          <div>
+            <p class="font-semibold text-gray-800 capitalize">{{ siswa.student_first_name }} {{ siswa.student_last_name
+              }}</p>
+            <p class="text-sm text-gray-500">{{ siswa.school_name }}</p>
+          </div>
+        </div>
+
+        <div class="text-right">
+          <p class="text-sm">
+            <span class="font-medium">
+              <ng-container *ngIf="siswa.shuttle_status.String === 'waiting_to_be_taken_to_school'">
+                <span class="text-yellow-500">Waiting Pickup</span>
+              </ng-container>
+              <ng-container *ngIf="siswa.shuttle_status.String === 'going_to_school'">
+                <span class="text-yellow-500">To School</span>
+              </ng-container>
+              <ng-container *ngIf="siswa.shuttle_status.String === 'at_school'">
+                <span class="text-green-500">At School</span>
+              </ng-container>
+              <ng-container *ngIf="siswa.shuttle_status.String === 'waiting_to_be_taken_to_home'">
+                <span class="text-blue-500">Waiting Return</span>
+              </ng-container>
+              <ng-container *ngIf="siswa.shuttle_status.String === 'going_to_home'">
+                <span class="text-blue-500">To Home</span>
+              </ng-container>
+              <ng-container *ngIf="siswa.shuttle_status.String === 'home'">
+                <span class="text-gray-500">At Home</span>
+              </ng-container>
+              <ng-container *ngIf="!siswa.shuttle_status.String">
+                <span class="text-gray-400">Status Unavailable</span>
+              </ng-container>
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Template for empty list -->
+      <div *ngIf="!(rowContohLokasiAnak && rowContohLokasiAnak.length > 0)"
+        class="text-center p-4 text-sm text-gray-500">
+        No trips available
+      </div>
+    </div>
+
+    <hr class="">
+
+    <!-- Footer with total trips -->
+    <div class="mt-3 flex items-center justify-between">
+      <div class="text-sm text-gray-600 text-center"
+        *ngIf="rowContohLokasiAnak && rowContohLokasiAnak.length > 0">
+        Total: {{ rowContohLokasiAnak.length }}
+      </div>
+
+      <a routerLink="/driver/shuttle" routerLinkActive="router-link-active">
+        <button
+          class="text-sm text-white bg-indigo-600 hover:bg-indigo-800 rounded-full px-6 py-2 shadow-md transition-all">
+          Start
+        </button>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- <div class="p-6 bg-white shadow rounded-2xl dark:bg-gray-900 grid gap-6 md:grid-cols-3 max-w-5xl mx-auto w-full">
+  <div class="p-6 bg-gray-100 shadow rounded-2xl dark:bg-gray-900">
+    <dl class="space-y-2">
+      <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Bounce rate</dt>
+      <dd class="text-5xl font-light md:text-6xl dark:text-white">21%</dd>
+      <dd class="flex items-center space-x-1 text-sm font-medium text-red-500 dark:text-red-400">
+        <span>7% increase</span>
+        <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M17.25 8.75V17.25H8.75"></path>
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M17 17L6.75 6.75"></path>
+        </svg>
+      </dd>
+    </dl>
+  </div>
+
+  <div class="p-6 bg-gray-100 shadow rounded-2xl dark:bg-gray-900">
+    <dl class="space-y-2">
+      <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Average time on page</dt>
+      <dd class="text-5xl font-light md:text-6xl dark:text-white">03:12</dd>
+      <dd class="flex items-center space-x-1 text-sm font-medium text-green-500 dark:text-green-400">
+        <span>3% increase</span>
+        <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M17.25 15.25V6.75H8.75"></path>
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M17 7L6.75 17.25"></path>
+        </svg>
+      </dd>
+    </dl>
+  </div>
+
+  <div class="p-6 bg-gray-100 shadow rounded-2xl dark:bg-gray-900">
+    <dl class="space-y-2">
+      <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Average time on page</dt>
+
+      <dd class="text-5xl font-light md:text-6xl dark:text-white">03:12</dd>
+
+      <dd class="flex items-center space-x-1 text-sm font-medium text-green-500 dark:text-green-400">
+        <span>3% increase</span>
+
+        <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M17.25 15.25V6.75H8.75"></path>
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M17 7L6.75 17.25"></path>
+        </svg>
+      </dd>
+    </dl>
+  </div>
+</div> -->
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+  <!-- Leave Request Overview -->
+  <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold text-gray-800">Leave Request Overview</h3>
+      <a class="text-sm text-indigo-600 hover:underline" routerLink="/driver/absence" routerLinkActive="router-link-active">
+        View Details
+      </a>
+    </div>
+    <div class="grid grid-cols-3 gap-4 text-center">
+      <div>
+        <p class="text-sm text-gray-600">Total</p>
+        <p class="text-lg font-semibold text-gray-800">8</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600">Approved</p>
+        <p class="text-lg font-semibold text-green-600">6</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600">Rejected</p>
+        <p class="text-lg font-semibold text-red-600">2</p>
+      </div>
+    </div>
+    <div class="mt-4 text-sm">
+      <p class="text-gray-600">Upcoming Trips:</p>
+      <ul class="space-y-1">
+        <li>Tomorrow, Jan 9, 2025: <span class="font-medium">3 Trips</span></li>
+        <li>Jan 10, 2025: <span class="font-medium">2 Trips</span></li>
+      </ul>
+    </div>
+    <button
+      class="w-full mt-4 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors duration-300"
+      routerLink="/driver/absence"
+      routerLinkActive="router-link-active"
+    >
+      Submit Leave Request
+    </button>
+  </div>
+
+  <!-- Leave Request History -->
+  <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold text-gray-800">Leave Request History</h3>
+      <a class="text-sm text-indigo-600 hover:underline" routerLink="/driver/absence/history" routerLinkActive="router-link-active">
+        View All
+      </a>
+    </div>
+    <ul class="space-y-3 text-sm">
+      <li>
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-gray-800">Family Matter</span>
+          <span class="text-green-600 text-xs">Approved</span>
+        </div>
+        <p class="text-gray-600">Dec 15, 2024 • 2 days</p>
+      </li>
+      <li>
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-gray-800">Sick Leave</span>
+          <span class="text-green-600 text-xs">Approved</span>
+        </div>
+        <p class="text-gray-600">Dec 20, 2024 • 1 day</p>
+      </li>
+      <li>
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-gray-800">Vehicle Maintenance</span>
+          <span class="text-red-600 text-xs">Rejected</span>
+        </div>
+        <p class="text-gray-600">Dec 5, 2024 • 1 day</p>
+      </li>
+    </ul>
+  </div>
+<!-- </div> -->
+
+</div>

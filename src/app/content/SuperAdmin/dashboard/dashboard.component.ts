@@ -11,6 +11,14 @@ interface GrowthData {
   growth: number;
 }
 
+interface ShuttleSummary{
+  shuttle_count: number
+  shuttle_today: number
+  shuttle_yesterday: number
+  shuttle_date_today: string
+  shuttle_date_yesterday: string
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -42,22 +50,29 @@ export class DashboardSuperAdminComponent implements OnInit {
   previousMonthVehicles: number = 0;
   vehicleChangePercentage: number = 0;
 
+  
+  shuttle_count: number = 0
+  shuttle_today: number = 0
+  shuttle_yesterday: number = 0
+  shuttle_date_today: string = ''
+  shuttle_date_yesterday: string = ''
+
   currentDate: string | null;
   yesterdayDate: string | null;
 
   growthData: GrowthData[] = [
-    { month: 'Jan', growth: 10 },
-    { month: 'Feb', growth: 3 },
-    { month: 'Mar', growth: 7 },
-    { month: 'Apr', growth: 0 },
-    { month: 'May', growth: 0 },
-    { month: 'Jun', growth: 0 },
-    { month: 'Jul', growth: 0 },
-    { month: 'Aug', growth: 0 },
-    { month: 'Sep', growth: 0 },
-    { month: 'Oct', growth: 0 },
-    { month: 'Nov', growth: 0 },
-    { month: 'Dec', growth: 0 },
+    // { month: 'Jan', growth: 10 },
+    // { month: 'Feb', growth: 3 },
+    // { month: 'Mar', growth: 7 },
+    // { month: 'Apr', growth: 0 },
+    // { month: 'May', growth: 0 },
+    // { month: 'Jun', growth: 0 },
+    // { month: 'Jul', growth: 0 },
+    // { month: 'Aug', growth: 0 },
+    // { month: 'Sep', growth: 0 },
+    // { month: 'Oct', growth: 0 },
+    // { month: 'Nov', growth: 0 },
+    // { month: 'Dec', growth: 0 },
   ];
 
   tooltipVisible = false;
@@ -88,6 +103,8 @@ export class DashboardSuperAdminComponent implements OnInit {
     this.getAllSchool();
     this.getAllDriver();
     this.getAllVehicle();
+    this.getAllShuttleSummary()
+    this.getStudentGrowth()
 
     setInterval(() => {
       this.getAllAdmin();
@@ -96,6 +113,84 @@ export class DashboardSuperAdminComponent implements OnInit {
       this.getAllVehicle();
     }, 30000);
   }
+
+  getAllShuttleSummary() {
+    axios
+    .get(`${this.apiUrl}/api/superadmin/shuttle/summary`, {
+      headers: { Authorization: `${this.token}` },
+    })
+    .then((response) => {
+      console.log('pp',response);
+
+      const dataShuttleSummary = response.data
+
+      this.shuttle_count = dataShuttleSummary.shuttle_count
+      this.shuttle_today = dataShuttleSummary.shuttle_today
+      this.shuttle_yesterday = dataShuttleSummary.shuttle_yesterday
+      this.shuttle_date_today = dataShuttleSummary.shuttle_date_today
+      this.shuttle_date_yesterday= dataShuttleSummary.shuttle_date_yesterday    
+
+    })
+    .catch((error) => {
+      console.error('Error fetching data:', error);
+      this.totalAdmin = 0;
+    });
+  }
+
+  getStudentGrowth() {
+    axios
+      .get(`${this.apiUrl}/api/superadmin/student/growth`, {
+        headers: { Authorization: `${this.token}` },
+      })
+      .then((response) => {
+        console.log('pp', response);
+  
+        // Peta nama bulan dari backend ke format standar
+        const monthMapping: { [key: string]: string } = {
+          jan: 'Jan',
+          feb: 'Feb',
+          mar: 'Mar',
+          apr: 'Apr',
+          mei: 'May', // Bahasa Indonesia
+          may: 'May', // Bahasa Inggris
+          jun: 'Jun',
+          jul: 'Jul',
+          aug: 'Aug',
+          sep: 'Sep',
+          okt: 'Oct', // Bahasa Indonesia
+          oct: 'Oct', // Bahasa Inggris
+          nov: 'Nov',
+          dec: 'Dec',
+        };
+  
+        // Urutan bulan untuk sortir
+        const monthOrder: string[] = [
+          'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+        ];
+  
+        // Data dari backend
+        const backendData = response.data;
+  
+        // Konversi data ke GrowthData[]
+        this.growthData = Object.entries(backendData).map(([key, value]) => ({
+          month: monthMapping[key.toLowerCase()] || key, // Gunakan mapping, fallback ke key asli jika tidak ditemukan
+          growth: value as number,
+        }));
+  
+        // Sortir berdasarkan urutan bulan
+        this.growthData.sort(
+          (a, b) => monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month)
+        );
+  
+        console.log('Formatted and sorted growthData:', this.growthData);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+        this.growthData = []; // Kosongkan data jika terjadi error
+      });
+  }
+  
 
   getAllAdmin() {
     axios

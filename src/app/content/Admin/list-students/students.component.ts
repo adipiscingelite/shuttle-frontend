@@ -97,8 +97,8 @@ export class StudentsComponent implements OnInit {
   // For token
   token: string | null = '';
   // For sorting
-  sortBy: string = 'user_id';
-  sortDirection: string = 'desc';
+  sortBy: string = 'student_id';
+  sortDirection: string = 'asc';
 
   // For pagination
   paginationPage: number = 1;
@@ -107,6 +107,10 @@ export class StudentsComponent implements OnInit {
   paginationTotalPage: number = 0;
   showing: string = '';
   pages: number[] = [];
+
+  totalRows: number = 0;
+  startRow: number = 1;
+  endRow: number = 10;
 
   // For data student
   student_uuid: string = '';
@@ -159,6 +163,8 @@ export class StudentsComponent implements OnInit {
   private marker: L.Marker | undefined;
   private watchId: number | undefined;
 
+  private columnClickCount: { [key: string]: number } = {};
+
   constructor(
     private cookieService: CookieService,
     private cdRef: ChangeDetectorRef,
@@ -180,16 +186,19 @@ export class StudentsComponent implements OnInit {
   gridOptions = {
     ensureDomOrder: true,
     pagination: true,
+    // paginationPageSize: 10,
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
+    suppressMovableColumns: true,
+    onSortChanged: this.onSortChanged.bind(this),
+    onGridReady: () => {
+      console.log('Grid sudah siap!');
+    },
     // penyesuaian request onSortChanged
     // onSortChanged: (event: any) => {
     //   this.onSortChanged(event);
     // },
     // onSortChanged: this.onSortChanged.bind(this),
-    onGridReady: () => {
-      console.log('Grid sudah siap!');
-    },
   };
 
   // Column Definitions
@@ -225,6 +234,12 @@ export class StudentsComponent implements OnInit {
       field: 'student_gender',
       maxWidth: 250,
       sortable: true,
+      valueFormatter: (params) => {
+        // Capitalize huruf pertama
+        return params.value
+          ? params.value.charAt(0).toUpperCase() + params.value.slice(1).toLowerCase()
+          : '';
+      },    
     },
     {
       headerName: 'Class',
@@ -361,8 +376,65 @@ export class StudentsComponent implements OnInit {
     sortable: false,
   };
 
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.paginationTotalPage) {
+  totalRowCount(currentPage: number, pageSize: number) {
+    if (this.rowListAllStudent && this.rowListAllStudent.length > 0) {
+      const totalRows = this.rowListAllStudent.length;
+      this.totalRows = totalRows;
+
+      this.startRow = (currentPage - 1) * pageSize + 1;
+      this.endRow = Math.min(currentPage * pageSize, this.totalRows);
+    } else {
+      this.totalRows = 0;
+      this.startRow = 0;
+      this.endRow = 0;
+    }
+  }
+
+  getVisiblePages(): (number | string)[] {
+    const visiblePages: (number | string)[] = [];
+    const totalPages = this.paginationTotalPage;
+    const currentPage = this.paginationPage;
+
+    visiblePages.push(1);
+
+    if (totalPages <= 7) {
+      for (let i = 2; i < totalPages; i++) {
+        visiblePages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        visiblePages.push(2, 3, 4, '...', totalPages - 1);
+      } else if (currentPage >= totalPages - 2) {
+        visiblePages.push(
+          '...',
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+        );
+      } else {
+        visiblePages.push(
+          '...',
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          '...',
+        );
+      }
+    }
+
+    if (totalPages > 1) {
+      visiblePages.push(totalPages);
+    }
+
+    return visiblePages;
+  }
+
+  goToPage(page: number | string) {
+    if (
+      typeof page === 'number' &&
+      page >= 1 &&
+      page <= this.paginationTotalPage
+    ) {
       this.paginationPage = page;
       this.getAllStudent();
     }
@@ -389,6 +461,44 @@ export class StudentsComponent implements OnInit {
     this.getAllStudent();
   }
 
+  onSortChanged(event: any) {
+    console.log('onSortChanged event:', event);
+
+    if (event && event.columns && event.columns.length > 0) {
+      event.columns.forEach((column: any) => {
+        const colId = column.colId;
+        console.log('Sorting column ID:', colId);
+
+        // if (!this.columnClickCount[colId]) {
+        //   this.columnClickCount[colId] = 0;
+        // }
+        // this.columnClickCount[colId] += 1;
+
+        // if (this.columnClickCount[colId] === 3) {
+        //   this.sortBy = 'user_id';
+        //   this.sortDirection = 'asc';
+        //   this.columnClickCount[colId] = 0;
+        // } else {
+        //   if (this.columnMapping[colId]) {
+        //     this.sortBy = this.columnMapping[colId];
+        //   } else {
+        //     this.sortBy = colId;
+        //   }
+
+        //   if (this.columnClickCount[colId] === 1) {
+        //     this.sortDirection = 'asc';
+        //   } else if (this.columnClickCount[colId] === 2) {
+        //     this.sortDirection = 'desc';
+        //   }
+        // }
+      });
+
+      this.getAllStudent();
+    } else {
+      console.error('onSortChanged: event.columns is undefined or empty');
+    }
+  }
+
   // For fetching data school
   getAllSchool() {
     axios
@@ -413,22 +523,22 @@ export class StudentsComponent implements OnInit {
         headers: {
           Authorization: `${this.cookieService.get('accessToken')}`,
         },
-        // params: {
-        //   // page: this.paginationPage,
-        //   // limit: this.paginationItemsLimit,
+        params: {
+          page: this.paginationPage,
+          limit: this.paginationItemsLimit,
 
-        //   // sort_by: this.sortBy,
-        //   // direction: this.sortDirection,
-        // },
+          sort_by: this.sortBy,
+          direction: this.sortDirection,
+        },
       })
       .then((response) => {
-        console.log('response', response.data.data.data);
+        console.log('response', response.data.data);
         this.rowListAllStudent = response.data.data.data;
-        this.paginationTotalPage = response.data.data.meta.total_page;
+        this.paginationTotalPage = response.data.data.meta.total_pages;
         this.pages = Array.from(
           { length: this.paginationTotalPage },
           (_, i) => i + 1,
-        ); // Copy data
+        );
         this.showing = response.data.data.meta.showing;
 
         this.isLoading = false;
@@ -450,6 +560,8 @@ export class StudentsComponent implements OnInit {
     this.student_pickup_point = '';
     this.student_pickup_latitude = null;
     this.student_pickup_longitude = null;
+
+    this.googleMapUrl = '';
 
     this.parent_uuid = '';
     this.parent_name = '';
@@ -514,6 +626,12 @@ export class StudentsComponent implements OnInit {
       });
   }
 
+  setParentAddressIfEmpty() {
+    if (!this.parent_address) {
+      this.parent_address = this.student_address;
+    }
+  }
+
   closeAddModal() {
     this.isModalAddOpen = false;
   }
@@ -529,7 +647,6 @@ export class StudentsComponent implements OnInit {
         console.log('edit', response);
 
         const editData = response.data.data;
-        
 
         // Set data ke dalam variabel komponen yang terikat dengan form
         this.student_uuid = editData.student_uuid;

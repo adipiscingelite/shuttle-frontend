@@ -12,23 +12,24 @@
           class="w-full h-full px-5 py-4 my-4 bg-white rounded-lg shadow border">
           <!-- Header Section -->
           <div class="flex items-start gap-4">
-            <div class="h-24 md:h-32 w-24 md:w-32 aspect-square rounded-full border-4 border-white shadow-lg overflow-hidden">
-              <img class="object-cover w-full h-full" src="https://i.pinimg.com/736x/75/f1/29/75f129482b96092769f354c0b8d21dc0.jpg"
-                alt="Profile Picture">
+            <div
+              class="h-24 md:h-32 w-24 md:w-32 aspect-square rounded-full border-4 border-white shadow-lg overflow-hidden">
+              <img class="object-cover w-full h-full"
+                src="https://i.pinimg.com/736x/75/f1/29/75f129482b96092769f354c0b8d21dc0.jpg" alt="Profile Picture">
             </div>
             <div class="flex flex-col flex-grow justify-center">
               <p class="text-sm text-gray-500">{{child.school_name}}</p>
-              <h1 class="text-lg font-medium capitalize text-neutral-800">{{child.student_first_name}} {{child.student_last_name}}</h1>
+              <h1 class="text-lg font-medium capitalize text-neutral-800">{{child.student_first_name}}
+                {{child.student_last_name}}</h1>
               <div class="hidden md:block text-sm text-gray-600 overflow-hidden max-w-xs">
                 <span class="block truncate">{{child.student_address || 'N/A'}}</span>
               </div>
             </div>
             <button (click)="openEditModal(child.student_uuid)"
-              class="px-4 py-2 flex items-center gap-x-2 rounded-full bg-blue-500 text-white font-semibold hover:bg-blue-600">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M16.862 3.487l3.651 3.651m-2.337 2.337L10.5 17.151a2.121 2.121 0 01-.894.53l-3.5 1.167 1.167-3.5c.099-.299.264-.577.53-.894l7.676-7.676m5.63-1.83a2.828 2.828 0 00-4-4L14.5 2.5l6 6 .993-.993z" />
+              class="px-4 py-2 flex items-center gap-x-2 rounded-full bg-[#3103ad] text-white font-semibold hover:bg-blue-600">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 20h4L18.5 9.5a2.829 2.829 0 0 0-4-4L4 16v4Z"></path>
+                <path d="m13.5 6.5 4 4"></path>
               </svg>
               Edit
             </button>
@@ -64,7 +65,7 @@
             <!-- Only show the Save button if the status has changed for the current child -->
             <div class="flex justify-end mt-3" *ngIf="child.student_status !== statusMap[child.student_uuid]">
               <button type="submit"
-                class="px-4 py-2 bg-blue-500 text-white text-sm font-semibold rounded-md shadow hover:bg-blue-600 focus:outline-none">
+                class="px-4 py-2 bg-[#3103ad] text-white text-sm font-semibold rounded-md shadow hover:bg-blue-600 focus:outline-none">
                 Save Status
               </button>
             </div>
@@ -78,7 +79,7 @@
     <div class="md:col-span-2">
       <div class="md:h-24 my-5">
         <h1 class="text-lg font-semibold text-neutral-700">Quick Preview</h1>
-        <p class="text-sm text-gray-600">Here you can view a brief list of your child(ren)'s status.</p>
+        <p class="text-sm text-gray-600">Your child will not be picked up by the driver if they are sick, on leave, or for other reasons.</p>
         <br>
       </div>
 

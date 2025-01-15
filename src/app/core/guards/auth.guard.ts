@@ -20,53 +20,58 @@ export class AuthGuard implements CanActivate {
     private router: Router,
     private cookieService: CookieService,
     @Inject('apiUrl') private apiUrl: string,
-  ) {
-    this.apiUrl = apiUrl;
-  }
+  ) {}
 
   async canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
   ): Promise<boolean> {
-    const token = this.cookieService.get('accessToken');
-    console.log('Token mentah:', token);
+    try {
+      const token = this.cookieService.get('accessToken');
+      if (!token) {
+        this.handleAuthError();
+        return false;
+      }
 
-    if (token) {
-      try {
-        const profileData = await this.profileService.fetchProfileData();
+      const profileData = await this.profileService.fetchProfileData(true); // Selalu reload data
+      const roleCode = profileData?.user_role_code;
 
-        const roleCode = profileData.user_role_code;
+      if (!roleCode) {
+        this.handleAuthError();
+        return false;
+      }
 
-        console.log('Role code:', roleCode);
-
-        if (!roleCode) {
-          this.router.navigate(['/login']);
-          return false;
-        }
-
-        const url = state.url;
-
-        if (url.startsWith('/superadmin') && roleCode !== 'SA') {
-          this.router.navigate(['/not-found']);
-          return false;
-        } else if (url.startsWith('/admin') && roleCode !== 'AS') {
-          this.router.navigate(['/not-found']);
-          return false;
-        } else if (url.startsWith('/driver') && roleCode !== 'D') {
-          this.router.navigate(['/not-found']);
-          return false;
-        } else if (url.startsWith('/parent') && roleCode !== 'P') {
-          this.router.navigate(['/not-found']);
-          return false;
-        }
-        return true;
-      } catch (error) {
+      const url = state.url;
+      if (!this.checkRoleAccess(url, roleCode)) {
         this.router.navigate(['/not-found']);
         return false;
       }
-    } else {
-      this.router.navigate(['/login']);
+
+      return true;
+    } catch (error) {
+      this.handleAuthError();
       return false;
     }
+  }
+
+  private checkRoleAccess(url: string, roleCode: string): boolean {
+    const roleRoutes = {
+      '/superadmin': ['SA'],
+      '/admin': ['AS'],
+      '/driver': ['D'],
+      '/parent': ['P'],
+    };
+
+    for (const [route, roles] of Object.entries(roleRoutes)) {
+      if (url.startsWith(route) && !roles.includes(roleCode)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private handleAuthError(): void {
+    this.profileService.resetProfileData();
+    this.router.navigate(['/login']);
   }
 }

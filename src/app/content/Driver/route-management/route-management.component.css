@@ -6,10 +6,12 @@
   z-index: 1;
 }
 
-.leaflet-routing-instructions {
-  display: none !important;
+.leaflet-control-container .leaflet-routing-container-hide {
+  display: none;
 }
-
+.leaflet-routing-container {
+  display: none;
+}
 
 .ui-loader {
   display: inline-block;

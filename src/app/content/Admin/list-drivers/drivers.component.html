@@ -60,29 +60,39 @@
 
     <!-- PAGINATION -->
     <div class="w-full flex items-center justify-center space-x-4 mb-4">
+      <!-- Previous Button -->
       <button class="p-2 bg-black text-white shadow-md rounded-full" (click)="goToPreviousPage()"
-        [disabled]="paginationPage === 1" [ngClass]="{'cursor-not-allowed': paginationPage === 1}">
+        [disabled]="paginationPage === 1" [ngClass]="{'cursor-not-allowed opacity-50': paginationPage === 1}">
         <div class="w-5 h-5 bg-white"
           style="mask: url('/assets/svg/chevron-left.icon.svg') no-repeat; -webkit-mask: url('/assets/svg/chevron-left.icon.svg') no-repeat;">
         </div>
-
       </button>
 
+      <!-- Page Numbers with Ellipsis -->
       <div class="flex space-x-2 rounded-full bg-gray-100 shadow">
-        <button *ngFor="let page of pages" class="w-10 h-10 rounded-full flex items-center justify-center"
-          [ngClass]="{'border border-[#3A3A3A] bg-black text-white shadow': paginationPage === page}"
-          (click)="goToPage(page)">
-          <span>{{ page }}</span>
-        </button>
+        <ng-container *ngFor="let page of getVisiblePages()">
+          <!-- Ellipsis -->
+          <div *ngIf="page === '...'" class="w-10 h-10 flex items-center justify-center text-gray-500">
+            ...
+          </div>
+
+          <!-- Page Numbers -->
+          <button *ngIf="page !== '...'" class="w-10 h-10 rounded-full flex items-center justify-center" [ngClass]="{
+      'border border-[#3A3A3A] bg-black text-white shadow': paginationPage === page,
+      'hover:bg-gray-200 transition-colors': paginationPage !== page
+    }" (click)="goToPage(page)">
+            <span>{{ page }}</span>
+          </button>
+        </ng-container>
       </div>
 
+      <!-- Next Button -->
       <button class="p-2 bg-black text-white shadow-md rounded-full" (click)="goToNextPage()"
         [disabled]="paginationPage >= paginationTotalPage"
-        [ngClass]="{'cursor-not-allowed': paginationPage >= paginationTotalPage}">
+        [ngClass]="{'cursor-not-allowed opacity-50': paginationPage >= paginationTotalPage}">
         <div class="w-5 h-5 bg-white"
           style="mask: url('/assets/svg/chevron-right.icon.svg') no-repeat; -webkit-mask: url('/assets/svg/chevron-right.icon.svg') no-repeat;">
         </div>
-
       </button>
     </div>
   </div>
@@ -302,7 +312,7 @@
               [ngClass]="{'border-red-500': vehicleIdModel.touched && vehicleIdModel.invalid}" #vehicleIdModel="ngModel"
               required>
               <option value="" disabled selected>Choose the vehicle</option>
-              <option *ngFor="let vehicle of rowListAllVehicle" [value]="vehicle.vehicle_uuid">
+              <option *ngFor="let vehicle of rowListAllFreeVehicle" [value]="vehicle.vehicle_uuid">
                 {{ vehicle.vehicle_name }}
               </option>
             </select>

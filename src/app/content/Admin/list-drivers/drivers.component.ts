@@ -93,6 +93,10 @@ export class SchoolAdminDriversComponent implements OnInit {
   showing: string = '';
   pages: number[] = [];
 
+  totalRows: number = 0;
+  startRow: number = 1;
+  endRow: number = 10;
+
   // For data drivers
   user_uuid: string = '';
   username: string = '';
@@ -138,6 +142,7 @@ export class SchoolAdminDriversComponent implements OnInit {
 
   // Row list data vehicle
   rowListAllVehicle: vehicleDetail[] = [];
+  rowListAllFreeVehicle: vehicleDetail[] = [];
 
   constructor(
     private cookieService: CookieService,
@@ -153,6 +158,7 @@ export class SchoolAdminDriversComponent implements OnInit {
     this.getAllDriver();
     // this.getAllSchool();
     this.getAllVehicle();
+    this.getAllFreeVehicle();
   }
 
   // Ag grid table displayed
@@ -163,6 +169,7 @@ export class SchoolAdminDriversComponent implements OnInit {
     pagination: true,
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
+    suppressMovableColumns: true,
     // penyesuaian request onSortChanged
     // onSortChanged: (event: any) => {
     //   this.onSortChanged(event);
@@ -309,8 +316,65 @@ export class SchoolAdminDriversComponent implements OnInit {
     sortable: false,
   };
 
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.paginationTotalPage) {
+  totalRowCount(currentPage: number, pageSize: number) {
+    if (this.rowListAllDriver && this.rowListAllDriver.length > 0) {
+      const totalRows = this.rowListAllDriver.length;
+      this.totalRows = totalRows;
+
+      this.startRow = (currentPage - 1) * pageSize + 1;
+      this.endRow = Math.min(currentPage * pageSize, this.totalRows);
+    } else {
+      this.totalRows = 0;
+      this.startRow = 0;
+      this.endRow = 0;
+    }
+  }
+
+  getVisiblePages(): (number | string)[] {
+    const visiblePages: (number | string)[] = [];
+    const totalPages = this.paginationTotalPage;
+    const currentPage = this.paginationPage;
+
+    visiblePages.push(1);
+
+    if (totalPages <= 7) {
+      for (let i = 2; i < totalPages; i++) {
+        visiblePages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        visiblePages.push(2, 3, 4, '...', totalPages - 1);
+      } else if (currentPage >= totalPages - 2) {
+        visiblePages.push(
+          '...',
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+        );
+      } else {
+        visiblePages.push(
+          '...',
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          '...',
+        );
+      }
+    }
+
+    if (totalPages > 1) {
+      visiblePages.push(totalPages);
+    }
+
+    return visiblePages;
+  }
+
+  goToPage(page: number | string) {
+    if (
+      typeof page === 'number' &&
+      page >= 1 &&
+      page <= this.paginationTotalPage
+    ) {
       this.paginationPage = page;
       this.getAllDriver();
     }
@@ -335,6 +399,44 @@ export class SchoolAdminDriversComponent implements OnInit {
     this.paginationItemsLimit = +target.value;
     this.paginationPage = 1;
     this.getAllDriver();
+  }
+
+  onSortChanged(event: any) {
+    console.log('onSortChanged event:', event);
+
+    if (event && event.columns && event.columns.length > 0) {
+      event.columns.forEach((column: any) => {
+        const colId = column.colId;
+        console.log('Sorting column ID:', colId);
+
+        // if (!this.columnClickCount[colId]) {
+        //   this.columnClickCount[colId] = 0;
+        // }
+        // this.columnClickCount[colId] += 1;
+
+        // if (this.columnClickCount[colId] === 3) {
+        //   this.sortBy = 'user_id';
+        //   this.sortDirection = 'asc';
+        //   this.columnClickCount[colId] = 0;
+        // } else {
+        //   if (this.columnMapping[colId]) {
+        //     this.sortBy = this.columnMapping[colId];
+        //   } else {
+        //     this.sortBy = colId;
+        //   }
+
+        //   if (this.columnClickCount[colId] === 1) {
+        //     this.sortDirection = 'asc';
+        //   } else if (this.columnClickCount[colId] === 2) {
+        //     this.sortDirection = 'desc';
+        //   }
+        // }
+      });
+
+      this.getAllDriver();
+    } else {
+      console.error('onSortChanged: event.columns is undefined or empty');
+    }
   }
 
   // Get all schools
@@ -375,6 +477,29 @@ export class SchoolAdminDriversComponent implements OnInit {
       });
   }
 
+  // Get all vehicles
+  getAllFreeVehicle() {
+    this.isLoading = true;
+    axios
+      .get(`${this.apiUrl}/api/school/vehicle/free/all`, {
+        headers: {
+          Authorization: `${this.cookieService.get('accessToken')}`,
+        },
+      })
+      .then((response) => {
+        console.log('response', response);
+        this.rowListAllFreeVehicle = response.data.vehicles;
+        console.log('ini', this.rowListAllFreeVehicle);
+
+        this.isLoading = false;
+        this.cdRef.detectChanges();
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+        this.isLoading = false;
+      });
+  }
+
   // Get all drivers
   getAllDriver() {
     this.isLoading = true;
@@ -387,7 +512,7 @@ export class SchoolAdminDriversComponent implements OnInit {
       .then((response) => {
         this.rowListAllDriver = response.data.data.data;
         console.log('response', response);
-        this.paginationTotalPage = response.data.data.meta.total_page;
+        this.paginationTotalPage = response.data.data.meta.total_pages;
         this.pages = Array.from(
           { length: this.paginationTotalPage },
           (_, i) => i + 1,

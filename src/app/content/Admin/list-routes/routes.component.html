@@ -2,7 +2,22 @@
   <h1 class="my-6 text-xl font-semibold uppercase">
     List of Routes
   </h1>
-  buatkan endpoint get all siswa by sekolah yg belum di assign ke driver dan route berdasarkan school_uuid
+  di list driver dikassih jumllah seats nya juga. biar tahu berapa student yg bisa di assign ke driver ini
+  di BE bikin validasi jumlah seats dan student yg di assign
+
+  
+  <input type="text" class="w-full h-24 bg-red-100" value="    const requestData = {
+    driver_uuid: this.driver_uuid,
+    route_name: this.route_name,
+    route_description: this.route_description,
+    students: finalStudents.map((student) => ({
+      student_uuid: student.student_uuid,
+      student_order: student.student_order,
+    })),
+    added, // Daftar siswa yang ditambahkan
+    deletedStudents: this.deletedStudents, // Daftar siswa yang dihapus
+  };
+">
 
   <div class="flex items-center w-full my-4 gap-x-1">
     <form class="form relative">
@@ -61,29 +76,39 @@
 
     <!-- PAGINATION -->
     <div class="w-full flex items-center justify-center space-x-4 mb-4">
+      <!-- Previous Button -->
       <button class="p-2 bg-black text-white shadow-md rounded-full" (click)="goToPreviousPage()"
-        [disabled]="paginationPage === 1" [ngClass]="{'cursor-not-allowed': paginationPage === 1}">
+        [disabled]="paginationPage === 1" [ngClass]="{'cursor-not-allowed opacity-50': paginationPage === 1}">
         <div class="w-5 h-5 bg-white"
           style="mask: url('/assets/svg/chevron-left.icon.svg') no-repeat; -webkit-mask: url('/assets/svg/chevron-left.icon.svg') no-repeat;">
         </div>
-
       </button>
 
+      <!-- Page Numbers with Ellipsis -->
       <div class="flex space-x-2 rounded-full bg-gray-100 shadow">
-        <button *ngFor="let page of pages" class="w-10 h-10 rounded-full flex items-center justify-center"
-          [ngClass]="{'border border-[#3A3A3A] bg-black text-white shadow': paginationPage === page}"
-          (click)="goToPage(page)">
-          <span>{{ page }}</span>
-        </button>
+        <ng-container *ngFor="let page of getVisiblePages()">
+          <!-- Ellipsis -->
+          <div *ngIf="page === '...'" class="w-10 h-10 flex items-center justify-center text-gray-500">
+            ...
+          </div>
+
+          <!-- Page Numbers -->
+          <button *ngIf="page !== '...'" class="w-10 h-10 rounded-full flex items-center justify-center" [ngClass]="{
+    'border border-[#3A3A3A] bg-black text-white shadow': paginationPage === page,
+    'hover:bg-gray-200 transition-colors': paginationPage !== page
+  }" (click)="goToPage(page)">
+            <span>{{ page }}</span>
+          </button>
+        </ng-container>
       </div>
 
+      <!-- Next Button -->
       <button class="p-2 bg-black text-white shadow-md rounded-full" (click)="goToNextPage()"
         [disabled]="paginationPage >= paginationTotalPage"
-        [ngClass]="{'cursor-not-allowed': paginationPage >= paginationTotalPage}">
+        [ngClass]="{'cursor-not-allowed opacity-50': paginationPage >= paginationTotalPage}">
         <div class="w-5 h-5 bg-white"
           style="mask: url('/assets/svg/chevron-right.icon.svg') no-repeat; -webkit-mask: url('/assets/svg/chevron-right.icon.svg') no-repeat;">
         </div>
-
       </button>
     </div>
   </div>
@@ -185,12 +210,15 @@
             <div *ngFor="let field of infoHAListArray.controls; let i = index" [formGroupName]="i"
               class="mt-2 p-2 border rounded-lg shadow">
               <div class="mt-4">
-                <label for="student_uuid" class="text-sm md:text-[0.875rem] mb-1">Student</label>
+                <label for="student_uuid" class="text-sm md:text-[0.875rem] mb-1">Student {{i + 1}}
+                  <app-asterisk></app-asterisk></label>
                 <div class="flex items-center gap-x-3">
                   <select id="student_uuid" formControlName="student_uuid" required
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                    <option value="" disabled [selected]="!field.get('student_uuid')?.value">Choose the Student</option>
-                    <option *ngFor="let student of rowListAllFreeStudent" [value]="student.student_uuid">
+                    <option value="" disabled [selected]="!field.get('student_uuid')?.value">
+                      {{ getFilteredStudents(i).length === 0 ? 'No students available' : 'Choose the Student' }}
+                    </option>
+                    <option *ngFor="let student of getFilteredStudents(i)" [value]="student.student_uuid">
                       {{ student.student_first_name }} {{ student.student_last_name }}
                     </option>
                   </select>
@@ -283,7 +311,8 @@
         <!-- Existing Students Section -->
         <div class="mt-4">
           <h2 class="text-lg font-semibold text-gray-800">Existing Students</h2>
-          <p class="text-sm text-gray-500 mb-4">These students are already part of the current student list. You can remove or reorder them as needed.</p>
+          <p class="text-sm text-gray-500 mb-4">These students are already part of the current student list. You can
+            remove or reorder them as needed.</p>
           <div cdkDropList (cdkDropListDropped)="onDrop($event)"
             class="mt-4 p-1 md:p-4 border rounded-lg shadow-lg bg-white">
             <div *ngFor="let student of students; let i = index" cdkDrag
@@ -299,8 +328,8 @@
               <!-- Text Section -->
               <div class="flex-1 bg-gray-100 p-2 rounded-lg" cdkDragDisabled>
                 <p class="text-sm font-semibold">{{ student.student_first_name }} {{ student.student_last_name }}</p>
-                <p class="text-sm text-gray-500">Status: {{ student.student_status }}</p>
-                <p class="text-sm text-gray-500">Order: {{ student.student_order }}</p>
+                <p class="text-sm text-gray-500 capitalize">Status: {{ student.student_status }}</p>
+                <!-- <p class="text-sm text-gray-500">Order: {{ student.student_order }}</p> -->
               </div>
 
               <!-- Remove Button -->
@@ -323,7 +352,8 @@
         <!-- Add New Students Section -->
         <div class="mt-6">
           <h2 class="text-lg font-semibold text-gray-800">Add New Students</h2>
-          <p class="text-sm text-gray-500 mb-4">Add new students to the route by selecting from the available list below.</p>
+          <p class="text-sm text-gray-500 mb-4">Add new students to the route by selecting from the available list
+            below.</p>
           <form [formGroup]="infoHAForm">
             <div formArrayName="students">
               <div *ngFor="let field of infoHAListArray.controls; let i = index" [formGroupName]="i"
@@ -333,14 +363,16 @@
                   <div class="flex items-center gap-x-3">
                     <select id="student_uuid" formControlName="student_uuid" required
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                      <option value="" disabled [selected]="!field.get('student_uuid')?.value">Choose the Student
+                      <option value="" disabled [selected]="!field.get('student_uuid')?.value">
+                        {{ getFilteredStudents(i).length === 0 ? 'No students available' : 'Choose the Student' }}
                       </option>
                       <option *ngFor="let student of getFilteredStudents(i)" [value]="student.student_uuid">
                         {{ student.student_first_name }} {{ student.student_last_name }}
                       </option>
+                      <!-- <option value="" disabled *ngIf="rowListAllFreeStudent.length === 0">List is empty</option> -->
 
                     </select>
-                    <button *ngIf="infoHAListArray.length > 1" type="button" (click)="removeInfoHAField(i)"
+                    <button type="button" (click)="removeInfoHAField(i)"
                       class="p-2 w-10 h-10 text-gray-100 bg-red-400 hover:bg-red-500 hover:text-white rounded-lg shadow-md flex items-center justify-center">
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round"
                         stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -405,14 +437,34 @@
 
         <hr>
 
+        <!-- Route Description -->
+        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
+          <label for="route_description" class="block text-sm font-medium text-gray-700 col-span-1">
+            Route Description <app-asterisk></app-asterisk>
+          </label>
+          <div class="col-span-2">
+            <input type="text" id="route_description" name="route_description" placeholder="e.g. johndoe_10"
+              [(ngModel)]="route_description"
+              class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
+              [ngClass]="{'border-red-500': routedescriptionModel.touched && routedescriptionModel.invalid}"
+              maxlength="" #routedescriptionModel="ngModel" disabled />
+            <div *ngIf="routedescriptionModel.invalid && routedescriptionModel.touched"
+              class="mt-1 text-sm text-pink-600">
+              <app-required-common></app-required-common>
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
         <!-- Driver Name -->
         <div class="grid grid-cols-3 items-start gap-x-4 my-3">
-          <label for="user_username" class="block text-sm font-medium text-gray-700 col-span-1">
+          <label for="driver_name" class="block text-sm font-medium text-gray-700 col-span-1">
             Driver Name <app-asterisk></app-asterisk>
           </label>
           <div class="col-span-2">
-            <input type="text" id="user_username" name="user_username" placeholder="e.g. johndoe_10"
-              [(ngModel)]="user_username" class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
+            <input type="text" id="driver_name" name="driver_name" placeholder="e.g. johndoe_10"
+              [(ngModel)]="driver_name" class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
               [ngClass]="{'border-red-500': usernameModel.touched && usernameModel.invalid}" maxlength=""
               #usernameModel="ngModel" disabled />
             <div *ngIf="usernameModel.invalid && usernameModel.touched" class="mt-1 text-sm text-pink-600">
@@ -429,33 +481,12 @@
             Student Name <app-asterisk></app-asterisk>
           </label>
           <div class="col-span-2">
-            <input type="text" id="student_name" name="student_name" placeholder="e.g. johndoe_10"
-              [(ngModel)]="student_name" class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
-              [ngClass]="{'border-red-500': studentnameModel.touched && studentnameModel.invalid}" maxlength=""
-              #studentnameModel="ngModel" disabled />
-            <div *ngIf="studentnameModel.invalid && studentnameModel.touched" class="mt-1 text-sm text-pink-600">
-              <app-required-common></app-required-common>
-            </div>
-          </div>
-        </div>
+            <ul class="list-disc px-3 py-1 pl-5 rounded-lg bg-neutral-50 border">
+              <li *ngFor="let student of students">
+                {{ student.student_first_name }} {{ student.student_last_name }}
+              </li>
+            </ul>
 
-        <hr>
-
-        <!-- Route Description -->
-        <div class="grid grid-cols-3 items-start gap-x-4 my-3">
-          <label for="route_description" class="block text-sm font-medium text-gray-700 col-span-1">
-            Route Description <app-asterisk></app-asterisk>
-          </label>
-          <div class="col-span-2">
-            <input type="text" id="route_description" name="route_description" placeholder="e.g. johndoe_10"
-              [(ngModel)]="route_description"
-              class="border border-neutral-300 text-sm rounded-lg p-2 px-3 w-full shadow-sm"
-              [ngClass]="{'border-red-500': routedescriptionModel.touched && routedescriptionModel.invalid}"
-              maxlength="" #routedescriptionModel="ngModel" disabled />
-            <div *ngIf="routedescriptionModel.invalid && routedescriptionModel.touched"
-              class="mt-1 text-sm text-pink-600">
-              <app-required-common></app-required-common>
-            </div>
           </div>
         </div>
 

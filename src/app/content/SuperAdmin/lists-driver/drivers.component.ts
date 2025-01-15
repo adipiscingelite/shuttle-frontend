@@ -353,7 +353,7 @@ export class DriversComponent implements OnInit {
   getAllVehicle() {
     this.isLoading = true;
     axios
-      .get(`${this.apiUrl}/api/superadmin/vehicle/all`, {
+      .get(`${this.apiUrl}/api/superadmin/vehicle/free/all`, {
         headers: {
           Authorization: `${this.cookieService.get('accessToken')}`,
         },
@@ -362,7 +362,7 @@ export class DriversComponent implements OnInit {
         },
       })
       .then((response) => {
-        this.rowListAllVehicle = response.data.data.data;
+        this.rowListAllVehicle = response.data.vehicles;
 
         console.log('vehicle', this.rowListAllVehicle);
 

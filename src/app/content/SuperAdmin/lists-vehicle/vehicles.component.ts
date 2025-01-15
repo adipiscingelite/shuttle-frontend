@@ -46,7 +46,7 @@ export class VehiclesComponent implements OnInit {
 
   paginationPage: number = 1;
   paginationCurrentPage: number = 1;
-  paginationItemsLimit: number = 1;
+  paginationItemsLimit: number = 10;
   paginationTotalPage: number = 0;
   showing: string = '';
   pages: number[] = [];

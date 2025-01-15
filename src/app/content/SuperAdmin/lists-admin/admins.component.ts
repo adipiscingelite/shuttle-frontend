@@ -403,7 +403,7 @@ export class AdminsComponent implements OnInit {
         this.rowListAllSchoolAdmin = response.data.data.data;
         console.log(this.rowListAllSchoolAdmin);
 
-        this.paginationTotalPage = response.data.data.meta.total_pages;
+        this.paginationTotalPage = response.data.data.meta.total_pages;        
         this.pages = Array.from(
           { length: this.paginationTotalPage },
           (_, i) => i + 1,
@@ -429,6 +429,8 @@ export class AdminsComponent implements OnInit {
     this.user_password = '';
     this.user_phone = '';
     this.user_address = '';
+
+    this.school_uuid = '';
 
     this.isModalAddOpen = true;
   }
@@ -571,6 +573,8 @@ export class AdminsComponent implements OnInit {
       })
       .then((response) => {
         const detailData = response.data.data;
+        console.log('detail', detailData);
+        
 
         this.user_uuid = detailData.user_uuid;
         this.user_username = detailData.user_username;

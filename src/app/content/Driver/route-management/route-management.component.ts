@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 
 import * as L from 'leaflet';
 import axios from 'axios';
+import { Response } from '@core/interfaces';
+import { ToastService } from '@core/services/toast/toast.service';
 interface Location {
   latitude: number;
   longitude: number;
@@ -38,7 +40,7 @@ export interface Route {
 @Component({
   selector: 'app-route-management',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './route-management.component.html',
   styleUrls: ['./route-management.component.css'],
 })
@@ -64,6 +66,7 @@ export class RouteManagementComponent {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
+    public toastService: ToastService,
     private cookieService: CookieService,
     @Inject('apiUrl') private apiUrl: string,
   ) {
@@ -87,7 +90,6 @@ export class RouteManagementComponent {
       });
 
       console.log(response);
-      
 
       // Mapping data dan menghitung distance
       this.rowContohLokasiAnak = await Promise.all(
@@ -156,8 +158,8 @@ export class RouteManagementComponent {
         },
       )
       .then((response) => {
-        // const responseMessage = response.data?.message || 'Success.';
-        // this.showToast(responseMessage, 3000, Response.Success);
+        const responseMessage = response.data?.message || 'Success.';
+        this.showToast(responseMessage, 3000, Response.Success);
 
         this.getAllShuttleStudent();
 
@@ -165,9 +167,9 @@ export class RouteManagementComponent {
         // this.cdRef.detectChanges();
       })
       .catch((error) => {
-        // const responseMessage =
-        //   error.response?.data?.message || 'An unexpected error occurred.';
-        // this.showToast(responseMessage, 3000, Response.Error);
+        const responseMessage =
+          error.response?.data?.message || 'An unexpected error occurred.';
+        this.showToast(responseMessage, 3000, Response.Error);
       });
   }
 
@@ -303,11 +305,18 @@ export class RouteManagementComponent {
 
   private updateMap(lat: number, lon: number): void {
     const studentIcon = L.icon({
-      iconUrl: 'https://cdn-icons-png.flaticon.com/128/3153/3153024.png',
-      iconSize: [32, 32],
+      iconUrl: 'https://cdn-icons-png.flaticon.com/128/1365/1365700.png',
+      iconSize: [35, 35],
       iconAnchor: [16, 32],
       popupAnchor: [0, -32],
     });
+
+    const schoolIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/128/5193/5193783.png', // Ganti dengan URL ikon sekolah
+      iconSize: [30, 30], // Ukuran ikon
+      iconAnchor: [15, 30], // Posisi anchor ikon
+    });
+    
 
     if (!this.map) {
       // Initialize map
@@ -335,69 +344,78 @@ export class RouteManagementComponent {
     // Add markers for students' pickup locations and calculate distance from driver
     this.rowContohLokasiAnak.forEach((student) => {
       let pickupPoint: { latitude: number; longitude: number };
-
-      // Check if `student.student_pickup_point` is a string
+      let schoolPoint: { latitude: number; longitude: number };
+    
+      // Parsing `student_pickup_point` jika berupa string
       if (typeof student.student_pickup_point === 'string') {
         pickupPoint = JSON.parse(student.student_pickup_point);
       } else {
-        pickupPoint = student.student_pickup_point; // Already an object
+        pickupPoint = student.student_pickup_point; // Sudah berupa objek
       }
-
+    
+      // Parsing `school_point` jika berupa string
+      if (typeof student.school_point === 'string') {
+        schoolPoint = JSON.parse(student.school_point);
+      } else {
+        schoolPoint = student.school_point; // Sudah berupa objek
+      }
+    
       const { latitude, longitude } = pickupPoint;
-
-      // Calculate the distance between the driver and the student
+    
+      // Hitung jarak antara driver dan student
       const studentLatLng = L.latLng(latitude, longitude);
       const driverLatLng = this.marker?.getLatLng();
-
+    
       if (driverLatLng) {
         const distanceInMeters = driverLatLng.distanceTo(studentLatLng);
-        const distanceInKilometers = (distanceInMeters / 1000).toFixed(2); // Distance in kilometers
-
-        // Update the student's distance property
+        const distanceInKilometers = (distanceInMeters / 1000).toFixed(2); // Jarak dalam km
+    
+        // Update properti distance pada student
         student.distance = distanceInKilometers;
-        
-
-        if (parseFloat(student.distance) <= 0.3) {
-        }
-
-        if (parseFloat(student.distance) <= 0.15) {
-          console.log('distance ', student.distance);
-          console.log('shuttle uuid', student.shuttle_uuid.String);
-
-          // axios
-          //   .put(
-          //     `${this.apiUrl}/api/driver/shuttle/update/${student.shuttle_uuid.String}`,
-          //     {
-          //       status: 'going_to_school',
-          //     },
-          //     {
-          //       headers: {
-          //         Authorization: `${this.token}`,
-          //       },
-          //     },
-          //   )
-          //   .then((response) => {
-          //     this.getAllShuttleStudent();
-          //   })
-          //   .catch((error) => {});
-        }
-
-        // Add a marker for the student
+    
+        // Marker untuk pickup point student
         L.marker([latitude, longitude], { icon: studentIcon })
           .addTo(this.map!)
           .bindPopup(
-            `<b class="capitalize">${student.student_first_name} ${student.student_last_name}</b><br>Distance: ${student.distance} km`,
+            `<b class="capitalize">${student.student_first_name} ${student.student_last_name}</b><br>Distance: ${student.distance} km`
           );
-
-        // Add a circle around the student's pickup point (radius 10 meters, opacity 50%)
+    
+        // Tambahkan circle di sekitar pickup point student
         L.circle([latitude, longitude], {
-          color: 'red', // Circle color
-          // colorOpacity: 0.5,
-          fillColor: 'red', // Fill color
-          fillOpacity: 0.2, // 50% opacity
-          radius: 30, // 10 meters
+          color: 'red', // Warna lingkaran
+          fillColor: 'red', // Warna isi lingkaran
+          fillOpacity: 0.2, // Opasitas 50%
+          radius: 30, // Radius 30 meter
         }).addTo(this.map!);
       }
+    
+      // Marker untuk school point
+      if (schoolPoint) {
+        const { latitude: schoolLat, longitude: schoolLng } = schoolPoint;
+    
+        L.marker([schoolLat, schoolLng], { icon: schoolIcon })
+          .addTo(this.map!)
+          .bindPopup(
+            `<b>School Location</b><br>Latitude: ${schoolLat}<br>Longitude: ${schoolLng}`
+          );
+    
+        // Tambahkan circle di sekitar school point (opsional)
+        L.circle([schoolLat, schoolLng], {
+          color: 'blue',
+          fillColor: 'blue',
+          fillOpacity: 0.2,
+          radius: 50, // Radius 50 meter
+        }).addTo(this.map!);
+      }
+    
     });
+  }
+
+  showToast(message: string, duration: number, type: Response) {
+    this.toastService.add(message, duration, type);
+  }
+
+  removeToast(index: number) {
+    this.toastService.remove(index);
   }
 }

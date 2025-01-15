@@ -267,11 +267,11 @@ export class SidebarComponent implements OnInit {
               icon: 'routeList',
               path: '/admin/routes',
             },
-            // {
-            //   name: 'Driver and Student Assignment',
-            //   icon: 'routeList',
-            //   path: '/admin/not-found',
-            // },
+            {
+              name: 'Track All Route',
+              icon: 'routeList',
+              path: '/admin/not-found',
+            },
           ],
         },
       ];
@@ -342,16 +342,16 @@ export class SidebarComponent implements OnInit {
             },
           ],
         },
-        {
-          title: 'STUDENT MANAGEMENT',
-          items: [
-            {
-              name: 'Student Lists',
-              icon: 'studentList',
-              path: '/driver/not-found',
-            },
-          ],
-        },
+        // {
+        //   title: 'STUDENT MANAGEMENT',
+        //   items: [
+        //     {
+        //       name: 'Student Lists',
+        //       icon: 'studentList',
+        //       path: '/driver/not-found',
+        //     },
+        //   ],
+        // },
       ];
     }
   }
@@ -364,65 +364,41 @@ export class SidebarComponent implements OnInit {
     this.isModalDeleteOpen = false;
   }
 
-  performLogout() {
-    const token = this.cookieService.get('accessToken');
-    axios
-      .post(
+  async performLogout() {
+    try {
+      const token = this.cookieService.get('accessToken');
+      if (!token) {
+        this.handleLogoutSuccess();
+        return;
+      }
+
+      await axios.post(
         `${this.apiUrl}/api/logout`,
         {},
         {
           headers: {
-            Authorization: `${token}`,
+            Authorization: `Bearer ${token}`,
           },
         },
-      )
-      .then((response) => {
-        console.log(token);
+      );
 
-        this.profileService.resetProfileData();
+      this.handleLogoutSuccess();
+    } catch (error) {
+      // Even if logout API fails, we should still clear local data
+      this.handleLogoutSuccess();
+    }
+  }
 
-        this.cookieService.delete('accessToken', '/');
-        this.cookieService.delete('refreshToken', '/');
+  private handleLogoutSuccess(): void {
+    this.profileService.resetProfileData(); // This will clear cookies and profile data
+    this.router.navigate(['/login']);
 
-        if (this.router.url !== '/login') {
-          window.location.reload();
-        }
-
-        this.router.navigateByUrl('/login');
-
-        console.log(response.data.message);
-        Swal.fire({
-          title: 'Success',
-          text: 'Logout Berhasil',
-          icon: 'success',
-          timer: 1500,
-          showConfirmButton: false,
-        });
-      })
-      .catch((error) => {
-        console.log(token);
-        if (error.response.status === 401) {
-          this.cookieService.delete('accessToken', '/');
-          this.cookieService.delete('refreshToken', '/');
-          this.cookieService.deleteAll();
-          alert(token);
-
-          this.router.navigateByUrl('/login');
-          Swal.fire({
-            title: 'Error',
-            text: error.response.data.message,
-            icon: 'error',
-          });
-        } else {
-          Swal.fire({
-            title: 'Error',
-            text: error.response.data.message,
-            icon: 'error',
-          });
-        }
-
-        this.cookieService.delete('accessToken', '/');
-        this.cookieService.delete('refreshToken', '/');
-      });
+    Swal.fire({
+      title: 'Success',
+      text: 'Logout Berhasil',
+      icon: 'success',
+      timer: 1500,
+      showConfirmButton: false,
+    });
   }
 }

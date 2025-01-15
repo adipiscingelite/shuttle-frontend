@@ -188,15 +188,17 @@ export class DashboardAdminComponent {
 
   getAllRoute() {
     axios
-      .get(`${this.apiUrl}/api/school/routes/all`, {
+      .get(`${this.apiUrl}/api/school/route/all`, {
         headers: {
           Authorization: `${this.token}`,
         },
       })
       .then((response) => {
-        this.totalRoute = response.data.routes.length || 0;
+        console.log(response,'pp');
+        
+        this.totalRoute = response.data.data.data.length || 0;
 
-        const routeData = response.data.routes;
+        const routeData = response.data.data.data;
         console.log('rispun', routeData);
         const currentMonth = new Date().getMonth();
         let currentMonthCount = 0;
@@ -239,10 +241,12 @@ export class DashboardAdminComponent {
     previousCount: number,
   ): number {
     if (previousCount === 0) {
-      return 0;
+      // Jika bulan sebelumnya tidak ada data
+      return currentCount > 0 ? 100 : 0;
     }
-
+  
     const change = ((currentCount - previousCount) / previousCount) * 100;
     return parseFloat(change.toFixed(2));
   }
+  
 }

@@ -78,6 +78,7 @@ interface Student {
   student_last_name: string;
   student_status: string;
   student_order: number;
+  route_assignment_uuid?: string;
 }
 
 interface Route {
@@ -142,9 +143,14 @@ export class RoutesComponent implements OnInit, AfterViewInit {
   showing: string = '';
   pages: number[] = [];
 
+  totalRows: number = 0;
+  startRow: number = 1;
+  endRow: number = 10;
+
   // For data routes
   route_uuid: string = '';
   route_name_uuid: string = '';
+  route_assignment_uuid: string = '';
   driver_uuid: string = '';
   driver_first_name: string = '';
   driver_last_name: string = '';
@@ -183,6 +189,7 @@ export class RoutesComponent implements OnInit, AfterViewInit {
   // Row list data school
   rowListAllSchool: schoolDetail[] = [];
   students: Student[] = [];
+  deletedStudents: Student[] = [];
 
   constructor(
     private cookieService: CookieService,
@@ -217,6 +224,7 @@ export class RoutesComponent implements OnInit, AfterViewInit {
     pagination: true,
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
+    suppressMovableColumns: true,
     // penyesuaian request onSortChanged
     // onSortChanged: (event: any) => {
     //   this.onSortChanged(event);
@@ -352,24 +360,81 @@ export class RoutesComponent implements OnInit, AfterViewInit {
     sortable: false,
   };
 
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.paginationTotalPage) {
+  totalRowCount(currentPage: number, pageSize: number) {
+    if (this.rowListAllRoute && this.rowListAllRoute.length > 0) {
+      const totalRows = this.rowListAllRoute.length;
+      this.totalRows = totalRows;
+
+      this.startRow = (currentPage - 1) * pageSize + 1;
+      this.endRow = Math.min(currentPage * pageSize, this.totalRows);
+    } else {
+      this.totalRows = 0;
+      this.startRow = 0;
+      this.endRow = 0;
+    }
+  }
+
+  getVisiblePages(): (number | string)[] {
+    const visiblePages: (number | string)[] = [];
+    const totalPages = this.paginationTotalPage;
+    const currentPage = this.paginationPage;
+
+    visiblePages.push(1);
+
+    if (totalPages <= 7) {
+      for (let i = 2; i < totalPages; i++) {
+        visiblePages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        visiblePages.push(2, 3, 4, '...', totalPages - 1);
+      } else if (currentPage >= totalPages - 2) {
+        visiblePages.push(
+          '...',
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+        );
+      } else {
+        visiblePages.push(
+          '...',
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          '...',
+        );
+      }
+    }
+
+    if (totalPages > 1) {
+      visiblePages.push(totalPages);
+    }
+
+    return visiblePages;
+  }
+
+  goToPage(page: number | string) {
+    if (
+      typeof page === 'number' &&
+      page >= 1 &&
+      page <= this.paginationTotalPage
+    ) {
       this.paginationPage = page;
-      this.getAllStudent();
+      this.getAllRoute();
     }
   }
 
   goToNextPage() {
     if (this.paginationPage < this.paginationTotalPage) {
       this.paginationPage++;
-      this.getAllStudent();
+      this.getAllRoute();
     }
   }
 
   goToPreviousPage() {
     if (this.paginationPage > 1) {
       this.paginationPage--;
-      this.getAllStudent();
+      this.getAllRoute();
     }
   }
 
@@ -377,7 +442,46 @@ export class RoutesComponent implements OnInit, AfterViewInit {
     const target = event.target as HTMLSelectElement;
     this.paginationItemsLimit = +target.value;
     this.paginationPage = 1;
-    this.getAllStudent();
+    this.getAllRoute();
+  }
+
+  onSortChanged(event: any) {
+    console.log('onSortChanged event:', event);
+
+    if (event && event.columns && event.columns.length > 0) {
+      event.columns.forEach((column: any) => {
+        const colId = column.colId;
+        console.log('Sorting column ID:', colId);
+
+        // if (!this.columnClickCount[colId]) {
+        //   this.columnClickCount[colId] = 0;
+        // }
+        // this.columnClickCount[colId] += 1;
+
+        // if (this.columnClickCount[colId] === 3) {
+        //   this.sortBy = 'user_id';
+        //   this.sortDirection = 'asc';
+        //   this.columnClickCount[colId] = 0;
+        // } else {
+        //   if (this.columnMapping[colId]) {
+        //     this.sortBy = this.columnMapping[colId];
+        //   } else {
+        //     this.sortBy = colId;
+        //   }
+
+        //   if (this.columnClickCount[colId] === 1) {
+        //     this.sortDirection = 'asc';
+        //   } else if (this.columnClickCount[colId] === 2) {
+        //     this.sortDirection = 'desc';
+        //   }
+        // }
+      });
+
+      this.getAllStudent();
+      this.getAllFreeStudent();
+    } else {
+      console.error('onSortChanged: event.columns is undefined or empty');
+    }
   }
 
   // input dinamis coy
@@ -433,7 +537,7 @@ export class RoutesComponent implements OnInit, AfterViewInit {
       .then((response) => {
         this.rowListAllRoute = response.data.data.data;
         console.log('route', response);
-        this.paginationTotalPage = response.data.data.meta.total_page;
+        this.paginationTotalPage = response.data.data.meta.total_pages;
         this.pages = Array.from(
           { length: this.paginationTotalPage },
           (_, i) => i + 1,
@@ -586,7 +690,8 @@ export class RoutesComponent implements OnInit, AfterViewInit {
             student_first_name: student.student_first_name,
             student_last_name: student.student_last_name,
             student_status: student.student_status,
-            student_order: +student.student_order, // Pastikan order berupa angka
+            student_order: +student.student_order,
+            route_assignment_uuid: student.route_assignment_uuid,
           }),
         );
 
@@ -636,47 +741,112 @@ export class RoutesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // Remove student
   removeStudent(index: number) {
-    console.log('Before removing:', this.students);
-    this.students.splice(index, 1);
-    console.log('After removing:', this.students);
+    const removedStudent = this.students[index]; // Menyimpan siswa yang akan dihapus
+    console.log(
+      'Removed Student:',
+      removedStudent.student_first_name,
+      removedStudent.student_last_name,
+    ); // Menampilkan nama siswa yang dihapus di console
 
-    // Update order
+    // Pastikan route_assignment_uuid ada di removedStudent
+    console.log(
+      'Route Assignment UUID in Removed Student:',
+      removedStudent.route_assignment_uuid,
+    );
+
+    // Menambahkan siswa yang dihapus ke dalam array deletedStudents dengan route_assignment_uuid
+    const studentToDelete = {
+      ...removedStudent,
+      route_assignment_uuid:
+        removedStudent.route_assignment_uuid || this.route_assignment_uuid, // Menambahkan route_assignment_uuid
+    };
+
+    this.deletedStudents = [...this.deletedStudents, studentToDelete];
+
+    // Hapus siswa dari array
+    this.students.splice(index, 1);
+
+    // Update urutan siswa setelah penghapusan
     this.students.forEach((student, idx) => {
       student.student_order = idx + 1;
     });
 
+    console.log('Deleted Students:', this.deletedStudents);
+
+    // Deteksi perubahan di template
     this.cdRef.detectChanges();
   }
 
   updateRoute() {
-    // Gabungkan data siswa lama dan siswa baru
-    const allStudents = [...this.students, ...this.infoHAForm.value.students];
+    // Daftar siswa awal sebelum perubahan
+    const initialStudents: Student[] = this.students;
 
-    // Filter siswa duplikat (opsional, jika `student_uuid` wajib unik)
-    const uniqueStudents = allStudents.filter(
-      (value, index, self) =>
-        index === self.findIndex((t) => t.student_uuid === value.student_uuid),
+    // Daftar siswa baru setelah perubahan dari form
+    const newStudents: Student[] = this.infoHAForm.value.students;
+
+    // Identifikasi siswa yang ditambahkan (yang ada di newStudents tapi tidak ada di initialStudents)
+    const added: Student[] = newStudents.filter(
+      (newStudent) =>
+        !initialStudents.some(
+          (existingStudent) =>
+            existingStudent.student_uuid === newStudent.student_uuid,
+        ),
     );
 
-    // Pastikan urutan benar
-    uniqueStudents.forEach((student, index) => {
-      student.student_order = index + 1; // Urutkan ulang berdasarkan posisi
-    });
+    // Log siswa yang ditambahkan
+    console.log('Added Students:', added);
 
+    // Identifikasi siswa yang dihapus (yang ada di initialStudents tapi tidak ada di newStudents)
+    const deleted: Student[] = initialStudents.filter(
+      (existingStudent) =>
+        !newStudents.some(
+          (newStudent) =>
+            newStudent.student_uuid === existingStudent.student_uuid,
+        ),
+    );
+
+    // Identifikasi siswa yang tidak berubah (mereka yang ada di kedua daftar)
+    const unchanged: Student[] = newStudents.filter((newStudent) =>
+      initialStudents.some(
+        (existingStudent) =>
+          existingStudent.student_uuid === newStudent.student_uuid,
+      ),
+    );
+
+    // Gabungkan siswa yang tidak berubah dan yang baru ditambahkan
+    const allStudents: Student[] = [...unchanged, ...added].map(
+      (student, index) => ({
+        ...student,
+        student_order: index + 1, // Urut ulang sesuai index
+      }),
+    );
+
+    const finalStudents: Student[] = initialStudents.filter(
+      (student) =>
+        !this.deletedStudents.some(
+          (deletedStudent) =>
+            deletedStudent.student_uuid === student.student_uuid,
+        ),
+    );
+
+    console.log('Deleted Students:', this.deletedStudents);
+    console.log('Final Students:', finalStudents);
+
+    // Data request
     const requestData = {
       driver_uuid: this.driver_uuid,
       route_name: this.route_name,
       route_description: this.route_description,
-      students: uniqueStudents.map((student) => ({
+      students: finalStudents.map((student) => ({
         student_uuid: student.student_uuid,
-        // student_first_name: student.student_first_name,
-        student_order: student.student_order, // Pastikan ini sesuai
+        student_order: student.student_order,
       })),
+      added, // Daftar siswa yang ditambahkan
+      deletedStudents: this.deletedStudents, // Daftar siswa yang dihapus
     };
 
-    console.log('request', requestData);
+    console.log('Request Data:', requestData);
 
     axios
       .put(
@@ -716,18 +886,17 @@ export class RoutesComponent implements OnInit, AfterViewInit {
         },
       })
       .then((response) => {
-        console.log('detailData', response);
-        const detailData: RouteAssignment = response.data;
+        console.log('detailData', response.data.route_assignment[0]);
+        const detailData = response.data.route_assignment[0]; // Mengambil data route assignment
 
         // Assign values to component variables
-        // this.route_name_uuid = detailData.route_name_uuid;
-        this.driver_first_name = detailData.driver_first_name;
-        this.driver_last_name = detailData.driver_last_name;
-        this.driver_uuid = detailData.driver_uuid;
-        // this.route_name = detailData.route_name;
-        // this.route_description = detailData.route_description;
-        this.students = detailData.students;
-
+        this.route_name = response.data.route_name; // Menyimpan nama rute
+        this.route_description = response.data.route_description; // Menyimpan deskripsi rute
+        this.driver_first_name = detailData.driver_first_name; // Menyimpan nama depan driver
+        this.driver_last_name = detailData.driver_last_name; // Menyimpan nama belakang driver
+        this.driver_name = `${this.driver_first_name} ${this.driver_last_name}`;
+        this.driver_uuid = detailData.driver_uuid; // Menyimpan UUID driver
+        this.students = detailData.students; // Simpan daftar siswa seperti semula
         // Buka modal
         this.isModalDetailOpen = true;
         this.cdRef.detectChanges(); // Pastikan perubahan terdeteksi di view
@@ -769,6 +938,7 @@ export class RoutesComponent implements OnInit, AfterViewInit {
         this.showToast(responseMessage, 3000, Response.Success);
 
         this.getAllRoute();
+        this.getAllFreeStudent();
         this.isModalDeleteOpen = false;
         this.cdRef.detectChanges();
       })
@@ -793,6 +963,14 @@ export class RoutesComponent implements OnInit, AfterViewInit {
   }
 
   getFilteredStudents(currentIndex: number): any[] {
+    if (
+      !this.rowListAllFreeStudent ||
+      this.rowListAllFreeStudent.length === 0
+    ) {
+      console.warn('No free students available');
+      return [];
+    }
+
     const selectedUUIDs = this.infoHAListArray.controls
       .map(
         (control, index) =>
