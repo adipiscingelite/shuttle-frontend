@@ -28,7 +28,8 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 input[type="number"] {
-  appearance: textfield; /* Firefox */
+  appearance: textfield;
+  /* Firefox */
 }
 
 .ag-theme-quartz .ag-paging-row-summary-panel {
@@ -36,16 +37,41 @@ input[type="number"] {
 }
 
 * {
-  scroll-behavior: smooth; /* Opsional: untuk transisi scroll lebih halus */
+  scroll-behavior: smooth;
+  /* Opsional: untuk transisi scroll lebih halus */
+  /* font-family: ; */
 }
+
 /* .ag-paging-panel {
   display: block !important;
 } */
 
 /* *{
-  font-family: "Montserrat", sans-serif;
+  font-family: "Montserrat";
 } */
-
+/* *{
+  font-family: "Roboto";
+} */
 /* *{
   outline: 1px solid red;
 } */
+
+
+
+
+.nunito-font {
+  font-family: "Nunito", serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+.monoton-font {
+  font-family: "Monoton", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.libre-caslon-display-font {
+  font-family: "Libre Caslon Display", serif;
+  font-style: normal;
+}

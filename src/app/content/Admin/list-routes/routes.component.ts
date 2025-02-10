@@ -679,6 +679,8 @@ export class RoutesComponent implements OnInit, AfterViewInit {
         const editDataRouteAssignment = response.data.route_assignment[0];
         // Mengisi data ke form
         this.route_name_uuid = editData.route_name_uuid;
+        console.log('uuid', editData.route_name_uuid);
+
         this.route_name = editData.route_name;
         this.route_description = editData.route_description;
         this.driver_uuid = editDataRouteAssignment.driver_uuid;
@@ -711,23 +713,21 @@ export class RoutesComponent implements OnInit, AfterViewInit {
       });
   }
 
-  onDrop(event: CdkDragDrop<Student[]>) {
+  onDrop(event: CdkDragDrop<any[]>) {
     const previousIndex = event.previousIndex;
     const currentIndex = event.currentIndex;
 
     // Pindahkan item dalam array
     moveItemInArray(this.students, previousIndex, currentIndex);
 
-    // Setelah pemindahan, urutkan ulang berdasarkan student_order
-    this.students = this.students.sort(
-      (a, b) => a.student_order - b.student_order,
-    );
-
-    // Jika perlu, perbarui data lainnya
+    // Update `student_order` sesuai urutan yang baru
     this.students = this.students.map((student, index) => ({
       ...student,
-      student_order: index + 1, // Update student order sesuai index
+      student_order: index + 1, // Update urutan berdasarkan posisi baru
     }));
+
+    console.log('Updated students:', this.students);
+    this.updateRoute();
   }
 
   // Add new student
@@ -794,8 +794,14 @@ export class RoutesComponent implements OnInit, AfterViewInit {
         ),
     );
 
+    const addedWithOrder = added.map((student, index) => ({
+      ...student,
+      student_order: index + 1, // Urutkan sesuai index
+    }));
+
     // Log siswa yang ditambahkan
     console.log('Added Students:', added);
+    console.log('Added Students with Order:', addedWithOrder);
 
     // Identifikasi siswa yang dihapus (yang ada di initialStudents tapi tidak ada di newStudents)
     const deleted: Student[] = initialStudents.filter(
@@ -813,6 +819,12 @@ export class RoutesComponent implements OnInit, AfterViewInit {
           existingStudent.student_uuid === newStudent.student_uuid,
       ),
     );
+    const startingOrder = initialStudents.length + 1;
+
+    // Tambahkan student_order ke siswa yang ditambahkan
+    added.forEach((student, index) => {
+      student.student_order = startingOrder + index; // Urutan dimulai setelah siswa terakhir di daftar awal
+    });
 
     // Gabungkan siswa yang tidak berubah dan yang baru ditambahkan
     const allStudents: Student[] = [...unchanged, ...added].map(
@@ -842,7 +854,10 @@ export class RoutesComponent implements OnInit, AfterViewInit {
         student_uuid: student.student_uuid,
         student_order: student.student_order,
       })),
-      added, // Daftar siswa yang ditambahkan
+      added: added.map((student) => ({
+        student_uuid: student.student_uuid,
+        student_order: student.student_order,
+      })), // Daftar siswa yang ditambahkan
       deletedStudents: this.deletedStudents, // Daftar siswa yang dihapus
     };
 
@@ -862,9 +877,9 @@ export class RoutesComponent implements OnInit, AfterViewInit {
         const responseMessage = response.data?.message || 'Success.';
         this.showToast(responseMessage, 3000, Response.Success);
 
-        this.getAllRoute();
+        // this.getAllRoute();
         this.getAllFreeStudent();
-        this.isModalEditOpen = false;
+        // this.isModalEditOpen = false;
       })
       .catch((error) => {
         const responseMessage =

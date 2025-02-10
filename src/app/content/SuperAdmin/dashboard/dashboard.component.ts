@@ -5,18 +5,19 @@ import axios from 'axios';
 import { CookieService } from 'ngx-cookie-service';
 import { RouterLink } from '@angular/router';
 import { CommonModule, DatePipe } from '@angular/common';
+import * as L from 'leaflet';
 
 interface GrowthData {
   month: string;
   growth: number;
 }
 
-interface ShuttleSummary{
-  shuttle_count: number
-  shuttle_today: number
-  shuttle_yesterday: number
-  shuttle_date_today: string
-  shuttle_date_yesterday: string
+interface ShuttleSummary {
+  shuttle_count: number;
+  shuttle_today: number;
+  shuttle_yesterday: number;
+  shuttle_date_today: string;
+  shuttle_date_yesterday: string;
 }
 
 @Component({
@@ -50,12 +51,11 @@ export class DashboardSuperAdminComponent implements OnInit {
   previousMonthVehicles: number = 0;
   vehicleChangePercentage: number = 0;
 
-  
-  shuttle_count: number = 0
-  shuttle_today: number = 0
-  shuttle_yesterday: number = 0
-  shuttle_date_today: string = ''
-  shuttle_date_yesterday: string = ''
+  shuttle_count: number = 0;
+  shuttle_today: number = 0;
+  shuttle_yesterday: number = 0;
+  shuttle_date_today: string = '';
+  shuttle_date_yesterday: string = '';
 
   currentDate: string | null;
   yesterdayDate: string | null;
@@ -82,6 +82,52 @@ export class DashboardSuperAdminComponent implements OnInit {
 
   isAnimating: boolean = true;
 
+  time = '';
+  day = '';
+  date = '';
+
+  showDiv: boolean = Math.random() < 0.1;
+
+  selectedSchool: any;
+  map!: L.Map;
+  schools = [
+    {
+      id: 1,
+      name: 'SMAN 8 Yogyakarta',
+      lat: -7.7829,
+      lng: 110.4141,
+      address: 'Jl. Sidobali No.1, Muja Muju, Umbulharjo, Yogyakarta',
+    },
+    {
+      id: 2,
+      name: 'SMAN 1 Yogyakarta',
+      lat: -7.8015,
+      lng: 110.3487,
+      address: 'Jl. HOS Cokroaminoto No.10, Pakuncen, Wirobrajan, Yogyakarta',
+    },
+    {
+      id: 3,
+      name: 'SMAN 3 Yogyakarta',
+      lat: -7.782,
+      lng: 110.3671,
+      address: 'Jl. Yos Sudarso No.7, Kotabaru, Gondokusuman, Yogyakarta',
+    },
+    {
+      id: 4,
+      name: 'SMAN 6 Yogyakarta',
+      lat: -7.7825,
+      lng: 110.3675,
+      address: 'Jl. C. Simanjuntak No.2, Terban, Gondokusuman, Yogyakarta',
+    },
+    {
+      id: 5,
+      name: 'SMAN 1 Godean',
+      lat: -7.7697,
+      lng: 110.2931,
+      address: 'Jl. Kebon Agung Km. 5, Godean, Sleman, Yogyakarta',
+    },
+  ];
+
   constructor(
     private cookieService: CookieService,
     private datePipe: DatePipe,
@@ -103,8 +149,11 @@ export class DashboardSuperAdminComponent implements OnInit {
     this.getAllSchool();
     this.getAllDriver();
     this.getAllVehicle();
-    this.getAllShuttleSummary()
-    this.getStudentGrowth()
+    this.getAllShuttleSummary();
+    this.getStudentGrowth();
+
+    this.initializeMap();
+    this.updateDateTime();
 
     setInterval(() => {
       this.getAllAdmin();
@@ -116,25 +165,24 @@ export class DashboardSuperAdminComponent implements OnInit {
 
   getAllShuttleSummary() {
     axios
-    .get(`${this.apiUrl}/api/superadmin/shuttle/summary`, {
-      headers: { Authorization: `${this.token}` },
-    })
-    .then((response) => {
-      console.log('pp',response);
+      .get(`${this.apiUrl}/api/superadmin/shuttle/summary`, {
+        headers: { Authorization: `${this.token}` },
+      })
+      .then((response) => {
+        console.log('pp', response);
 
-      const dataShuttleSummary = response.data
+        const dataShuttleSummary = response.data;
 
-      this.shuttle_count = dataShuttleSummary.shuttle_count
-      this.shuttle_today = dataShuttleSummary.shuttle_today
-      this.shuttle_yesterday = dataShuttleSummary.shuttle_yesterday
-      this.shuttle_date_today = dataShuttleSummary.shuttle_date_today
-      this.shuttle_date_yesterday= dataShuttleSummary.shuttle_date_yesterday    
-
-    })
-    .catch((error) => {
-      console.error('Error fetching data:', error);
-      this.totalAdmin = 0;
-    });
+        this.shuttle_count = dataShuttleSummary.shuttle_count;
+        this.shuttle_today = dataShuttleSummary.shuttle_today;
+        this.shuttle_yesterday = dataShuttleSummary.shuttle_yesterday;
+        this.shuttle_date_today = dataShuttleSummary.shuttle_date_today;
+        this.shuttle_date_yesterday = dataShuttleSummary.shuttle_date_yesterday;
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+        this.totalAdmin = 0;
+      });
   }
 
   getStudentGrowth() {
@@ -144,7 +192,7 @@ export class DashboardSuperAdminComponent implements OnInit {
       })
       .then((response) => {
         console.log('pp', response);
-  
+
         // Peta nama bulan dari backend ke format standar
         const monthMapping: { [key: string]: string } = {
           jan: 'Jan',
@@ -162,27 +210,37 @@ export class DashboardSuperAdminComponent implements OnInit {
           nov: 'Nov',
           dec: 'Dec',
         };
-  
+
         // Urutan bulan untuk sortir
         const monthOrder: string[] = [
-          'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dec',
         ];
-  
+
         // Data dari backend
         const backendData = response.data;
-  
+
         // Konversi data ke GrowthData[]
         this.growthData = Object.entries(backendData).map(([key, value]) => ({
           month: monthMapping[key.toLowerCase()] || key, // Gunakan mapping, fallback ke key asli jika tidak ditemukan
           growth: value as number,
         }));
-  
+
         // Sortir berdasarkan urutan bulan
         this.growthData.sort(
-          (a, b) => monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month)
+          (a, b) => monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month),
         );
-  
+
         console.log('Formatted and sorted growthData:', this.growthData);
       })
       .catch((error) => {
@@ -190,7 +248,6 @@ export class DashboardSuperAdminComponent implements OnInit {
         this.growthData = []; // Kosongkan data jika terjadi error
       });
   }
-  
 
   getAllAdmin() {
     axios
@@ -387,5 +444,98 @@ export class DashboardSuperAdminComponent implements OnInit {
     return this.growthData
       .map((data, i) => `${50 + i * 40},${190 - data.growth * 0.5}`)
       .join(' ');
+  }
+
+  updateDateTime(): void {
+    const now = new Date();
+    this.time = now.toLocaleTimeString('id-ID', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+    this.day = [
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+    ][now.getDay()];
+    this.date = now.toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
+  initializeMap(): void {
+    this.map = L.map('map').setView(
+      [-7.782774868433334, 110.36703914403769],
+      13,
+    );
+
+    // Tile layer dari Google Maps
+    L.tileLayer('http://{s}.google.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
+      maxZoom: 20,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+    }).addTo(this.map);
+
+    // Custom icon untuk marker
+    const schoolIcon = L.icon({
+      iconUrl: 'assets/images/location_15114817.png', // Path gambar ikon (pastikan ada di assets/icons)
+      iconSize: [40, 50], // Ukuran ikon
+      iconAnchor: [20, 40], // Anchor agar ujung bawah ikon menyentuh lokasi
+      popupAnchor: [0, -40], // Popup muncul di atas ikon
+    });
+
+    // Tambahkan marker untuk setiap sekolah
+    this.schools.forEach((school) => {
+      L.marker([school.lat, school.lng], { icon: schoolIcon })
+        .addTo(this.map)
+        .on('click', () => this.showSchoolDetails(school));
+    });
+  }
+
+  showSchoolDetails(school: any): void {
+    const popupContent = `
+      <div>
+          <div class="flex items-center gap-x-2">
+            <h4>abcd-1234-efgh</h4>
+            <span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19.078 6H8.672A2.672 2.672 0 0 0 6 8.672v10.406a2.672 2.672 0 0 0 2.672 2.672h10.406a2.672 2.672 0 0 0 2.672-2.672V8.672A2.672 2.672 0 0 0 19.078 6Z"></path></svg></span>
+          </div>
+          <div class="-space-y-1">
+            <h1 class="text-xl font-semibold">${school.name}</h1>
+            <p class="truncate">${school.address}</p>
+            <a href="https://www.google.com/maps?q=${school.lat},${school.lng}" target="_blank" class="text-sm text-blue-500">Open in Google Maps</a>
+          </div>
+          <hr>
+          <div class="pt-2 flex items-center justify-between">
+            <button id="viewMoreBtn-${school.id}" class="text-blue-500" type="button">See Details</button>
+            <span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12.31 15.75 16.032 12 12.31 8.25"></path><path d="M15.514 12H7.97"></path><path d="M12 21c4.969 0 9-4.031 9-9s-4.031-9-9-9-9 4.031-9 9 4.031 9 9 9Z"></path></svg></span>
+          </div>
+      </div>
+    `;
+    L.popup({ offset: L.point(0, -20) })
+      .setLatLng([school.lat, school.lng])
+      .setContent(popupContent)
+      .openOn(this.map);
+    document
+      .getElementById(`viewMoreBtn-${school.id}`)
+      ?.addEventListener('click', () => {
+        this.selectedSchool = school;
+      });
+  }
+
+  openModal(school: any): void {
+    this.selectedSchool = school;
+  }
+
+  closeModal(): void {
+    this.selectedSchool = null;
+  }
+
+  viewMoreDetails(schoolId: number): void {
+    alert(`Navigating to more details for school ID ${schoolId}`);
   }
 }

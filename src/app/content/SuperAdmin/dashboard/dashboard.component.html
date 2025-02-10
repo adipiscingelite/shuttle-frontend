@@ -1,6 +1,22 @@
 <div>
-  <app-hello-and-date></app-hello-and-date>
-  <hr>
+  <!-- <app-hello-and-date></app-hello-and-date>
+  <hr> -->
+
+  <!-- *ngIf="showDiv"  -->
+  <div class="flex items-center w-full h-auto p-3 px-4 bg-blue-500 rounded-lg" *ngIf="showDiv">
+    <!-- <img class="h-full aspect-square rounded-full"
+        src="https://i.pinimg.com/originals/08/ea/5c/08ea5c4387f1da98fa7f8046d844c2c2.gif" alt=""> -->
+    <div class="max-w-1/2 text-white">
+      <h1 class="text-4xl font-semibold libre-caslon-display-font">Welcome, Superadmin</h1>
+      <p class="mt-2 text-sm">Stay updated with the latest stats and manage your shuttle services effortlessly. Your
+        dashboard is ready to assist!</p>
+    </div>
+    <div class="max-w-1/2 ml-auto text-right text-white">
+      <h1 class="text-2xl font-bold">{{ time }}</h1>
+      <p class="text-lg">{{ day }}, {{ date }}</p>
+    </div>
+  </div>
+
 
   <h1 class="mt-4 text-xl font-bold">Overview</h1>
   <div class="grid grid-cols-2 md:grid-cols-4 my-4 px-2 gap-4 md:gap-8 auto-rows-fr">
@@ -353,4 +369,121 @@
       <p class="truncate hidden md:block">Rata Rata Waktu Jemput</p>
     </div>
   </div> -->
+
+
+  <div class="w-full h-auto">
+    <h1 class="mt-4 text-xl font-bold">School Map</h1>
+
+    <div id="map" style="height: 500px;"></div>
+    <!-- *ngIf="selectedSchool" -->
+    <div class="fixed inset-0 w-screen h-screen bg-neutral-700 bg-opacity-30 z-50" *ngIf="selectedSchool"
+      (click)="closeModal()">
+      <div class="fixed top-12 right-6 flex justify-end w-1/4 h-1/2 bg-transparent z-[999]">
+        <div class="flex flex-col gap-y-5">
+          <div
+            class="flex items-center justify-center w-12 aspect-square bg-white border border-gray-300 rounded-lg shadow-md cursor-pointer">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+              stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="m18 18.765 1.647-.015A1.36 1.36 0 0 0 21 17.397V6.603a1.36 1.36 0 0 0-1.353-1.353L18 5.265">
+              </path>
+              <path d="m6 5.25-1.725.015C3.531 5.265 3 5.875 3 6.62v10.794c0 .744.53 1.352 1.275 1.352L6 18.75"></path>
+              <path d="M18 9v6"></path>
+              <path d="M15 7.5v9"></path>
+              <path d="M12 8.25v7.5"></path>
+              <path d="M9 7.5v9"></path>
+              <path d="M6 9v6"></path>
+            </svg>
+          </div>
+
+          <div
+            class="flex flex-col items-center gap-2 w-12 py-2 bg-white border border-gray-300 rounded-lg shadow-md cursor-pointer">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1"
+              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M20.203 15.028c-.047-.169.056-.403.154-.572.03-.05.063-.098.099-.145a7.593 7.593 0 0 0 1.294-4.233c.014-4.322-3.633-7.828-8.143-7.828-3.932 0-7.214 2.677-7.982 6.23a7.533 7.533 0 0 0-.174 1.603c0 4.326 3.506 7.926 8.016 7.926.717 0 1.683-.215 2.212-.36.53-.146 1.055-.338 1.19-.39a1.237 1.237 0 0 1 .91.014l2.658.943c.058.024.12.04.183.046a.375.375 0 0 0 .375-.375.6.6 0 0 0-.024-.126l-.768-2.733Z">
+              </path>
+              <path
+                d="M3.115 10.875a6.855 6.855 0 0 0 .3 7.156c.108.164.17.29.15.375-.018.085-.559 2.9-.559 2.9a.375.375 0 0 0 .127.36.383.383 0 0 0 .378.056l2.635-1.031a.736.736 0 0 1 .563.009c.888.346 1.87.563 2.851.563a7.463 7.463 0 0 0 3.752-1.008">
+              </path>
+            </svg>
+            <hr class="w-full border-gray-300">
+            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M21.75 11.717a.496.496 0 0 0-.439-.466l-1.202-.194a.253.253 0 0 1-.21-.22 6.815 6.815 0 0 0-.08-.446.259.259 0 0 1 .123-.274l1.068-.593a.485.485 0 0 0 .234-.601l-.185-.511a.484.484 0 0 0-.569-.305l-1.197.234a.258.258 0 0 1-.273-.132 8.426 8.426 0 0 0-.225-.394.262.262 0 0 1 .02-.305l.797-.92a.489.489 0 0 0 .019-.646l-.348-.417a.48.48 0 0 0-.637-.094l-1.048.63a.253.253 0 0 1-.3-.03 9.508 9.508 0 0 0-.345-.29.256.256 0 0 1-.08-.291l.433-1.144a.485.485 0 0 0-.202-.613l-.472-.274a.483.483 0 0 0-.631.133l-.767.96a.215.215 0 0 1-.262.081c-.03-.011-.27-.11-.458-.173a.254.254 0 0 1-.176-.245l.018-1.222a.49.49 0 0 0-.401-.51l-.537-.094a.49.49 0 0 0-.55.336l-.4 1.163a.254.254 0 0 1-.25.171h-.457a.26.26 0 0 1-.249-.172l-.396-1.156a.49.49 0 0 0-.552-.34l-.537.094a.49.49 0 0 0-.402.505l.019 1.227a.256.256 0 0 1-.181.246l-.446.17c-.094.034-.197-.003-.281-.099l-.763-.937a.483.483 0 0 0-.628-.136l-.472.274a.486.486 0 0 0-.202.617l.433 1.141a.26.26 0 0 1-.08.292c-.113.094-.23.187-.346.292a.252.252 0 0 1-.298.03l-1.036-.642a.487.487 0 0 0-.638.094l-.347.417a.484.484 0 0 0 .017.645l.801.919a.254.254 0 0 1 .021.302c-.08.127-.156.261-.225.396a.26.26 0 0 1-.275.132L3.502 8.1a.485.485 0 0 0-.569.305l-.188.51a.486.486 0 0 0 .235.602l1.068.593a.253.253 0 0 1 .124.278l-.01.058c-.026.13-.048.255-.07.387a.257.257 0 0 1-.209.218l-1.205.194a.488.488 0 0 0-.428.482v.543a.481.481 0 0 0 .43.48l1.203.195a.254.254 0 0 1 .211.219c.023.148.047.3.08.446a.259.259 0 0 1-.124.274l-1.067.594a.485.485 0 0 0-.234.601l.187.511a.484.484 0 0 0 .569.305l1.198-.232a.258.258 0 0 1 .272.132c.07.131.147.264.225.395a.262.262 0 0 1-.02.304l-.797.921a.488.488 0 0 0-.024.645l.348.418a.48.48 0 0 0 .636.094l1.049-.63a.253.253 0 0 1 .3.03c.116.101.234.2.345.29a.256.256 0 0 1 .08.29l-.434 1.145a.485.485 0 0 0 .202.612l.474.274a.483.483 0 0 0 .63-.132l.777-.954c.065-.081.168-.117.245-.087.163.068.272.106.466.17a.255.255 0 0 1 .176.246l-.02 1.22a.493.493 0 0 0 .403.51l.536.095a.49.49 0 0 0 .551-.336l.398-1.162a.257.257 0 0 1 .252-.17h.457a.258.258 0 0 1 .248.171l.397 1.157a.49.49 0 0 0 .552.34l.538-.094a.49.49 0 0 0 .401-.506l-.018-1.226a.255.255 0 0 1 .175-.244c.18-.06.306-.11.418-.152l.028-.011c.144-.05.212.007.257.061l.785.968a.483.483 0 0 0 .63.132l.472-.274a.486.486 0 0 0 .202-.614l-.433-1.14a.258.258 0 0 1 .079-.293c.114-.093.23-.187.347-.291a.252.252 0 0 1 .299-.03l1.05.629a.487.487 0 0 0 .637-.094l.347-.417a.483.483 0 0 0-.017-.645l-.8-.922a.253.253 0 0 1-.021-.302 5.32 5.32 0 0 0 .226-.396.261.261 0 0 1 .275-.132l1.194.233a.485.485 0 0 0 .569-.305l.185-.51a.486.486 0 0 0-.234-.602l-1.069-.594a.254.254 0 0 1-.122-.276l.01-.059c.025-.13.047-.255.07-.387a.257.257 0 0 1 .209-.217l1.204-.194a.489.489 0 0 0 .43-.482v-.549Zm-13.707 5.22a6.334 6.334 0 0 1 .024-9.889l2.812 4.95-2.836 4.938ZM12 18.334a6.27 6.27 0 0 1-2.273-.424l2.835-4.935h5.683c-.47 3.031-3.09 5.359-6.245 5.359Zm.565-7.308-2.81-4.945A6.275 6.275 0 0 1 12 5.668c3.154 0 5.776 2.328 6.245 5.359h-5.68Z">
+              </path>
+            </svg>
+            <hr class="w-full border-gray-300">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+              stroke-width="1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M18 3.75H6c-1.219 0-2.016.656-2.25 1.875l-1.5 7.125V18a2.257 2.257 0 0 0 2.25 2.25h15A2.256 2.256 0 0 0 21.75 18v-5.25l-1.5-7.125C20.016 4.359 19.172 3.75 18 3.75Z">
+              </path>
+              <path d="M2.25 12.75H9"></path>
+              <path d="M15 12.75h6.75"></path>
+              <path d="M9 12.75a3 3 0 0 0 6 0"></path>
+              <path d="M6.75 6.75h10.5"></path>
+              <path d="M6 9.75h12"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="fixed top-12 right-24 w-1/4 h-[70%] bg-white/90 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl z-[999] overflow-hidden">
+        <div class="bg-transparent w-full h-full flex flex-col" (click)="$event.stopPropagation()">
+          <!-- Close Button -->
+          <button
+            class="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-md cursor-pointer text-gray-500 hover:text-gray-700 hover:bg-white transition"
+            (click)="closeModal()">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="m13.59 12.002 4.454-4.453a1.126 1.126 0 0 0-1.59-1.594L12 10.408 7.547 5.955A1.127 1.127 0 1 0 5.953 7.55l4.453 4.453-4.453 4.453a1.127 1.127 0 1 0 1.594 1.594L12 13.596l4.453 4.453a1.127 1.127 0 1 0 1.594-1.594l-4.456-4.453Z">
+              </path>
+            </svg>
+          </button>
+      
+          <!-- Image Section -->
+          <div class="w-full h-48 overflow-hidden relative">
+            <img class="w-full h-full object-cover"
+              src="https://i.pinimg.com/474x/c9/25/6d/c9256d41c490e12bfbe0694107e56e4e.jpg" alt="School IMG">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+          </div>
+      
+          <!-- Content Section -->
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <!-- School Name -->
+              <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                {{ selectedSchool.name }}
+              </h2>
+      
+              <!-- School Details -->
+              <div class="text-gray-600 space-y-3">
+                <div class="flex items-start">
+                  <strong class="text-gray-700 w-24">Address:</strong>
+                  <span class="flex-1">{{ selectedSchool.address }}</span>
+                </div>
+                <div class="flex items-start">
+                  <strong class="text-gray-700 w-24">Coordinates:</strong>
+                  <span class="flex-1">{{ selectedSchool.lat }}, {{ selectedSchool.lng }}</span>
+                </div>
+                <div class="flex items-start">
+                  <strong class="text-gray-700 w-24">School ID:</strong>
+                  <span class="flex-1">{{ selectedSchool.id }}</span>
+                </div>
+              </div>
+            </div>
+      
+            <!-- View More Button -->
+            <div class="mt-6">
+              <button
+                class="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold px-4 py-3 rounded-lg hover:from-blue-700 hover:to-blue-600 transition transform hover:scale-105 active:scale-95 shadow-lg">
+                View More Details
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

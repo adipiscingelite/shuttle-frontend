@@ -15,7 +15,10 @@
 
   <br>
   <div class="flex items-center justify-between mb-1">
-    <div class="text-xl font-semibold">List of Students who must be picked up</div>
+    <div>
+      <div class="text-xl font-semibold">List of Students who must be picked up</div>
+      <p>Total Distance: <strong>{{ totalDistance.toFixed(2) }} km</strong></p>
+    </div>
     <div class="hidden md:flex items-center gap-x-2 cursor-pointer">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -23,16 +26,23 @@
         <path d="M8 5l4-4 4 4"></path>
         <path d="M16 19l-4 4-4-4"></path>
       </svg>
-      <span class="text-sm text-gray-600">Sort by Nearest</span>
+      <span class="text-sm text-gray-600">Sort by Default</span>
     </div>
   </div>
 
   <hr>
   <br>
-  <div class="w-full min-h-[40vh]">
+  <div class="w-full min-h-[40vh]" cdkDropList (cdkDropListDropped)="onDrop($event)">
     <div *ngFor="let siswa of rowContohLokasiAnak; let i = index"
-      class="flex items-center justify-between gap-x-6 mt-1 mb-4 px-5 py-3 rounded-lg bg-gray-50 shadow">
-      <div class="w-full">
+      class="flex items-center justify-between gap-x-6 mt-1 mb-4 px-5 py-3 rounded-lg bg-gray-50 shadow" cdkDrag>
+      <!-- Drag Handle -->
+      <div class="flex items-center justify-center bg-gray-100 rounded-lg shadow p-2 cursor-pointer" cdkDragHandle>
+        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16M4 14h16"></path>
+        </svg>
+      </div>
+
+      <div class="w-full" cdkDragDisabled>
         <div class="md:flex items-center justify-between my-2">
           <div>
             <!-- Nama Siswa -->
@@ -103,39 +113,17 @@
             </div>
           </div>
 
-
+          <!-- Action buttons -->
           <button (click)="jemput(siswa.student_uuid)" class="px-4 py-1 my-1 rounded-full bg-black text-white"
             *ngIf="siswa.shuttle_status.String === ''">
             Start Pickup
           </button>
-          <button (click)="update(siswa.shuttle_uuid.String, 'going_to_school')"
-            class="px-4 py-1 my-1 rounded-full bg-black text-white"
-            *ngIf="siswa.shuttle_status.String === 'waiting_to_be_taken_to_school'">
-            Going to School
-          </button>
-          <button (click)="update(siswa.shuttle_uuid.String, 'at_school')"
-            class="px-4 py-1 my-1 rounded-full bg-black text-white"
-            *ngIf="siswa.shuttle_status.String === 'going_to_school'">
-            Arrived to School
-          </button>
-          <button (click)="update(siswa.shuttle_uuid.String, 'waiting_to_be_taken_to_home')"
-            class="px-4 py-1 my-1 rounded-full bg-black text-white" *ngIf="siswa.shuttle_status.String === 'at_school'">
-            Start Pickup Home
-          </button>
-          <button (click)="update(siswa.shuttle_uuid.String, 'going_to_home')"
-            class="px-4 py-1 my-1 rounded-full bg-black text-white"
-            *ngIf="siswa.shuttle_status.String === 'waiting_to_be_taken_to_home'">
-            Going Home
-          </button>
-          <button (click)="update(siswa.shuttle_uuid.String, 'home')" class="px-4 py-1 rounded-full bg-black text-white"
-            *ngIf="siswa.shuttle_status.String === 'going_to_home'">
-            Arrived Home
-          </button>
+          <!-- More buttons -->
         </div>
 
         <hr>
 
-        <!-- Details -->
+        <!-- Details Section -->
         <details class="w-full group mt-4">
           <summary
             class="flex justify-between items-center font-medium cursor-pointer list-none text-blue-600 hover:underline select-none">
@@ -147,42 +135,8 @@
               </svg>
             </span>
           </summary>
-          <div class="text-neutral-600 mt-3 group-open:animate-fadeIn  px-2">
-            <!-- Menampilkan detail yang relevan tanpa repetisi -->
-            <p class="text-sm">
-              <span class="font-medium text-gray-700">Shuttle ID : </span>
-              <span class="text-gray-600">{{ siswa.shuttle_uuid.String || 'N/A' }}</span>
-            </p>
-            <p class="text-sm mb-2">
-              <span class="font-medium text-gray-700">Pickup Point : </span>
-              <a href="https://www.google.com/maps?q={{ siswa.student_pickup_point.latitude }}, {{ siswa.student_pickup_point.longitude }}"
-                target="_blank" class="flex items-center gap-x-1 text-sm text-blue-500 underline">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                  stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M12 2.25c-3.727 0-6.75 2.878-6.75 6.422 0 4.078 4.5 10.54 6.152 12.773a.739.739 0 0 0 1.196 0c1.652-2.231 6.152-8.692 6.152-12.773 0-3.544-3.023-6.422-6.75-6.422Z">
-                  </path>
-                  <path d="M12 11.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z"></path>
-                </svg>
-                <span>Open in Google Maps</span>
-              </a>
-            </p>
-
-            <!-- School Point with Icon -->
-            <p class="text-sm mb-2">
-              <span class="font-medium text-gray-700">School Point : </span>
-              <a href="https://www.google.com/maps?q={{ siswa.school_point.latitude }}, {{ siswa.school_point.longitude }}"
-                target="_blank" class="flex items-center gap-x-1 text-sm text-blue-500 underline">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                  stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M12 2.25c-3.727 0-6.75 2.878-6.75 6.422 0 4.078 4.5 10.54 6.152 12.773a.739.739 0 0 0 1.196 0c1.652-2.231 6.152-8.692 6.152-12.773 0-3.544-3.023-6.422-6.75-6.422Z">
-                  </path>
-                  <path d="M12 11.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z"></path>
-                </svg>
-                <span>Open in Google Maps</span>
-              </a>
-            </p>
+          <div class="text-neutral-600 mt-3 group-open:animate-fadeIn px-2">
+            <!-- Additional details go here -->
           </div>
         </details>
       </div>
@@ -192,6 +146,7 @@
       <p>No data available</p>
     </div>
   </div>
+
 
 
   <!-- Emergency FAB Container -->

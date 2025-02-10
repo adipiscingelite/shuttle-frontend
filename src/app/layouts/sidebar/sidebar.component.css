@@ -1,3 +1,4 @@
-.sidebarActive{
-  @apply font-semibold text-white bg-black rounded-full shadow hover:bg-neutral-900 hover:shadow-lg
+
+.sidebarActive {
+  @apply font-semibold text-white bg-[#3A3A3A] rounded-lg hover:bg-neutral-700;
 }

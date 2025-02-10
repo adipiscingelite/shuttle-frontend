@@ -1,95 +1,130 @@
-<section class="relative flex flex-col md:flex-row w-screen h-screen  bg-white">
-  <div class="relative bg-white-500 h-screen w-full md:w-1/2 flex items-center justify-center">
-    <div
-      class="absolute top-36 md:top-10 left-1/2 -translate-x-1/2 w-1/4 h-[3px] bg-black border border-black rounded-full">
+<div #fullLoginPage id="fullLoginPage">
+  <div class="flex w-screen h-screen">
+    <!-- Left Side -->
+    <div class="w-[50%] h-screen relative hidden md:block">
+      <img class="w-full h-full object-cover object-bottom rounded-r-[5rem]"
+        src="https://i.pinimg.com/originals/9f/df/93/9fdf93860f9269c05411e27291a7b936.gif" alt="Background" />
+      <div class="absolute bottom-0 left-0 p-6 rounded-tr-lg">
+        <h1 class="text-4xl font-bold libre-caslon-display-font">Embrace the Challenge</h1>
+        <p class="mt-2 text-sm">Growth begins at the edge of your comfort zone. Keep moving forward.</p>
+      </div>
     </div>
-    <!-- <div>lorem</div> -->
-    <form (ngSubmit)="onLogin()" #loginForm="ngForm"
-      class="bg-[#FAFAFA] h-1/2 md:h-96 w-3/4 md:w-1/2 -translate-y-10 px-4 py-2 border border-neutral-200 rounded shadow-md flex flex-col">
-      <h1 class="my-4 text-2xl font-bold">Sign In for Woilah</h1>
-      <div class="mt-8 space-y-4">
-        <div>
-          <label class="font-semibold text-sm" for="email">Email</label>
-          <div class="shadow-md flex gap-2 items-center bg-white p-2 hover:shadow-lg rounded-md border" [ngClass]="{
-            'border-red-500 ring-red-500': emailField?.invalid && emailField?.touched,
-            'border-gray-300 focus-within:ring-blue-300': !emailField?.invalid || !emailField?.touched
-          }">
-            <svg class="mx-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-              <path d="M22 6l-10 7L2 6"></path>
-            </svg>
-            <input id="email" type="email" name="email" [(ngModel)]="loginData.email" #emailField="ngModel"
-              class="flex-1 text-sm focus:outline-none" placeholder="Enter your email" required />
+
+    <!-- Right Side -->
+    <div class="w-full md:w-[50%] h-screen px-10 md:py-5 py-[10%] flex flex-col items-center justify-between">
+      <!-- Logo -->
+      <a routerLink="/" class="flex items-center gap-x-3 w-full justify-center mb-10">
+        <img class="w-12 h-12 aspect-square object-cover rounded-full"
+          src="https://i.pinimg.com/474x/19/8b/17/198b1789c84abfa466e7dd388db5c16d.jpg" alt="Logo" />
+        <h1 class="text-2xl font-bold nunito-font">Woila</h1>
+      </a>
+
+      <!-- Welcome Text -->
+      <div class="text-center mb-6">
+        <h1 class="text-4xl font-bold libre-caslon-display-font">Welcome Back</h1>
+        <p class="text-sm nunito-font">Sign in to continue to your account</p>
+      </div>
+
+      <!-- Form -->
+      <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="w-full max-w-sm">
+        <div class="space-y-4">
+          <!-- Email Input -->
+          <div>
+            <label class="font-semibold text-sm" for="email">Email</label>
+            <div class="flex gap-2 items-center bg-gray-100 text-gray-600 p-2 rounded-md border border-gray-200"
+              [ngClass]="{
+              'border-red-500 ring-red-500': emailField?.invalid && emailField?.touched,
+              'border-gray-300 focus-within:ring-blue-300': !emailField?.invalid || !emailField?.touched
+            }">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <path d="M22 6l-10 7L2 6"></path>
+              </svg>
+              <input id="email" type="email" name="email" [(ngModel)]="loginData.email" #emailField="ngModel"
+                class="flex-1 text-sm bg-transparent focus:outline-none" placeholder="Enter your email" required />
+            </div>
+
+            <div class="text-xs text-red-500 min-h-[8px]">
+              <div *ngIf="emailField.invalid && emailField.touched">
+                Email is required.
+              </div>
+            </div>
           </div>
-          <div class="text-xs text-red-500 min-h-[8px]">
-            <div *ngIf="emailField.invalid && emailField.touched">
-              Email is required.
+
+          <!-- Password Input -->
+          <div>
+            <label class="font-semibold text-sm" for="password">Password</label>
+            <div class="flex gap-2 items-center bg-gray-100 text-gray-600 p-2 rounded-md border border-gray-200"
+              [ngClass]="{'border-red-500 ring-red-500': passwordField?.invalid && passwordField?.touched,'border-gray-300 focus-within:ring-blue-300': !passwordField?.invalid || !passwordField?.touched}">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15.75 9.75V5.297a3.75 3.75 0 0 0-7.5 0V9.75"></path>
+                <path
+                  d="M17.25 9.75H6.75A2.25 2.25 0 0 0 4.5 12v8.25a2.25 2.25 0 0 0 2.25 2.25h10.5a2.25 2.25 0 0 0 2.25-2.25V12a2.25 2.25 0 0 0-2.25-2.25Z">
+                </path>
+              </svg>
+              <input id="password" type="password" name="password" [(ngModel)]="loginData.password"
+                #passwordField="ngModel" class="flex-1 text-sm bg-transparent focus:outline-none" placeholder="••••••••"
+                required />
+            </div>
+
+            <div class="text-xs text-red-500 min-h-[8px]">
+              <div *ngIf="passwordField.invalid && passwordField.touched">
+                Password is required.
+              </div>
+              <div *ngIf="errorMessage">{{ errorMessage }}</div>
             </div>
           </div>
         </div>
 
-        <div>
-          <label class="font-semibold text-sm" for="Password">Password</label>
-          <div class="shadow-md flex gap-2 items-center bg-white p-2 hover:shadow-lg rounded-md border"
-            [ngClass]="{'border-red-500 ring-red-500': passwordField?.invalid && passwordField?.touched,'border-gray-300 focus-within:ring-blue-300': !passwordField?.invalid || !passwordField?.touched}">
-            <svg class="mx-1 w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M15.75 9.75V5.297a3.75 3.75 0 0 0-7.5 0V9.75"></path>
-              <path
-                d="M17.25 9.75H6.75A2.25 2.25 0 0 0 4.5 12v8.25a2.25 2.25 0 0 0 2.25 2.25h10.5a2.25 2.25 0 0 0 2.25-2.25V12a2.25 2.25 0 0 0-2.25-2.25Z">
-              </path>
-            </svg>
-            <input id="password" type="password" name="password" [(ngModel)]="loginData.password"
-              #passwordField="ngModel" class="flex-1 text-sm focus:outline-none" placeholder="••••••••"
-              autocomplete="on" required />
-          </div>
-          <div class="text-xs text-red-500 min-h-[8px]">
-            <div *ngIf="passwordField.invalid && passwordField.touched">
-              Password is required.
+        <!-- Remember Me and Forgot Password -->
+        <div class="flex items-center justify-between mt-2 mb-12">
+          <label for="remember" class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+            <input id="remember" type="checkbox" class="peer hidden" (change)="takeScreenshot()" />
+            <div
+              class="h-4 w-4 rounded-md border border-gray-200 bg-gray-200 peer-checked:bg-black flex items-center justify-center">
+              <svg class="w-3 h-3 text-white hidden peer-checked:block" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
             </div>
-            <div *ngIf="errorMessage">{{ errorMessage }}</div>
-          </div>
-          <!-- <div *ngIf="loginForm.invalid" class="text-sm text-red-500">
-            Please fill out all required fields correctly.
-          </div> -->
+            Remember me
+          </label>
+          <div  (click)="forgor()" class="text-xs text-blue-600 hover:underline outline-none cursor-pointer">Forgot password?</div>
         </div>
-      </div>
 
+        <!-- Sign In Button -->
+        <button type="submit" class="w-full bg-black text-white text-sm font-medium rounded-lg py-2 hover:bg-gray-800">
+          Sign In
+        </button>
 
-      <div class="relative w-full my-2 px-2 py-1 flex items-center">
-        <!-- <div class="w-"> -->
-        <label for="hr" class="flex flex-row items-center gap-2 dark:text-white light:text-black cursor-pointer">
-          <input id="hr" type="checkbox" class="peer hidden" />
-          <div for="hr"
-            class="h-5 w-5 flex rounded-md border border-[#94949433] bg-[#e8e8e8] peer-checked:bg-[#2a1f55] transition">
-            <svg fill="none" viewBox="0 0 24 24" class="w-5 h-5 light:stroke-[#e8e8e8] dark:stroke-[#212121]"
-              xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 12.6111L8.92308 17.5L20 6.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              </path>
-            </svg>
-          </div>
-          <p class="text-xs text-gray-600">Remember me</p>
-        </label>
+        <!-- Sign In with Other Options -->
+        <button aria-label="Continue with google" role="button"
+          class="py-2 px-4 border border-gray-300 text-sm font-medium rounded-lg flex items-center justify-center w-full mt-2">
+          <svg class="w-5 aspect-square" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M18.9892 10.1871C18.9892 9.36767 18.9246 8.76973 18.7847 8.14966H9.68848V11.848H15.0277C14.9201 12.767 14.3388 14.1512 13.047 15.0812L13.0289 15.205L15.905 17.4969L16.1042 17.5173C17.9342 15.7789 18.9892 13.221 18.9892 10.1871Z"
+              fill="#4285F4" />
+            <path
+              d="M9.68813 19.9314C12.3039 19.9314 14.4999 19.0455 16.1039 17.5174L13.0467 15.0813C12.2286 15.6682 11.1306 16.0779 9.68813 16.0779C7.12612 16.0779 4.95165 14.3395 4.17651 11.9366L4.06289 11.9465L1.07231 14.3273L1.0332 14.4391C2.62638 17.6946 5.89889 19.9314 9.68813 19.9314Z"
+              fill="#34A853" />
+            <path
+              d="M4.17667 11.9366C3.97215 11.3165 3.85378 10.6521 3.85378 9.96562C3.85378 9.27905 3.97215 8.6147 4.16591 7.99463L4.1605 7.86257L1.13246 5.44363L1.03339 5.49211C0.37677 6.84302 0 8.36005 0 9.96562C0 11.5712 0.37677 13.0881 1.03339 14.4391L4.17667 11.9366Z"
+              fill="#FBBC05" />
+            <path
+              d="M9.68807 3.85336C11.5073 3.85336 12.7344 4.66168 13.4342 5.33718L16.1684 2.59107C14.4892 0.985496 12.3039 0 9.68807 0C5.89885 0 2.62637 2.23672 1.0332 5.49214L4.16573 7.99466C4.95162 5.59183 7.12608 3.85336 9.68807 3.85336Z"
+              fill="#EB4335" />
+          </svg>
+          <p class="text-sm font-medium ml-4 text-gray-700">Continue with Google</p>
+        </button>
 
-        <div (click)="forgor()" class="ml-auto text-xs text-blue-600">Forgot password?</div>
-      </div>
-      <!-- </div> -->
-
-
-      <button type="submit" [disabled]="loginForm.invalid"
-        class="mt-auto mx-auto mb-8 md:mb-4 select-none cursor-pointer w-1/2 md:w-auto relative text-center rounded-md shadow bg-black hover:bg-neutral-700 hover:shadow-md text-white  px-8 py-1">
-        Login
-      </button>
-    </form>
+        <!-- Register -->
+        <div class="mt-12 text-center">
+          <p class="text-sm">
+            Don't have an account? <a routerLink="/register" class="text-blue-600 hover:underline">Register</a>
+          </p>
+        </div>
+      </form>
+    </div>
   </div>
-  <div class="hidden relative bg-[#3A3A3A] h-screen w-1/2 md:flex items-center justify-center z-50">
-    <img class="h-1/2 aspect-square object-fill"
-      src="https://i.pinimg.com/474x/f8/f7/f5/f8f7f50064d8fe03d2c211427ee28666.jpg" alt="">
-    <!-- <h1 class="text-white">Woilah</h1> -->
-  </div>
-
-
-  <div class="absolute left-0 bottom-0 select-none">
-    <img class="w-screen h-32" src="/img/wave (1).png" alt="">
-  </div>
-</section>
+</div>

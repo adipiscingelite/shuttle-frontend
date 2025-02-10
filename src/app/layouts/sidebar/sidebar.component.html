@@ -58,13 +58,13 @@
           </h2>
           <nav class="space-y-1">
             <div *ngFor="let item of section.items"
-              class="px-2 py-1 rounded-md text-sm text-black font-medium hover:bg-stone-50 hover:rounded-full"
+              class="px-2 py-1 rounded-md text-sm text-black font-medium hover:bg-gray-50 hover:rounded-lg"
               routerLinkActive="sidebarActive">
               <!-- Menampilkan item jika cocok dengan pencarian -->
               <div *ngIf="matchesSearch(item)">
                 <a [routerLink]="item.path" (click)="onNavigate()">
                   <div class="flex items-center space-x-1 px-2">
-                    <span class="material-icons" [innerHTML]="getSvgIcon(item.icon)"></span>
+                    <span class="" [innerHTML]="getSvgIcon(item.icon)"></span>
                     <p class="block px-3 py-2 rounded-md capitalize">
                       {{ item.name }}
                     </p>

@@ -30,6 +30,7 @@ import { RoutesComponent } from './content/Admin/list-routes/routes.component';
 import { VehiclesAdminComponent } from './content/Admin/list-vehicles/vehicles.component';
 import { DriverManagementComponent } from './content/Admin/driver-management/driver-management.component';
 import { TripReportComponent } from './content/Driver/trip-report/trip-report.component';
+import { RegisterComponent } from './auth/register/register.component';
 
 const superAdminChildrenRoutes: Route[] = [
   {
@@ -227,6 +228,11 @@ export const routes: Routes = [
     component: LoginComponent,
 
     // Digunakan untuk mencegah user yg memiliki token untuk mengakses /login
+    canActivate: [GuestGuard],
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
     canActivate: [GuestGuard],
   },
   {

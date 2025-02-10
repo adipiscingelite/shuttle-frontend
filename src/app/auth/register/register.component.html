@@ -1,0 +1,247 @@
+<div class="flex flex-row-reverse w-screen h-screen">
+  <!-- Right Side: Image and Motivation -->
+  <div class="w-[50%] h-screen relative hidden md:block">
+    <img class="w-full h-full object-cover object-center rounded-l-[5rem]"
+      src="https://i.pinimg.com/originals/6e/43/d3/6e43d3706a0bc3174710409a74b0ab9b.gif" alt="Background" />
+    <div class="absolute bottom-0 right-0 p-6 text-right rounded-tl-lg">
+      <h1 class="text-4xl font-bold libre-caslon-display-font">Start Your Journey</h1>
+      <p class="mt-2 text-sm">Your role defines the experience. Let's get started!</p>
+    </div>
+  </div>
+
+  <!-- Left Side: Registration Process -->
+  <div class="w-full md:w-[50%] h-screen px-10 py-5 flex flex-col justify-between">
+    <!-- Logo -->
+    <a routerLink="/" class="flex items-center gap-x-3 w-full justify-center mb-10">
+      <img class="w-12 h-12 aspect-square object-cover rounded-full"
+        src="https://i.pinimg.com/474x/19/8b/17/198b1789c84abfa466e7dd388db5c16d.jpg" alt="Logo" />
+      <h1 class="text-2xl font-bold nunito-font">Woila</h1>
+    </a>
+
+    <!-- Progress Indicator -->
+    <div class="flex items-center justify-between mb-10">
+      <div class="flex-1 text-center">
+        <div class=" text-xs font-semibold"
+          [class]="step >= 1 ? 'w-7 h-7 mx-auto rounded-full bg-green-800 text-white flex items-center justify-center' : 'w-7 h-7 mx-auto rounded-full bg-gray-200 text-gray-600 flex items-center justify-center'">
+          1
+        </div>
+        <p class="mt-2 text-sm">Choose User</p>
+      </div>
+      <div class="flex-1 h-0.5" [class.bg-gray-300]="step < 2" [class.bg-black]="step >= 2"></div>
+      <div class="flex-1 text-center">
+        <div class=" text-xs font-semibold"
+          [class]="step >= 2 ? 'w-7 h-7 mx-auto rounded-full bg-green-800 text-white flex items-center justify-center' : 'w-7 h-7 mx-auto rounded-full bg-gray-200 text-gray-600 flex items-center justify-center'">
+          2
+        </div>
+        <p class="mt-2 text-sm">Fill Form</p>
+      </div>
+      <div class="flex-1 h-0.5" [class.bg-gray-300]="step < 3" [class.bg-black]="step >= 3"></div>
+      <div class="flex-1 text-center">
+        <div class=" text-xs font-semibold"
+          [class]="step >= 3 ? 'w-7 h-7 mx-auto rounded-full bg-green-800 text-white flex items-center justify-center' : 'w-7 h-7 mx-auto rounded-full bg-gray-200 text-gray-600 flex items-center justify-center'">
+          3
+        </div>
+        <p class="mt-2 text-sm">Success</p>
+      </div>
+      <div class="flex-1 h-0.5" [class.bg-gray-300]="step < 4" [class.bg-black]="step >= 4"></div>
+      <div class="flex-1 text-center">
+        <div class=" text-xs font-semibold"
+          [class]="step >= 4 ? 'w-7 h-7 mx-auto rounded-full bg-green-800 text-white flex items-center justify-center' : 'w-7 h-7 mx-auto rounded-full bg-gray-200 text-gray-600 flex items-center justify-center'">
+          4
+        </div>
+        <p class="mt-2 text-sm">Success</p>
+      </div>
+    </div>
+
+    <!-- Dynamic Content (Per Step) -->
+    <div class="flex-1 mt-1  nunito-font">
+      <!-- Step 1: Choose User -->
+      <div *ngIf="step === 1" class="grid grid-cols-3 gap-4">
+        <!-- Title and Description -->
+        <div class="col-span-3 text-center mb-6">
+          <h1 class="text-3xl font-bold libre-caslon-display-font">Choose Your Role</h1>
+          <p class="mt-2 text-sm text-gray-600">Select a role to begin your registration. Choose whether you're a School
+            Admin, Parent, or Driver.</p>
+        </div>
+
+        <div
+          class="p-4 border border-gray-300 rounded-lg text-center cursor-pointer hover:shadow-lg hover:bg-blue-50 hover:border-blue-400 hover:scale-[101%] select-none"
+          [class.border-black]="selectedUserType === 'School'" (click)="selectUserType('School')">
+          <img src="assets/images/back-to-school.png" alt="School" class="w-20 h-20 mx-auto">
+          <h3 class="mt-4 text-lg font-semibold">School Admin</h3>
+        </div>
+        <div
+          class="p-4 border border-gray-300 rounded-lg text-center cursor-pointer hover:shadow-lg hover:bg-blue-50 hover:border-blue-400 hover:scale-[101%] select-none"
+          [class.border-black]="selectedUserType === 'Parent'" (click)="selectUserType('Parent')">
+          <img src="https://cdn-icons-png.flaticon.com/128/4395/4395700.png" alt="Parent" class="w-20 h-20 mx-auto">
+          <h3 class="mt-4 text-lg font-semibold">Parent</h3>
+        </div>
+        <div
+          class="p-4 border border-gray-300 rounded-lg text-center cursor-pointer hover:shadow-lg hover:bg-blue-50 hover:border-blue-400 hover:scale-[101%] select-none"
+          [class.border-black]="selectedUserType === 'Driver'" (click)="selectUserType('Driver')">
+          <img src="assets/images/license.png" alt="Driver" class="w-20 h-20 mx-auto">
+          <h3 class="mt-4 text-lg font-semibold">Driver</h3>
+        </div>
+      </div>
+
+      <div>
+        <!-- Step 2 -->
+        <div *ngIf="step === 2" class="text-center">
+          <h3 class="text-2xl font-bold text-gray-800">Step 2: Details</h3>
+          <p class="text-sm mt-2 text-gray-600">Provide specific details below.</p>
+
+          <!-- Form untuk School -->
+          <div *ngIf="selectedUserType === 'School'" class="mt-4 space-y-3 text-left">
+            <div>
+              <label class="font-semibold block mb-1">School Name</label>
+              <input type="text" [(ngModel)]="schoolData.schoolName" class="w-full p-2 border rounded-lg"
+                placeholder="Enter School Name" />
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">School Address</label>
+              <input type="text" [(ngModel)]="schoolData.schoolAddress" class="w-full p-2 border rounded-lg"
+                placeholder="Enter School Address" />
+            </div>
+          </div>
+
+          <!-- Form untuk Driver -->
+          <div *ngIf="selectedUserType === 'Driver'" class="mt-4 space-y-3 text-left">
+            <div>
+              <label class="font-semibold block mb-1">Car Model</label>
+              <input type="text" [(ngModel)]="driverData.carModel" class="w-full p-2 border rounded-lg"
+                placeholder="Enter Car Model" />
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">License Plate</label>
+              <input type="text" [(ngModel)]="driverData.licensePlate" class="w-full p-2 border rounded-lg"
+                placeholder="Enter License Plate" />
+            </div>
+          </div>
+
+          <!-- Form untuk Parent -->
+          <div *ngIf="selectedUserType === 'Parent'" class="mt-4 space-y-3 text-left">
+            <div>
+              <label class="font-semibold block mb-1">Select School</label>
+              <select [(ngModel)]="parentData.childSchool" class="w-full p-2 border rounded-lg">
+                <option *ngFor="let school of schools" [value]="school">{{ school }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">Child's Name</label>
+              <input type="text" [(ngModel)]="parentData.childName" class="w-full p-2 border rounded-lg"
+                placeholder="Enter Child's Name" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div *ngIf="step === 3" class="text-center">
+          <h3 class="text-2xl font-bold text-gray-800">Step 3: Your Account</h3>
+          <p class="text-sm mt-2 text-gray-600">Complete your profile details below.</p>
+
+          <!-- Form untuk School -->
+          <div *ngIf="selectedUserType === 'School'" class="mt-4 space-y-3 text-left">
+            <div>
+              <label class="font-semibold block mb-1">Admin Name</label>
+              <input type="text" [(ngModel)]="schoolData.adminName" class="w-full p-2 border rounded-lg"
+                placeholder="Enter Admin Name" />
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">Email Address</label>
+              <input type="email" [(ngModel)]="schoolData.adminEmail" class="w-full p-2 border rounded-lg"
+                placeholder="Enter Email Address" />
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">Password</label>
+              <input type="password" [(ngModel)]="schoolData.adminPassword" class="w-full p-2 border rounded-lg"
+                placeholder="Enter Password" />
+            </div>
+          </div>
+
+          <!-- Form untuk Driver -->
+          <div *ngIf="selectedUserType === 'Driver'" class="mt-4 space-y-3 text-left">
+            <div>
+              <label class="font-semibold block mb-1">Driver Name</label>
+              <input type="text" [(ngModel)]="driverData.driverName" class="w-full p-2 border rounded-lg"
+                placeholder="Enter Driver Name" />
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">Email Address</label>
+              <input type="email" [(ngModel)]="driverData.driverEmail" class="w-full p-2 border rounded-lg"
+                placeholder="Enter Email Address" />
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">Password</label>
+              <input type="password" [(ngModel)]="driverData.driverPassword" class="w-full p-2 border rounded-lg"
+                placeholder="Enter Password" />
+            </div>
+          </div>
+
+          <!-- Form untuk Parent -->
+          <div *ngIf="selectedUserType === 'Parent'" class="mt-4 space-y-3 text-left">
+            <div>
+              <label class="font-semibold block mb-1">Parent Name</label>
+              <input type="text" [(ngModel)]="parentData.parentName" class="w-full p-2 border rounded-lg"
+                placeholder="Enter Parent Name" />
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">Email Address</label>
+              <input type="email" [(ngModel)]="parentData.parentEmail" class="w-full p-2 border rounded-lg"
+                placeholder="Enter Email Address" />
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">Password</label>
+              <input type="password" [(ngModel)]="parentData.parentPassword" class="w-full p-2 border rounded-lg"
+                placeholder="Enter Password" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Step 3: Success -->
+      <div *ngIf="step === 4" class="text-center">
+        <h3 class="text-2xl font-bold text-green-600">Registration Successful!</h3>
+        <p class="text-sm mt-2">You can now log in to your account.</p>
+      </div>
+    </div>
+
+    <!-- Back or Submit Button -->
+    <div class="flex items-center gap-x-3 mt-10">
+      <button *ngIf="step === 2 || step === 3"
+        class="w-full bg-gray-100 text-black text-sm font-medium rounded-lg py-2 border border-gray-300 hover:bg-gray-300 cursor-pointer"
+        (click)="goBack()">
+        Back
+      </button>
+      <button *ngIf="step === 2"
+        class="w-full bg-black text-white text-sm font-medium rounded-lg py-2 hover:bg-gray-800 cursor-pointer"
+        (click)="nextStep()">
+        Next
+      </button>
+      <button *ngIf="step === 3"
+        class="w-full bg-black text-white text-sm font-medium rounded-lg py-2 hover:bg-gray-800 cursor-pointer"
+        (click)="submitForm()">
+        Submit
+      </button>
+
+      <!-- Login Button -->
+      <a *ngIf="step === 4" routerLink="/login"
+        class="block w-full text-center bg-black text-white text-sm font-medium rounded-lg py-2 hover:bg-gray-800">
+        Go to Login
+      </a>
+    </div>
+
+    <div class="flex items-center justify-center gap-x-2 mt-6 capitalize text-gray-500 text-sm cursor-pointer">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M8.228 9c.549-1.165 2.03-2 3.771-2 2.21 0 4 1.343 4 3 0 1.4-1.277 2.575-3.006 2.907-.542.104-.994.54-.994 1.093">
+        </path>
+        <path d="M12 17h.01"></path>
+        <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+      </svg>
+      help
+    </div>
+  </div>
+
+</div>

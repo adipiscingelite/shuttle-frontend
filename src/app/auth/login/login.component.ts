@@ -1,16 +1,17 @@
-import { Component, Inject } from '@angular/core';
+import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import axios from 'axios';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { ProfileService } from '../../core/services/profile/profile.service';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -31,7 +32,7 @@ export class LoginComponent {
     private profileService: ProfileService,
     private cookieService: CookieService,
     private router: Router,
-    @Inject('apiUrl') apiUrl: string
+    @Inject('apiUrl') apiUrl: string,
   ) {
     this.apiUrl = apiUrl;
   }
@@ -70,8 +71,7 @@ export class LoginComponent {
         this.cookieService.set('refreshToken', refresh_token);
 
         try {
-          
-        const profileData = await this.profileService.fetchProfileData();
+          const profileData = await this.profileService.fetchProfileData();
           // const fetchRoleCode = await axios.get(
           //   `${this.apiUrl}/api/my/profile`,
           //   {
@@ -79,7 +79,7 @@ export class LoginComponent {
           //   }
           // );
 
-          const roleCode = profileData.user_role_code;      
+          const roleCode = profileData.user_role_code;
 
           switch (roleCode) {
             case 'SA':
@@ -100,7 +100,6 @@ export class LoginComponent {
           }
 
           console.log('saat login', roleCode);
-          
         } catch (error) {
           console.error('Error fetching profile:', error);
           Swal.fire({
@@ -123,5 +122,19 @@ export class LoginComponent {
 
   forgor() {
     alert('passwordnya 12345678 kalo ga salah');
+  }
+
+  @ViewChild('fullLoginPage') fullLoginPage!: ElementRef;
+
+  takeScreenshot() {
+    if (!this.fullLoginPage) return;
+
+    html2canvas(this.fullLoginPage.nativeElement).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = imgData;
+      link.download = 'screenshot.png';
+      link.click();
+    });
   }
 }
