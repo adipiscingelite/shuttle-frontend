@@ -150,33 +150,66 @@ export class RouteManagementComponent {
   }
 
   private generateRoute() {
-    // Get driver location
+    // Pastikan peta sudah diinisialisasi
+    if (!this.map) {
+      console.error("Peta belum diinisialisasi!");
+      return;
+    }
+  
+    // Dapatkan lokasi driver
     const driverLatLng = this.marker?.getLatLng();
-
-    if (driverLatLng) {
-      // Route stops array, start with driver's position
-      const routeStops: L.LatLng[] = [driverLatLng];
-
-      // Add students' pickup points in order of student_order
-      this.rowContohLokasiAnak.forEach((student) => {
-        const { latitude, longitude } = student.student_pickup_point;
+    if (!driverLatLng) {
+      console.error("Lokasi driver tidak tersedia!");
+      return;
+    }
+  
+    // Pastikan data siswa tersedia
+    if (!this.rowContohLokasiAnak || this.rowContohLokasiAnak.length === 0) {
+      console.error("Data lokasi siswa tidak tersedia!");
+      return;
+    }
+  
+    // Array untuk menyimpan titik-titik rute, dimulai dengan lokasi driver
+    const routeStops: L.LatLng[] = [driverLatLng];
+  
+    // Tambahkan titik penjemputan siswa
+    this.rowContohLokasiAnak.forEach((student) => {
+      const { latitude, longitude } = student.student_pickup_point;
+      if (latitude && longitude) { // Pastikan koordinat valid
         routeStops.push(L.latLng(latitude, longitude));
-      });
-
-      // Add the school location at the end
-      const { latitude, longitude } = this.rowContohLokasiAnak[0].school_point; // Assuming school is the same for all students
-      routeStops.push(L.latLng(latitude, longitude));
-
-      // Initialize the routing control
+      } else {
+        console.warn(`Koordinat tidak valid untuk siswa: ${student}`);
+      }
+    });
+  
+    // Tambahkan lokasi sekolah di akhir
+    const schoolPoint = this.rowContohLokasiAnak[0]?.school_point;
+    if (!schoolPoint || !schoolPoint.latitude || !schoolPoint.longitude) {
+      console.error("Lokasi sekolah tidak tersedia atau tidak valid!");
+      return;
+    }
+    routeStops.push(L.latLng(schoolPoint.latitude, schoolPoint.longitude));
+  
+    // Pastikan ada minimal 2 titik untuk rute
+    if (routeStops.length < 2) {
+      console.error("Rute membutuhkan minimal 2 titik!");
+      return;
+    }
+  
+    // Debugging: Cetak waypoints
+    console.log("Waypoints untuk rute:", routeStops);
+  
+    // Inisialisasi kontrol rute
+    try {
       L.Routing.control({
-        waypoints: routeStops, // Stops for the route
-        routeWhileDragging: false, // Enable dragging of route while creating
-        // Optionally, disable markers for each stop if you don't need them
-        // createRouteMarker: () => null,  // Disable route markers entirely
-      }).addTo(this.map!);
+        waypoints: routeStops,
+        routeWhileDragging: false,
+      }).addTo(this.map);
+    } catch (error) {
+      console.error("Error saat membuat rute:", error);
     }
   }
-
+  
   private calculateTotalDistance(): void {
     if (!this.marker || this.rowContohLokasiAnak.length === 0) {
       this.totalDistance = 0;
