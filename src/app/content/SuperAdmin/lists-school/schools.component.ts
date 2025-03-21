@@ -1,9 +1,7 @@
-// ANGULAR
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-// THIRD-PARTY LIBRARIES
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { CookieService } from 'ngx-cookie-service';
@@ -11,13 +9,11 @@ import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import * as L from 'leaflet';
 
-// COMPONENTS
 import { HeaderComponent } from '@layouts/header/header.component';
 import { AsteriskComponent } from '@shared/components/asterisk/asterisk.component';
 import { RequiredCommonComponent } from '@shared/components/required-common/required-common.component';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
-// SHARED
 import { Response, School } from '@core/interfaces';
 
 import { ToastService } from '@core/services/toast/toast.service';
@@ -65,7 +61,6 @@ export class SchoolsComponent implements OnInit {
   school_latitude: number | null = null;
   school_longitude: number | null = null;
 
-  // for map
   googleMapUrl: string = '';
 
   isLoading: boolean = false;
@@ -103,7 +98,7 @@ export class SchoolsComponent implements OnInit {
   gridOptions = {
     ensureDomOrder: true,
     pagination: true,
-    // paginationPageSize: 10,
+
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
     suppressMovable: true,
@@ -117,7 +112,6 @@ export class SchoolsComponent implements OnInit {
     {
       headerName: 'No.',
       valueGetter: (params: any) => {
-        // Hitung nomor urut berdasarkan posisi pagination
         return (
           (this.paginationPage - 1) * this.paginationItemsLimit +
           (params.node.rowIndex + 1)
@@ -131,7 +125,7 @@ export class SchoolsComponent implements OnInit {
     { headerName: 'School Address', field: 'school_address' },
     { headerName: 'School Phone', field: 'school_contact' },
     { headerName: 'School Email', field: 'school_email' },
-    // { field: 'school_description' },
+
     {
       headerName: 'Actions',
       headerClass: 'justify-center',
@@ -292,12 +286,9 @@ export class SchoolsComponent implements OnInit {
   }
 
   onSortChanged(event: any) {
-    console.log('onSortChanged event:', event);
-
     if (event && event.columns && event.columns.length > 0) {
       event.columns.forEach((column: any) => {
         const colId = column.colId;
-        console.log('Sorting column ID:', colId);
 
         if (!this.columnClickCount[colId]) {
           this.columnClickCount[colId] = 0;
@@ -340,8 +331,6 @@ export class SchoolsComponent implements OnInit {
           (_, i) => i + 1,
         );
         this.showing = response.data.data.meta.showing;
-
-        console.log(response);
 
         this.isLoading = false;
 
@@ -417,7 +406,6 @@ export class SchoolsComponent implements OnInit {
       })
       .then((response) => {
         const editData = response.data.data;
-        console.log('school edit', editData);
 
         this.school_uuid = editData.school_uuid;
         this.school_name = editData.school_name;
@@ -588,28 +576,21 @@ export class SchoolsComponent implements OnInit {
   }
 
   private getCoordinateByMap(): void {
-    console.log('plis');
-
-    // if ('geolocation' in navigator) {
-    // Reset map jika sudah ada
     if (this.map) {
-      this.map.remove(); // Menghapus map lama
-      this.map = undefined; // Menghapus referensi map
+      this.map.remove();
+      this.map = undefined;
     }
 
-    // Start watching the position
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
 
-        // Update coordinates on the page
         const coordinatesElement = document.getElementById('coordinates');
         if (coordinatesElement) {
           coordinatesElement.textContent = `Latitude: ${lat}, Longitude: ${lon}`;
         }
 
-        // Update the map and marker
         this.map = L.map('map').setView(
           [-7.76131921887155, 110.36293728044329],
           12,
@@ -622,18 +603,16 @@ export class SchoolsComponent implements OnInit {
           const clickedLat = e.latlng.lat;
           const clickedLng = e.latlng.lng;
 
-          // Update marker position
           if (this.marker) {
             this.marker.setLatLng([clickedLat, clickedLng]);
           } else {
             this.marker = L.marker([clickedLat, clickedLng]).addTo(this.map!);
           }
 
-          // Update form inputs
           this.school_latitude = clickedLat;
           this.school_longitude = clickedLng;
         });
-        // Set loading status to false after location is retrieved
+
         this.isLoading = false;
       },
       (error) => {
@@ -644,24 +623,13 @@ export class SchoolsComponent implements OnInit {
           coordinatesElement.textContent = 'Unable to detect location.';
         }
 
-        // Set loading status to false if there's an error
         this.isLoading = false;
       },
       {
-        enableHighAccuracy: true, // Use high-accuracy mode if available
-        maximumAge: 0, // Prevent using cached location
-        timeout: 10000, // Timeout after 10 seconds if no location is retrieved
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000,
       },
     );
-    // } else {
-    //   const coordinatesElement = document.getElementById('coordinates');
-    //   if (coordinatesElement) {
-    //     coordinatesElement.textContent =
-    //       'Geolocation is not supported by your browser.';
-    //   }
-
-    //   // Set loading status to false if geolocation is not supported
-    //   this.isLoading = false;
-    // }
   }
 }

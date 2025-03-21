@@ -1,5 +1,5 @@
 <div class="flex flex-row-reverse w-screen h-screen">
-  <!-- Right Side: Image and Motivation -->
+
   <div class="w-[50%] h-screen relative hidden md:block">
     <img class="w-full h-full object-cover object-center rounded-l-[5rem]"
       src="https://i.pinimg.com/originals/6e/43/d3/6e43d3706a0bc3174710409a74b0ab9b.gif" alt="Background" />
@@ -9,16 +9,16 @@
     </div>
   </div>
 
-  <!-- Left Side: Registration Process -->
+
   <div class="w-full md:w-[50%] h-screen px-10 py-5 flex flex-col justify-between">
-    <!-- Logo -->
+
     <a routerLink="/" class="flex items-center gap-x-3 w-full justify-center mb-10">
       <img class="w-12 h-12 aspect-square object-cover rounded-full"
         src="https://i.pinimg.com/474x/19/8b/17/198b1789c84abfa466e7dd388db5c16d.jpg" alt="Logo" />
       <h1 class="text-2xl font-bold nunito-font">Woila</h1>
     </a>
 
-    <!-- Progress Indicator -->
+
     <div class="flex items-center justify-between mb-10">
       <div class="flex-1 text-center">
         <div class=" text-xs font-semibold"
@@ -53,11 +53,11 @@
       </div>
     </div>
 
-    <!-- Dynamic Content (Per Step) -->
+
     <div class="flex-1 mt-1  nunito-font">
-      <!-- Step 1: Choose User -->
+
       <div *ngIf="step === 1" class="grid grid-cols-3 gap-4">
-        <!-- Title and Description -->
+
         <div class="col-span-3 text-center mb-6">
           <h1 class="text-3xl font-bold libre-caslon-display-font">Choose Your Role</h1>
           <p class="mt-2 text-sm text-gray-600">Select a role to begin your registration. Choose whether you're a School
@@ -85,12 +85,12 @@
       </div>
 
       <div>
-        <!-- Step 2 -->
+
         <div *ngIf="step === 2" class="text-center">
           <h3 class="text-2xl font-bold text-gray-800">Step 2: Details</h3>
           <p class="text-sm mt-2 text-gray-600">Provide specific details below.</p>
 
-          <!-- Form untuk School -->
+
           <div *ngIf="selectedUserType === 'School'" class="mt-4 space-y-3 text-left">
             <div>
               <label class="font-semibold block mb-1">School Name</label>
@@ -104,7 +104,7 @@
             </div>
           </div>
 
-          <!-- Form untuk Driver -->
+
           <div *ngIf="selectedUserType === 'Driver'" class="mt-4 space-y-3 text-left">
             <div>
               <label class="font-semibold block mb-1">Car Model</label>
@@ -118,7 +118,7 @@
             </div>
           </div>
 
-          <!-- Form untuk Parent -->
+
           <div *ngIf="selectedUserType === 'Parent'" class="mt-4 space-y-3 text-left">
             <div>
               <label class="font-semibold block mb-1">Select School</label>
@@ -134,12 +134,12 @@
           </div>
         </div>
 
-        <!-- Step 3 -->
+
         <div *ngIf="step === 3" class="text-center">
           <h3 class="text-2xl font-bold text-gray-800">Step 3: Your Account</h3>
           <p class="text-sm mt-2 text-gray-600">Complete your profile details below.</p>
 
-          <!-- Form untuk School -->
+
           <div *ngIf="selectedUserType === 'School'" class="mt-4 space-y-3 text-left">
             <div>
               <label class="font-semibold block mb-1">Admin Name</label>
@@ -158,7 +158,7 @@
             </div>
           </div>
 
-          <!-- Form untuk Driver -->
+
           <div *ngIf="selectedUserType === 'Driver'" class="mt-4 space-y-3 text-left">
             <div>
               <label class="font-semibold block mb-1">Driver Name</label>
@@ -177,7 +177,7 @@
             </div>
           </div>
 
-          <!-- Form untuk Parent -->
+
           <div *ngIf="selectedUserType === 'Parent'" class="mt-4 space-y-3 text-left">
             <div>
               <label class="font-semibold block mb-1">Parent Name</label>
@@ -199,14 +199,14 @@
       </div>
 
 
-      <!-- Step 3: Success -->
+
       <div *ngIf="step === 4" class="text-center">
         <h3 class="text-2xl font-bold text-green-600">Registration Successful!</h3>
         <p class="text-sm mt-2">You can now log in to your account.</p>
       </div>
     </div>
 
-    <!-- Back or Submit Button -->
+
     <div class="flex items-center gap-x-3 mt-10">
       <button *ngIf="step === 2 || step === 3"
         class="w-full bg-gray-100 text-black text-sm font-medium rounded-lg py-2 border border-gray-300 hover:bg-gray-300 cursor-pointer"
@@ -224,7 +224,7 @@
         Submit
       </button>
 
-      <!-- Login Button -->
+
       <a *ngIf="step === 4" routerLink="/login"
         class="block w-full text-center bg-black text-white text-sm font-medium rounded-lg py-2 hover:bg-gray-800">
         Go to Login

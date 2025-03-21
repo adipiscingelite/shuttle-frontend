@@ -1,20 +1,16 @@
-// ANGULAR
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-// THIRD PARTY
 import { AgGridAngular } from 'ag-grid-angular';
 import { CookieService } from 'ngx-cookie-service';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import axios from 'axios';
 
-// COMPONENTS
 import { HeaderComponent } from '@layouts/header/header.component';
 import { AsteriskComponent } from '@shared/components/asterisk/asterisk.component';
 import { RequiredCommonComponent } from '@shared/components/required-common/required-common.component';
 
-// SHARED
 import { Response, Vehicle } from '@core/interfaces';
 import { ToastService } from '@core/services/toast/toast.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
@@ -94,7 +90,7 @@ export class VehiclesComponent implements OnInit {
     ensureDomOrder: true,
     enableAccessibility: false,
     pagination: true,
-    // paginationPageSize: 10,
+
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
     suppressMovable: true,
@@ -108,7 +104,6 @@ export class VehiclesComponent implements OnInit {
     {
       headerName: 'No.',
       valueGetter: (params: any) => {
-        // Hitung nomor urut berdasarkan posisi pagination
         return (
           (this.paginationPage - 1) * this.paginationItemsLimit +
           (params.node.rowIndex + 1)
@@ -281,12 +276,9 @@ export class VehiclesComponent implements OnInit {
   }
 
   onSortChanged(event: any) {
-    console.log('onSortChanged event:', event);
-
     if (event && event.columns && event.columns.length > 0) {
       event.columns.forEach((column: any) => {
         const colId = column.colId;
-        console.log('Sorting column ID:', colId);
 
         if (!this.columnClickCount[colId]) {
           this.columnClickCount[colId] = 0;
@@ -322,20 +314,20 @@ export class VehiclesComponent implements OnInit {
       })
       .then((response) => {
         this.rowListAllVehicle = response.data.data.data;
-        console.log(this.rowListAllVehicle);
-  
-        // Set pagination total pages
+
         this.paginationTotalPage = response.data.data.meta.total_pages;
-        this.pages = Array.from({ length: this.paginationTotalPage }, (_, i) => i + 1);
+        this.pages = Array.from(
+          { length: this.paginationTotalPage },
+          (_, i) => i + 1,
+        );
         this.showing = response.data.data.meta.showing;
-  
-        // Update ag-Grid pagination page size and refresh data
+
         if (this.gridApi) {
-          this.gridApi.paginationSetPageSize(this.paginationItemsLimit);  // Update page size for grid
-          this.gridApi.setRowData(this.rowListAllVehicle);  // Set the new row data
-          this.gridApi.paginationGoToPage(this.paginationPage - 1);  // Go to the correct page
+          this.gridApi.paginationSetPageSize(this.paginationItemsLimit);
+          this.gridApi.setRowData(this.rowListAllVehicle);
+          this.gridApi.paginationGoToPage(this.paginationPage - 1);
         }
-  
+
         this.isLoading = false;
         this.cdRef.detectChanges();
       })
@@ -344,7 +336,6 @@ export class VehiclesComponent implements OnInit {
         this.isLoading = false;
       });
   }
-  
 
   openAddModal() {
     this.vehicle_uuid = '';
@@ -368,7 +359,6 @@ export class VehiclesComponent implements OnInit {
       vehicle_status: this.vehicle_status,
       school_id: this.school_uuid,
     };
-    console.log('add vehicle', requestData);
 
     axios
       .post(`${this.apiUrl}/api/superadmin/vehicle/add`, requestData, {
@@ -465,7 +455,6 @@ export class VehiclesComponent implements OnInit {
       });
   }
 
-  
   openDetailModal(student_uuid: string) {
     axios
       .get(`${this.apiUrl}/api/superadmin/vehicle/${student_uuid}`, {

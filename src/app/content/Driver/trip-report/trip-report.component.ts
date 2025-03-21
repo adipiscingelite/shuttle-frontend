@@ -12,11 +12,15 @@ import { FormsModule } from '@angular/forms';
 export class TripReportComponent {
   imageUrl: string | ArrayBuffer | null = null;
   isDropdownOpen: boolean = false;
-  actionType: string = 'Category of Issue'; // Default value
-  showOtherIssuesInput: boolean = false; // Kontrol untuk input teks
-  otherIssueText: string = ''; // Menyimpan teks input "Other Issues"
-  dropdownOptions: string[] = ['Mechanical Issue', 'Accident', 'Health Emergency', 'Other Issues'];
-
+  actionType: string = 'Category of Issue';
+  showOtherIssuesInput: boolean = false;
+  otherIssueText: string = '';
+  dropdownOptions: string[] = [
+    'Mechanical Issue',
+    'Accident',
+    'Health Emergency',
+    'Other Issues',
+  ];
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -35,9 +39,8 @@ export class TripReportComponent {
   }
 
   handleAction(actionType: string): void {
-    console.log(`Action selected: ${actionType}`);
     this.actionType = actionType;
-    this.isDropdownOpen = false; // Tutup dropdown setelah aksi dipilih
-    this.showOtherIssuesInput = actionType === 'otherIssues'; // Tampilkan input jika "Other Issues" dipilih
+    this.isDropdownOpen = false;
+    this.showOtherIssuesInput = actionType === 'otherIssues';
   }
 }

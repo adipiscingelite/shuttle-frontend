@@ -1,8 +1,6 @@
 <div class="h-full">
   <div class="bg-white pb-8">
     <div class="w-full h-[250px]">
-      <!-- <img src="https://i.pinimg.com/474x/e5/ce/50/e5ce50f326895b9962862d91a81795fa.jpg"
-        class="w-full h-full object-cover rounded-tl-xl rounded-tr-xl"> -->
       <div class="w-full h-full bg-gray-300 rounded-t-xl"></div>
     </div>
     <div class="flex flex-col items-center -mt-20">
@@ -21,7 +19,6 @@
           </svg>
         </span>
       </div>
-      <!-- <p class="text-gray-700">  user.role_title  </p> -->
       <p class="text-sm text-gray-500">{{user_email}}</p>
     </div>
 
@@ -42,18 +39,7 @@
           <p>Password</p>
         </a>
       </li>
-      <!-- <li class="w-auto flex-shrink-0">
-        <a class="flex items-center px-5 py-3 w-fit leading-normal cursor-pointer" (click)="toggleTabs(3)"
-          [ngClass]="{'text-neutral-500': openTab !== 3, 'text-black font-semibold border-b-2 border-neutral-600 rounded-b-sm': openTab === 3}">
-          <p>Vehicle</p>
-        </a>
-      </li>
-      <li class="w-auto flex-shrink-0">
-        <a class="flex items-center px-5 py-3 w-fit leading-normal cursor-pointer" (click)="toggleTabs(4)"
-          [ngClass]="{'text-neutral-500': openTab !== 4, 'text-black font-semibold border-b-2 border-neutral-600 rounded-b-sm': openTab === 4}">
-          <p>Driver's License</p>
-        </a>
-      </li> -->
+
     </ul>
 
     <div [ngClass]="{'hidden': openTab !== 1, 'block': openTab === 1}" class="px-8">

@@ -16,11 +16,13 @@ import html2canvas from 'html2canvas';
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
+  @ViewChild('fullLoginPage') fullLoginPage!: ElementRef;
+
   errorMessage: string = '';
 
   loginData = {
     email: '',
-    password: '12345678',
+    password: '',
   };
 
   emailError: string = '';
@@ -72,12 +74,6 @@ export class LoginComponent {
 
         try {
           const profileData = await this.profileService.fetchProfileData();
-          // const fetchRoleCode = await axios.get(
-          //   `${this.apiUrl}/api/my/profile`,
-          //   {
-          //     headers: { Authorization: `${access_token}` },
-          //   }
-          // );
 
           const roleCode = profileData.user_role_code;
 
@@ -95,11 +91,9 @@ export class LoginComponent {
               this.router.navigate(['/parent']);
               break;
             default:
-              this.router.navigate(['/jawa']);
+              this.router.navigate(['/']);
               break;
           }
-
-          console.log('saat login', roleCode);
         } catch (error) {
           console.error('Error fetching profile:', error);
           Swal.fire({
@@ -121,10 +115,8 @@ export class LoginComponent {
   }
 
   forgor() {
-    alert('passwordnya 12345678 kalo ga salah');
+    alert('me too');
   }
-
-  @ViewChild('fullLoginPage') fullLoginPage!: ElementRef;
 
   takeScreenshot() {
     if (!this.fullLoginPage) return;
@@ -133,7 +125,7 @@ export class LoginComponent {
       const imgData = canvas.toDataURL('image/png');
       const link = document.createElement('a');
       link.href = imgData;
-      link.download = 'screenshot.png';
+      link.download = 'rememberMe.png';
       link.click();
     });
   }

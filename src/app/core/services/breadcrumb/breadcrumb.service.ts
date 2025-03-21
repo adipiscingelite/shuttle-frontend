@@ -39,53 +39,31 @@ export class BreadcrumbService {
           this.activatedRoute.root,
           baseURL,
         );
-        this.breadcrumbsSubject.next(breadcrumbs); // Emit breadcrumbs terbaru
+        this.breadcrumbsSubject.next(breadcrumbs);
       });
   }
 
-  // Mendapatkan base URL berdasarkan role_code
   public getBaseURLForCurrentRole(): string {
     const role_code = this.roleSubject.value;
     return this.roleBaseURLs[role_code] || '/';
   }
 
-  // Fungsi untuk mengupdate role_code setelah API call
   public setRoleCode(role_code: string): void {
     this.roleSubject.next(role_code);
   }
 
-  // Verifikasi token dan mendapatkan role_code dari API
   public async verifyTokenAndSetRole(): Promise<void> {
     try {
-      // Ambil token dari cookie
       const token = this.cookieService.get('accessToken');
       if (!token) {
         throw new Error('Token tidak ditemukan!');
       }
 
-      // Subscribe ke ProfileService untuk mendapatkan data profil
       this.profileService.profileData$.subscribe(
         (data) => {
           if (data) {
-            // Set data profil ke properti kelas
-            // this.user_id = data.user_id;
-            // this.first_name = data.first_name;
-            // this.last_name = data.last_name;
-            // this.email = data.email;
-            // this.password = data.password;
-            // this.status = data.status;
             this.role_code = data.role_code;
-            // this.role = data.role;
-            // this.picture = data.picture;
 
-            // // Inisialisasi avatar
-            // this.initialAvatar =
-            //   this.first_name.charAt(0).toUpperCase() +
-            //   this.last_name.charAt(0).toUpperCase();
-
-            // console.log('Profile fetched:', this.email);
-
-            // Set role_code untuk navigasi
             this.setRoleCode(this.role_code);
           } else {
             console.warn('Data profil tidak ditemukan!');
@@ -103,7 +81,6 @@ export class BreadcrumbService {
     }
   }
 
-  // Membuat breadcrumbs
   private createBreadcrumbs(
     route: ActivatedRoute,
     url: string = '',

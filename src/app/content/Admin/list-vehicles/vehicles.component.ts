@@ -1,20 +1,16 @@
-// ANGULAR
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-// THIRD PARTY
 import { AgGridAngular } from 'ag-grid-angular';
 import { CookieService } from 'ngx-cookie-service';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import axios from 'axios';
 
-// COMPONENTS
 import { HeaderComponent } from '@layouts/header/header.component';
 import { AsteriskComponent } from '@shared/components/asterisk/asterisk.component';
 import { RequiredCommonComponent } from '@shared/components/required-common/required-common.component';
 
-// SHARED
 import { Response, Vehicle } from '@core/interfaces';
 import { ToastService } from '@core/services/toast/toast.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
@@ -97,7 +93,6 @@ export class VehiclesAdminComponent implements OnInit {
     ensureDomOrder: true,
     enableAccessibility: false,
     pagination: true,
-    // paginationPageSize: 10,
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
     suppressMovableColumns: true,
@@ -291,12 +286,9 @@ export class VehiclesAdminComponent implements OnInit {
   }
 
   onSortChanged(event: any) {
-    console.log('onSortChanged event:', event);
-
     if (event && event.columns && event.columns.length > 0) {
       event.columns.forEach((column: any) => {
         const colId = column.colId;
-        console.log('Sorting column ID:', colId);
 
         if (!this.columnClickCount[colId]) {
           this.columnClickCount[colId] = 0;
@@ -334,7 +326,6 @@ export class VehiclesAdminComponent implements OnInit {
       .then((response) => {
         this.rowListAllVehicle = response.data.data.data;
 
-        console.log('ini', response);
         this.paginationTotalPage = response.data.data.meta.total_pages;
         this.pages = Array.from(
           { length: this.paginationTotalPage },
@@ -356,26 +347,6 @@ export class VehiclesAdminComponent implements OnInit {
   }
 
   addVehicle(): void {
-    // const requestData = {
-    //   vehicle: {
-    //     name: "Bus Sekolah A",
-    //     number: "B 1234 XY",
-    //     type: "Bus",
-    //     color: "Putih",
-    //     seats: 30,
-    //     status: "Aktif",
-    //     driver: {
-    //       user_username: "john_doe",
-    //       firstName: "John",
-    //       lastName: "Doe",
-    //       gender: "Laki-laki",
-    //       email: "john.doe@example.com",
-    //       password: "password123",
-    //       phone: "081234567890",
-    //       address: "Jl. Raya No. 1"
-    //     }
-    //   }
-    // }
     const requestData = {
       vehicle_name: this.vehicle_name,
       vehicle_number: this.vehicle_number,
@@ -383,9 +354,7 @@ export class VehiclesAdminComponent implements OnInit {
       vehicle_color: this.vehicle_color,
       vehicle_seats: this.vehicle_seats,
       vehicle_status: this.vehicle_status,
-      // school_uuid: "21f9ef44-ad6b-4a2d-a906-3d969ce7eff9",
     };
-    console.log('add vehicle', requestData);
 
     axios
       .post(`${this.apiUrl}/api/school/vehicle/add`, requestData, {
@@ -422,7 +391,6 @@ export class VehiclesAdminComponent implements OnInit {
       })
       .then((response) => {
         const editData = response.data.data;
-        console.log('edit data', editData);
 
         this.school_uuid = editData.school_uuid;
         this.vehicle_uuid = editData.vehicle_uuid;
@@ -458,8 +426,6 @@ export class VehiclesAdminComponent implements OnInit {
       vehicle_seats: this.vehicle_seats,
       vehicle_status: this.vehicle_status,
     };
-
-    console.log('req update', data);
 
     axios
       .put(

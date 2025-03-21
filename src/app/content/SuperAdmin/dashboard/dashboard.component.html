@@ -4,8 +4,6 @@
 
   <!-- *ngIf="showDiv"  -->
   <div class="flex items-center w-full h-auto p-3 px-4 bg-blue-500 rounded-lg" *ngIf="showDiv">
-    <!-- <img class="h-full aspect-square rounded-full"
-        src="https://i.pinimg.com/originals/08/ea/5c/08ea5c4387f1da98fa7f8046d844c2c2.gif" alt=""> -->
     <div class="max-w-1/2 text-white">
       <h1 class="text-4xl font-semibold libre-caslon-display-font">Welcome, Superadmin</h1>
       <p class="mt-2 text-sm">Stay updated with the latest stats and manage your shuttle services effortlessly. Your
@@ -20,37 +18,6 @@
 
   <h1 class="mt-4 text-xl font-bold">Overview</h1>
   <div class="grid grid-cols-2 md:grid-cols-4 my-4 px-2 gap-4 md:gap-8 auto-rows-fr">
-    <!-- <a routerLink="/superadmin/admins"
-      class="flex flex-col justify-center items-center w-auto h-full aspect-square p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer">
-      <div>
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-          stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M18.844 7.875c-.138 1.906-1.552 3.375-3.094 3.375-1.542 0-2.959-1.468-3.094-3.375-.14-1.983 1.236-3.375 3.094-3.375 1.858 0 3.235 1.428 3.094 3.375Z">
-          </path>
-          <path
-            d="M15.75 14.25c-3.055 0-5.993 1.517-6.729 4.472-.097.391.148.778.55.778h12.358c.402 0 .646-.387.55-.778-.736-3.002-3.674-4.472-6.73-4.472Z">
-          </path>
-          <path
-            d="M9.375 8.716c-.11 1.522-1.253 2.722-2.484 2.722-1.232 0-2.377-1.2-2.485-2.722C4.294 7.132 5.406 6 6.891 6c1.484 0 2.596 1.161 2.484 2.716Z">
-          </path>
-          <path
-            d="M9.657 14.341c-.846-.387-1.778-.536-2.766-.536-2.437 0-4.786 1.211-5.374 3.572-.077.312.118.62.44.62h5.262">
-          </path>
-        </svg>
-      </div>
-      <h1 class="text-[2.5rem] font-bold">{{totalAdmin}}</h1>
-      <p class="truncate hidden md:block">Total School Admin</p>
-      <div class="flex items-center justify-center gap-x-2 mt-auto">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-          stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M5.25 11.438 12 4.688l6.75 6.75"></path>
-          <path d="M12 5.625v13.688"></path>
-        </svg>
-        <p class="font-medium">0%</p>
-      </div>
-      <p class="text-xs md:text-sm text-center">From last month</p>
-    </a> -->
     <a routerLink="/superadmin/schools"
       class="flex flex-col justify-center items-center w-auto h-full p-6 border shadow-md rounded-lg bg-white text-black hover:text-white hover:bg-black hover:scale-[98%] hover:shadow-lg transform transition-transform cursor-pointer text-center">
       <div>
@@ -428,7 +395,8 @@
         </div>
       </div>
 
-      <div class="fixed top-12 right-24 w-1/4 h-[70%] bg-white/90 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl z-[999] overflow-hidden">
+      <div
+        class="fixed top-12 right-24 w-1/4 h-[70%] bg-white/90 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl z-[999] overflow-hidden">
         <div class="bg-transparent w-full h-full flex flex-col" (click)="$event.stopPropagation()">
           <!-- Close Button -->
           <button
@@ -440,14 +408,14 @@
               </path>
             </svg>
           </button>
-      
+
           <!-- Image Section -->
           <div class="w-full h-48 overflow-hidden relative">
             <img class="w-full h-full object-cover"
               src="https://i.pinimg.com/474x/c9/25/6d/c9256d41c490e12bfbe0694107e56e4e.jpg" alt="School IMG">
             <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
           </div>
-      
+
           <!-- Content Section -->
           <div class="p-6 flex-1 flex flex-col justify-between">
             <div>
@@ -455,7 +423,7 @@
               <h2 class="text-2xl font-bold text-gray-800 mb-4">
                 {{ selectedSchool.name }}
               </h2>
-      
+
               <!-- School Details -->
               <div class="text-gray-600 space-y-3">
                 <div class="flex items-start">
@@ -472,7 +440,7 @@
                 </div>
               </div>
             </div>
-      
+
             <!-- View More Button -->
             <div class="mt-6">
               <button

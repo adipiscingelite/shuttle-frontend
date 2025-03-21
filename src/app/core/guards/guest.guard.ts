@@ -41,7 +41,6 @@ export class GuestGuard implements CanActivate {
         const profileData = response.data.data;
         const role_code = profileData?.user_role_code;
 
-        // Redirect berdasarkan role_code
         if (role_code === 'SA') {
           return this.router.createUrlTree(['/superadmin']);
         } else if (role_code === 'AS') {
@@ -56,10 +55,9 @@ export class GuestGuard implements CanActivate {
       } catch (error: any) {
         console.error('Error fetching profile data:', error);
 
-        // Jika respons = 401, hapus isi CookieService
         if (error.response && error.response.status === 401) {
           this.cookieService.deleteAll();
-          return this.router.createUrlTree(['/login']); // Gunakan createUrlTree di sini
+          return this.router.createUrlTree(['/login']);
         }
 
         return this.router.createUrlTree(['/login']);

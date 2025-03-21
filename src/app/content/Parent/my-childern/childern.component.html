@@ -52,17 +52,9 @@
                 <option value="present">Ready to Attend</option>
                 <option value="sick">Sick</option>
                 <option value="excused">Excused</option>
-                <!-- <option value="other">Other...</option> -->
               </select>
-
-              <!-- <input *ngIf="child.student_status === 'other'" 
-                    type="text" 
-                    [(ngModel)]="child.customStatus" 
-                   placeholder="Enter custom status"
-                   class="w-full px-3 py-2 mt-2 bg-gray-100 border border-gray-300 rounded-md text-sm text-gray-600" /> -->
             </div>
 
-            <!-- Only show the Save button if the status has changed for the current child -->
             <div class="flex justify-end mt-3" *ngIf="child.student_status !== statusMap[child.student_uuid]">
               <button type="submit"
                 class="px-4 py-2 bg-[#3103ad] text-white text-sm font-semibold rounded-md shadow hover:bg-blue-600 focus:outline-none">

@@ -169,8 +169,6 @@ export class DashboardSuperAdminComponent implements OnInit {
         headers: { Authorization: `${this.token}` },
       })
       .then((response) => {
-        console.log('pp', response);
-
         const dataShuttleSummary = response.data;
 
         this.shuttle_count = dataShuttleSummary.shuttle_count;
@@ -191,27 +189,27 @@ export class DashboardSuperAdminComponent implements OnInit {
         headers: { Authorization: `${this.token}` },
       })
       .then((response) => {
-        console.log('pp', response);
-
-        // Peta nama bulan dari backend ke format standar
         const monthMapping: { [key: string]: string } = {
           jan: 'Jan',
           feb: 'Feb',
           mar: 'Mar',
           apr: 'Apr',
-          mei: 'May', // Bahasa Indonesia
-          may: 'May', // Bahasa Inggris
+          mei: 'May',
+
+          may: 'May',
+
           jun: 'Jun',
           jul: 'Jul',
           aug: 'Aug',
           sep: 'Sep',
-          okt: 'Oct', // Bahasa Indonesia
-          oct: 'Oct', // Bahasa Inggris
+          okt: 'Oct',
+
+          oct: 'Oct',
+
           nov: 'Nov',
           dec: 'Dec',
         };
 
-        // Urutan bulan untuk sortir
         const monthOrder: string[] = [
           'Jan',
           'Feb',
@@ -227,25 +225,21 @@ export class DashboardSuperAdminComponent implements OnInit {
           'Dec',
         ];
 
-        // Data dari backend
         const backendData = response.data;
 
-        // Konversi data ke GrowthData[]
         this.growthData = Object.entries(backendData).map(([key, value]) => ({
-          month: monthMapping[key.toLowerCase()] || key, // Gunakan mapping, fallback ke key asli jika tidak ditemukan
+          month: monthMapping[key.toLowerCase()] || key,
+
           growth: value as number,
         }));
 
-        // Sortir berdasarkan urutan bulan
         this.growthData.sort(
           (a, b) => monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month),
         );
-
-        console.log('Formatted and sorted growthData:', this.growthData);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
-        this.growthData = []; // Kosongkan data jika terjadi error
+        this.growthData = [];
       });
   }
 
@@ -475,21 +469,21 @@ export class DashboardSuperAdminComponent implements OnInit {
       13,
     );
 
-    // Tile layer dari Google Maps
     L.tileLayer('http://{s}.google.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
       maxZoom: 20,
       subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
     }).addTo(this.map);
 
-    // Custom icon untuk marker
     const schoolIcon = L.icon({
-      iconUrl: 'assets/images/location_15114817.png', // Path gambar ikon (pastikan ada di assets/icons)
-      iconSize: [40, 50], // Ukuran ikon
-      iconAnchor: [20, 40], // Anchor agar ujung bawah ikon menyentuh lokasi
-      popupAnchor: [0, -40], // Popup muncul di atas ikon
+      iconUrl: 'assets/images/location_15114817.png',
+
+      iconSize: [40, 50],
+
+      iconAnchor: [20, 40],
+
+      popupAnchor: [0, -40],
     });
 
-    // Tambahkan marker untuk setiap sekolah
     this.schools.forEach((school) => {
       L.marker([school.lat, school.lng], { icon: schoolIcon })
         .addTo(this.map)

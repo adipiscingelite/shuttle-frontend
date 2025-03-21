@@ -91,13 +91,13 @@ export class ShuttleHistoryComponent implements OnInit {
       valueGetter: (params) => {
         if (params.data && params.data.created_at) {
           const datePipe = new DatePipe('en-US');
-          // Format tanggal sesuai yang Anda inginkan
+
           return datePipe.transform(
             params.data.created_at,
             'dd/MM/yyyy HH:mm:ss',
           );
         }
-        return null; // Jika data tidak ada atau tidak valid, kembalikan null
+        return null;
       },
     },
     {
@@ -105,7 +105,6 @@ export class ShuttleHistoryComponent implements OnInit {
       field: 'status',
       valueGetter: (params) => {
         if (params.data && params.data.status) {
-          // Parsing status untuk membuatnya lebih rapi
           const statusMap: { [key: string]: string } = {
             home: 'At home',
             waiting_to_be_taken_to_school: 'Waiting for pickup',
@@ -175,35 +174,9 @@ export class ShuttleHistoryComponent implements OnInit {
   }
 
   onSortChanged(event: any) {
-    console.log('onSortChanged event:', event);
-
     if (event && event.columns && event.columns.length > 0) {
       event.columns.forEach((column: any) => {
         const colId = column.colId;
-        console.log('Sorting column ID:', colId);
-
-        // if (!this.columnClickCount[colId]) {
-        //   this.columnClickCount[colId] = 0;
-        // }
-        // this.columnClickCount[colId] += 1;
-
-        // if (this.columnClickCount[colId] === 3) {
-        //   this.sortBy = 'user_id';
-        //   this.sortDirection = 'asc';
-        //   this.columnClickCount[colId] = 0;
-        // } else {
-        //   if (this.columnMapping[colId]) {
-        //     this.sortBy = this.columnMapping[colId];
-        //   } else {
-        //     this.sortBy = colId;
-        //   }
-
-        //   if (this.columnClickCount[colId] === 1) {
-        //     this.sortDirection = 'asc';
-        //   } else if (this.columnClickCount[colId] === 2) {
-        //     this.sortDirection = 'desc';
-        //   }
-        // }
       });
 
       this.getAllShuttleStudent();
@@ -220,10 +193,7 @@ export class ShuttleHistoryComponent implements OnInit {
         },
       })
       .then((response) => {
-        console.log('pp', response);
-
         this.rowListRecap = response.data;
-        console.log(this.rowListRecap);
       })
       .catch((error) => {
         console.error('Error fetching shuttle students:', error);

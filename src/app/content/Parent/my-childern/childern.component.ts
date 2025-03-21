@@ -57,7 +57,6 @@ export class ChildernComponent implements OnInit {
   latitude: number | null = null;
   longitude: number | null = null;
 
-  // for map
   googleMapUrl: string = '';
 
   initialAvatar: string = '';
@@ -83,50 +82,41 @@ export class ChildernComponent implements OnInit {
 
   getAllMyChildern() {
     axios
-  .get(`${this.apiUrl}/api/parent/my/childern/all`, {
-    headers: {
-      Authorization: `${this.cookieService.get('accessToken')}`,
-    },
-  })
-  .then((response) => {
-    // Sort children by student_first_name
-    this.rowListChildern = response.data.data.sort((a: any, b: any) => {
-      const nameA = a.student_first_name.toUpperCase(); // Ignore case
-      const nameB = b.student_first_name.toUpperCase(); // Ignore case
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
-      return 0;
-    });
+      .get(`${this.apiUrl}/api/parent/my/childern/all`, {
+        headers: {
+          Authorization: `${this.cookieService.get('accessToken')}`,
+        },
+      })
+      .then((response) => {
+        this.rowListChildern = response.data.data.sort((a: any, b: any) => {
+          const nameA = a.student_first_name.toUpperCase();
+          const nameB = b.student_first_name.toUpperCase();
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          return 0;
+        });
 
-    console.log('edit my children', response);
-
-    this.rowListChildern.forEach((child) => {
-      this.statusMap[child.student_uuid] = child.student_status; // Store initial status
-    });
-  })
-  .catch((error) => {
-    console.error('Error fetching data:', error);
-  });
-
+        this.rowListChildern.forEach((child) => {
+          this.statusMap[child.student_uuid] = child.student_status;
+        });
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
   }
-
 
   openEditModal(childern_uuid: string) {
     axios
       .get(`${this.apiUrl}/api/parent/my/childern/${childern_uuid}`, {
         headers: {
           Authorization: `${this.token}`,
-          // Author: token dari firebae,
-          // Authos: device token dari firebase
         },
       })
       .then((response) => {
-        console.log(response);
-        
         const editData = response.data;
         this.student_uuid = editData.student_uuid;
         this.student_first_name = editData.student_first_name;
@@ -183,7 +173,7 @@ export class ChildernComponent implements OnInit {
       .then((response) => {
         const responseMessage = response.data?.message || 'Success.';
         this.showToast(responseMessage, 3000, Response.Success);
-        this.getAllMyChildern(); // Update the list of children after the status update
+        this.getAllMyChildern();
         this.isModalEditOpen = false;
         this.cdRef.detectChanges();
       })
@@ -195,16 +185,16 @@ export class ChildernComponent implements OnInit {
   }
 
   updateChildernStatus(student_uuid: string) {
-    // Find the child by UUID
-    const child = this.rowListChildern.find(child => child.student_uuid === student_uuid);
+    const child = this.rowListChildern.find(
+      (child) => child.student_uuid === student_uuid,
+    );
     if (!child) return;
-  
-    // Compare the current status with the initial status
+
     if (child.student_status !== this.statusMap[student_uuid]) {
       const data = {
-        student_status: child.student_status,  // Use the updated status from the dropdown
+        student_status: child.student_status,
       };
-  
+
       axios
         .put(
           `${this.apiUrl}/api/parent/my/childern/status/update/${student_uuid}`,
@@ -213,13 +203,13 @@ export class ChildernComponent implements OnInit {
             headers: {
               Authorization: `${this.token}`,
             },
-          }
+          },
         )
         .then((response) => {
-          const responseMessage = response.data?.message || 'Status updated successfully.';
+          const responseMessage =
+            response.data?.message || 'Status updated successfully.';
           this.showToast(responseMessage, 3000, Response.Success);
-  
-          // Update the local list of children and close the modal
+
           this.getAllMyChildern();
           this.isModalEditOpen = false;
           this.cdRef.detectChanges();
@@ -231,7 +221,6 @@ export class ChildernComponent implements OnInit {
         });
     }
   }
-  
 
   closeEditModal() {
     this.isModalEditOpen = false;

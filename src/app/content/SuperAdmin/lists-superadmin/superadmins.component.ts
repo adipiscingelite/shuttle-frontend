@@ -1,9 +1,7 @@
-// ANGULAR
 import { CommonModule, DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-// THIRD-PARTY LIBRARIES
 import {
   _isAnimateRows,
   ColDef,
@@ -15,13 +13,11 @@ import { CookieService } from 'ngx-cookie-service';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-// COMPONENTS
 import { HeaderComponent } from '@layouts/header/header.component';
 import { AsteriskComponent } from '@shared/components/asterisk/asterisk.component';
 import { RequiredCommonComponent } from '@shared/components/required-common/required-common.component';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
-// SHARED
 import { Response, Superadmin } from '@core/interfaces';
 import { TimeDateFormatPipe } from '@shared/pipes/time-date-format.pipe';
 import { ToastService } from '@core/services/toast/toast.service';
@@ -134,9 +130,11 @@ export class SuperadminsComponent implements OnInit {
     {
       headerName: 'No.',
       valueGetter: (params: any) => {
-        // Hitung nomor urut berdasarkan posisi pagination
-        return (this.paginationPage - 1) * this.paginationItemsLimit + (params.node.rowIndex + 1);
-      },  
+        return (
+          (this.paginationPage - 1) * this.paginationItemsLimit +
+          (params.node.rowIndex + 1)
+        );
+      },
       width: 50,
       maxWidth: 70,
       pinned: 'left',
@@ -170,15 +168,7 @@ export class SuperadminsComponent implements OnInit {
     {
       headerName: 'User Last Active',
       field: 'user_last_active',
-      // valueFormatter: (params) => {
-      //   if (!params.value || params.value === 'N/A') {
-      //     return '-';
-      //   }
 
-      //   // Menggunakan custom pipe untuk memformat tanggal
-      //   const formattedDate = this.timeDateFormatPipe.transform(params.value);
-      //   return formattedDate ? formattedDate : '-';
-      // },
       maxWidth: undefined,
     },
     {
@@ -318,7 +308,6 @@ export class SuperadminsComponent implements OnInit {
     }
   }
 
-
   goToNextPage() {
     if (this.paginationPage < this.paginationTotalPage) {
       this.paginationPage++;
@@ -341,12 +330,9 @@ export class SuperadminsComponent implements OnInit {
   }
 
   onSortChanged(event: any) {
-    console.log('onSortChanged event:', event);
-
     if (event && event.columns && event.columns.length > 0) {
       event.columns.forEach((column: any) => {
         const colId = column.colId;
-        console.log('Sorting column ID:', colId);
 
         if (!this.columnClickCount[colId]) {
           this.columnClickCount[colId] = 0;
@@ -422,7 +408,7 @@ export class SuperadminsComponent implements OnInit {
     this.user_address = '';
 
     this.isModalAddOpen = true;
-    this.cdRef.detectChanges()
+    this.cdRef.detectChanges();
   }
 
   addSuperadmin(): void {
@@ -471,7 +457,6 @@ export class SuperadminsComponent implements OnInit {
       })
       .then((response) => {
         const editData = response.data.data;
-        console.log('edit data', response);
 
         this.user_uuid = editData.user_uuid;
         this.user_username = editData.user_username;
@@ -520,8 +505,6 @@ export class SuperadminsComponent implements OnInit {
       phone: this.user_phone,
       address: this.user_address,
     };
-
-    console.log('uodate', data);
 
     axios
       .put(

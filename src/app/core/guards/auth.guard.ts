@@ -6,9 +6,6 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
-import { environment } from '../../../environments/environment';
-import axios, { AxiosError } from 'axios';
-import Swal from 'sweetalert2';
 import { ProfileService } from '../services/profile/profile.service';
 
 @Injectable({

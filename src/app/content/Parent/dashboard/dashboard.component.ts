@@ -77,18 +77,16 @@ export class DashboardParentComponent implements OnInit {
   ngOnInit(): void {
     this.startWatchingPosition();
     this.getAllMyChildern();
-    this.getAllChildernRecap()
+    this.getAllChildernRecap();
   }
 
   ngOnDestroy(): void {
-    // Stop watching the position when the component is destroyed
     if (this.watchId !== undefined) {
       navigator.geolocation.clearWatch(this.watchId);
     }
 
-    // Clean up map if needed (if you need to fully reset the map)
     if (this.map) {
-      this.map.remove(); // Optional: make sure to remove map on destroy
+      this.map.remove();
     }
   }
 
@@ -121,51 +119,40 @@ export class DashboardParentComponent implements OnInit {
         },
       })
       .then((response) => {
-        console.log('rekap', response);
-  
-        // Sort by `created_at` in descending order
         this.rowListRecap = response.data.sort(
-          (a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          (a: any, b: any) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
         );
-  
-        // Take only the top 3 records
+
         this.rowListRecap = this.rowListRecap.slice(0, 3);
-  
-        console.log(this.rowListRecap);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
-        this.rowListRecap = []; // Ensure it's empty in case of error
+        this.rowListRecap = [];
       });
   }
-  
+
   private startWatchingPosition(): void {
     if ('geolocation' in navigator) {
-      // Tampilkan spinner saat menunggu
       this.isLoading = true;
 
-      // Reset map jika sudah ada
       if (this.map) {
-        this.map.remove(); // Menghapus map lama
-        this.map = undefined; // Menghapus referensi map
+        this.map.remove();
+        this.map = undefined;
       }
 
-      // Start watching the position
       this.watchId = navigator.geolocation.watchPosition(
         (position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
 
-          // Update coordinates on the page
           const coordinatesElement = document.getElementById('coordinates');
           if (coordinatesElement) {
             coordinatesElement.textContent = `Latitude: ${lat}, Longitude: ${lon}`;
           }
 
-          // Update the map and marker
           this.updateMap(lat, lon);
 
-          // Set loading status to false after location is retrieved
           this.isLoading = false;
         },
         (error) => {
@@ -176,13 +163,12 @@ export class DashboardParentComponent implements OnInit {
             coordinatesElement.textContent = 'Unable to detect location.';
           }
 
-          // Set loading status to false if there's an error
           this.isLoading = false;
         },
         {
-          enableHighAccuracy: true, // Use high-accuracy mode if available
-          maximumAge: 0, // Prevent using cached location
-          timeout: 10000, // Timeout after 10 seconds if no location is retrieved
+          enableHighAccuracy: true,
+          maximumAge: 0,
+          timeout: 10000,
         },
       );
     } else {
@@ -192,7 +178,6 @@ export class DashboardParentComponent implements OnInit {
           'Geolocation is not supported by your browser.';
       }
 
-      // Set loading status to false if geolocation is not supported
       this.isLoading = false;
     }
   }

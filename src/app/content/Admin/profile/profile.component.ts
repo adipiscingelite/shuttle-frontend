@@ -1,12 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { ProfileService } from '../../../core/services/profile/profile.service';
-import { CookieService } from 'ngx-cookie-service';
 import { FormsModule } from '@angular/forms';
-import { Title } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-profile',
+  selector: 'app-admin-profile',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './profile.component.html',
@@ -50,8 +48,6 @@ export class ProfileAdminComponent {
   async fetchProfileData(): Promise<void> {
     try {
       this.profileService.profileData$.subscribe((data) => {
-        console.log('data profil dari subs service', data);
-
         if (data) {
           this.user_uuid = data.user_user_id;
           this.user_username = data.user_username;

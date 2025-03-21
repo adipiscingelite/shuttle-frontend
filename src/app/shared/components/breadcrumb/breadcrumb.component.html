@@ -11,12 +11,6 @@
     </li>
 
     <li class="breadcrumb-item select-none" *ngFor="let breadcrumb of breadcrumbs | async; let isLast = last">
-      <!-- <span *ngIf="!isLast" class="cursor-default text-black">
-        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M6.41 6 5 7.41 9.58 12 5 16.59 6.41 18l6-6-6-6Z"></path>
-          <path d="m13 6-1.41 1.41L16.17 12l-4.58 4.59L13 18l6-6-6-6Z"></path>
-        </svg>
-      </span> -->
       <a *ngIf="!isLast" class="hover:text-blue-500 hover:cursor-pointer hover:underline hover:underline-offset-4" [routerLink]="breadcrumb.url">{{ breadcrumb.label }}</a>
       <span *ngIf="isLast">{{ breadcrumb.label }}</span>
     </li>

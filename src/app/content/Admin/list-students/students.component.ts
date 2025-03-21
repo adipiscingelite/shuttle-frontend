@@ -1,4 +1,3 @@
-// ANGULAR
 import { CommonModule, DatePipe } from '@angular/common';
 import {
   ChangeDetectorRef,
@@ -8,15 +7,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
-} from '@angular/animations';
 
-// THIRD-PARTY LIBRARIES
 import {
   _isAnimateRows,
   ColDef,
@@ -29,12 +20,10 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import * as L from 'leaflet';
 
-// COMPONENTS
 import { HeaderComponent } from '@layouts/header/header.component';
 import { AsteriskComponent } from '@shared/components/asterisk/asterisk.component';
 import { RequiredCommonComponent } from '@shared/components/required-common/required-common.component';
 
-// SHARED
 import { Response } from '@core/interfaces';
 import { TimeDateFormatPipe } from '@shared/pipes/time-date-format.pipe';
 import { ToastService } from '@core/services/toast/toast.service';
@@ -65,7 +54,7 @@ interface Parent {
   last_name: string;
   email: string;
   password: string;
-  role: string; // Bisa gunakan enum untuk nilai role jika ada
+  role: string;
   gender: string;
   phone: string;
   address: string;
@@ -94,13 +83,11 @@ interface schoolDetail {
   animations: [toastInOutAnimation, modalScaleAnimation],
 })
 export class StudentsComponent implements OnInit {
-  // For token
   token: string | null = '';
-  // For sorting
+
   sortBy: string = 'student_id';
   sortDirection: string = 'asc';
 
-  // For pagination
   paginationPage: number = 1;
   paginationCurrentPage: number = 1;
   paginationItemsLimit: number = 10;
@@ -112,7 +99,6 @@ export class StudentsComponent implements OnInit {
   startRow: number = 1;
   endRow: number = 10;
 
-  // For data student
   student_uuid: string = '';
   student_first_name: string = '';
   student_last_name: string = '';
@@ -124,10 +110,8 @@ export class StudentsComponent implements OnInit {
   student_pickup_latitude: number | null = null;
   student_pickup_longitude: number | null = null;
 
-  // for map
   googleMapUrl: string = '';
 
-  // For data parent
   parent_uuid: string = '';
   parent_name: string = '';
   parent_username: string = '';
@@ -140,14 +124,11 @@ export class StudentsComponent implements OnInit {
   parent_phone: string = '';
   parent_address: string = '';
 
-  // For initial avatar
   initialAvatar: string = '';
 
-  // For loading
   isLoading: boolean = false;
   isMobile = window.innerWidth <= 768;
 
-  // For CRUD Modal
   isModalAddOpen: boolean = false;
   isModalEditOpen: boolean = false;
   isModalDetailOpen: boolean = false;
@@ -156,7 +137,6 @@ export class StudentsComponent implements OnInit {
   //Row list data parrent and school
   rowListAllSchool: schoolDetail[] = [];
 
-  // Row data to be displayed in the table
   rowListAllStudent: Student[] = [];
 
   private map: L.Map | undefined;
@@ -176,9 +156,7 @@ export class StudentsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.startWatchingPosition();
     this.getAllStudent();
-    // this.extractLatLonFromUrl('https://www.google.com/maps/@-7.761514,110.366105,21z?entry=ttu&g_ep=EgoyMDI0MTIxMS4wIKXMDSoASAFQAw%3D%3D')
   }
 
   themeClass = 'ag-theme-quartz';
@@ -186,7 +164,7 @@ export class StudentsComponent implements OnInit {
   gridOptions = {
     ensureDomOrder: true,
     pagination: true,
-    // paginationPageSize: 10,
+
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
     suppressMovableColumns: true,
@@ -194,14 +172,8 @@ export class StudentsComponent implements OnInit {
     onGridReady: () => {
       console.log('Grid sudah siap!');
     },
-    // penyesuaian request onSortChanged
-    // onSortChanged: (event: any) => {
-    //   this.onSortChanged(event);
-    // },
-    // onSortChanged: this.onSortChanged.bind(this),
   };
 
-  // Column Definitions
   colHeaderListStudent: ColDef<Student>[] = [
     {
       headerName: 'No.',
@@ -235,11 +207,11 @@ export class StudentsComponent implements OnInit {
       maxWidth: 250,
       sortable: true,
       valueFormatter: (params) => {
-        // Capitalize huruf pertama
         return params.value
-          ? params.value.charAt(0).toUpperCase() + params.value.slice(1).toLowerCase()
+          ? params.value.charAt(0).toUpperCase() +
+              params.value.slice(1).toLowerCase()
           : '';
-      },    
+      },
     },
     {
       headerName: 'Class',
@@ -284,12 +256,6 @@ export class StudentsComponent implements OnInit {
       },
     },
 
-    // {
-    //   headerName: 'Pickup Point',
-    //   field: 'student_pickup_point',
-    //   maxWidth: 250,
-    //   sortable: true,
-    // },
     {
       headerName: 'Actions',
       headerClass: 'justify-center',
@@ -366,7 +332,6 @@ export class StudentsComponent implements OnInit {
     },
   ];
 
-  // Default column definitions for consistency
   defaultColDef: ColDef = {
     flex: 1,
     width: 130,
@@ -462,35 +427,9 @@ export class StudentsComponent implements OnInit {
   }
 
   onSortChanged(event: any) {
-    console.log('onSortChanged event:', event);
-
     if (event && event.columns && event.columns.length > 0) {
       event.columns.forEach((column: any) => {
         const colId = column.colId;
-        console.log('Sorting column ID:', colId);
-
-        // if (!this.columnClickCount[colId]) {
-        //   this.columnClickCount[colId] = 0;
-        // }
-        // this.columnClickCount[colId] += 1;
-
-        // if (this.columnClickCount[colId] === 3) {
-        //   this.sortBy = 'user_id';
-        //   this.sortDirection = 'asc';
-        //   this.columnClickCount[colId] = 0;
-        // } else {
-        //   if (this.columnMapping[colId]) {
-        //     this.sortBy = this.columnMapping[colId];
-        //   } else {
-        //     this.sortBy = colId;
-        //   }
-
-        //   if (this.columnClickCount[colId] === 1) {
-        //     this.sortDirection = 'asc';
-        //   } else if (this.columnClickCount[colId] === 2) {
-        //     this.sortDirection = 'desc';
-        //   }
-        // }
       });
 
       this.getAllStudent();
@@ -499,7 +438,6 @@ export class StudentsComponent implements OnInit {
     }
   }
 
-  // For fetching data school
   getAllSchool() {
     axios
       .get(`${this.apiUrl}/api/school/all`, {
@@ -515,7 +453,6 @@ export class StudentsComponent implements OnInit {
       });
   }
 
-  // For fetching data
   getAllStudent() {
     this.isLoading = true;
     axios
@@ -532,7 +469,6 @@ export class StudentsComponent implements OnInit {
         },
       })
       .then((response) => {
-        console.log('response', response.data.data);
         this.rowListAllStudent = response.data.data.data;
         this.paginationTotalPage = response.data.data.meta.total_pages;
         this.pages = Array.from(
@@ -587,7 +523,7 @@ export class StudentsComponent implements OnInit {
         student_gender: this.student_gender,
         student_grade: this.student_grade,
         student_address: this.student_address,
-        // student_status: 'present',
+
         student_pickup_point: {
           latitude: this.student_pickup_latitude,
           longitude: this.student_pickup_longitude,
@@ -644,11 +580,8 @@ export class StudentsComponent implements OnInit {
         },
       })
       .then((response) => {
-        console.log('edit', response);
-
         const editData = response.data.data;
 
-        // Set data ke dalam variabel komponen yang terikat dengan form
         this.student_uuid = editData.student_uuid;
         this.student_first_name = editData.student_first_name;
         this.student_last_name = editData.student_last_name;
@@ -674,10 +607,9 @@ export class StudentsComponent implements OnInit {
         this.parent_phone = editData.parent_phone;
         this.parent_address = editData.address;
 
-        // Buka modal
         this.isModalEditOpen = true;
         this.getCoordinateByMap();
-        this.cdRef.detectChanges(); // Pastikan perubahan terdeteksi di view
+        this.cdRef.detectChanges();
       })
       .catch((error) => {
         Swal.fire({
@@ -694,7 +626,6 @@ export class StudentsComponent implements OnInit {
 
   updateStudent() {
     const requestData = {
-      // student: {
       student_first_name: this.student_first_name,
       student_last_name: this.student_last_name,
       student_gender: this.student_gender,
@@ -705,21 +636,7 @@ export class StudentsComponent implements OnInit {
         latitude: this.student_pickup_latitude,
         longitude: this.student_pickup_longitude,
       },
-      // },
-      // parent: {
-      //   username: this.parent_username,
-      //   first_name: this.parent_first_name,
-      //   last_name: this.parent_last_name,
-      //   gender: this.parent_gender,
-      //   role: 'parent',
-      //   email: this.parent_email,
-      //   password: this.parent_password,
-      //   phone: this.parent_phone,
-      //   address: this.parent_address,
-      // },
     };
-
-    console.log('update', requestData);
 
     axios
       .put(
@@ -760,7 +677,6 @@ export class StudentsComponent implements OnInit {
       .then((response) => {
         const detailData = response.data.data;
 
-        // Set data ke dalam variabel komponen yang terikat dengan form
         this.student_uuid = detailData.student_uuid;
         this.student_first_name = detailData.student_first_name;
         this.student_last_name = detailData.student_last_name;
@@ -847,26 +763,21 @@ export class StudentsComponent implements OnInit {
   }
 
   private getCoordinateByMap(): void {
-    // if ('geolocation' in navigator) {
-    // Reset map jika sudah ada
     if (this.map) {
-      this.map.remove(); // Menghapus map lama
-      this.map = undefined; // Menghapus referensi map
+      this.map.remove();
+      this.map = undefined;
     }
 
-    // Start watching the position
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
 
-        // Update coordinates on the page
         const coordinatesElement = document.getElementById('coordinates');
         if (coordinatesElement) {
           coordinatesElement.textContent = `Latitude: ${lat}, Longitude: ${lon}`;
         }
 
-        // Update the map and marker
         this.map = L.map('map').setView(
           [-7.76131921887155, 110.36293728044329],
           12,
@@ -879,18 +790,16 @@ export class StudentsComponent implements OnInit {
           const clickedLat = e.latlng.lat;
           const clickedLng = e.latlng.lng;
 
-          // Update marker position
           if (this.marker) {
             this.marker.setLatLng([clickedLat, clickedLng]);
           } else {
             this.marker = L.marker([clickedLat, clickedLng]).addTo(this.map!);
           }
 
-          // Update form inputs
           this.student_pickup_latitude = clickedLat;
           this.student_pickup_longitude = clickedLng;
         });
-        // Set loading status to false after location is retrieved
+
         this.isLoading = false;
       },
       (error) => {
@@ -901,24 +810,13 @@ export class StudentsComponent implements OnInit {
           coordinatesElement.textContent = 'Unable to detect location.';
         }
 
-        // Set loading status to false if there's an error
         this.isLoading = false;
       },
       {
-        enableHighAccuracy: true, // Use high-accuracy mode if available
-        maximumAge: 0, // Prevent using cached location
-        timeout: 10000, // Timeout after 10 seconds if no location is retrieved
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000,
       },
     );
-    // } else {
-    //   const coordinatesElement = document.getElementById('coordinates');
-    //   if (coordinatesElement) {
-    //     coordinatesElement.textContent =
-    //       'Geolocation is not supported by your browser.';
-    //   }
-
-    //   // Set loading status to false if geolocation is not supported
-    //   this.isLoading = false;
-    // }
   }
 }

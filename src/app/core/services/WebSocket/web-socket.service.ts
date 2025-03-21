@@ -22,7 +22,6 @@ export class WebSocketService {
     //   );
     //   this.userId = response.data.id;
     //   console.log('woi', response.data);
-
     //   this.connectToWebSocket(ws);
     // } catch (error) {
     //   console.error('Error fetching profile data:', error);

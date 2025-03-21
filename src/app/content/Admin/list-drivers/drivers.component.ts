@@ -1,9 +1,7 @@
-// ANGULAR
 import { CommonModule, DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-// THIRD-PARTY LIBRARIES
 import {
   _isAnimateRows,
   ColDef,
@@ -15,11 +13,9 @@ import { CookieService } from 'ngx-cookie-service';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-// COMPONENTS
 import { AsteriskComponent } from '@shared/components/asterisk/asterisk.component';
 import { RequiredCommonComponent } from '@shared/components/required-common/required-common.component';
 
-// SHARED
 import { Response } from '@core/interfaces';
 import { ToastService } from '@core/services/toast/toast.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
@@ -79,13 +75,11 @@ interface vehicleDetail {
   animations: [toastInOutAnimation, modalScaleAnimation],
 })
 export class SchoolAdminDriversComponent implements OnInit {
-  // For token
   token: string | null = '';
-  // For sorting
+
   sortBy: string = 'user_id';
   sortDirection: string = 'asc';
 
-  // For pagination
   paginationPage: number = 1;
   paginationCurrentPage: number = 1;
   paginationItemsLimit: number = 10;
@@ -97,7 +91,6 @@ export class SchoolAdminDriversComponent implements OnInit {
   startRow: number = 1;
   endRow: number = 10;
 
-  // For data drivers
   user_uuid: string = '';
   username: string = '';
   first_name: string = '';
@@ -112,35 +105,27 @@ export class SchoolAdminDriversComponent implements OnInit {
   status: string = '';
   license_number: string = '';
 
-  // For data school
   school_id: string = '';
   school_name: string = '';
 
-  // For data vehicle
   vehicle_uuid: string = '';
   vehicle_name: string = '';
   vehicle_number: string = '';
 
-  // For initial avatar
   initialAvatar: string = '';
 
-  // For loading
   isLoading: boolean = false;
   isMobile = window.innerWidth <= 768;
 
-  // For CRUD Modal
   isModalAddOpen: boolean = false;
   isModalEditOpen: boolean = false;
   isModalDetailOpen: boolean = false;
   isModalDeleteOpen: boolean = false;
 
-  // Row list data driver
   rowListAllDriver: Driver[] = [];
 
-  // Row list data school
   rowListAllSchool: schoolDetail[] = [];
 
-  // Row list data vehicle
   rowListAllVehicle: vehicleDetail[] = [];
   rowListAllFreeVehicle: vehicleDetail[] = [];
 
@@ -156,12 +141,11 @@ export class SchoolAdminDriversComponent implements OnInit {
 
   ngOnInit(): void {
     this.getAllDriver();
-    // this.getAllSchool();
+
     this.getAllVehicle();
     this.getAllFreeVehicle();
   }
 
-  // Ag grid table displayed
   themeClass = 'ag-theme-quartz';
 
   gridOptions = {
@@ -170,17 +154,12 @@ export class SchoolAdminDriversComponent implements OnInit {
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
     suppressMovableColumns: true,
-    // penyesuaian request onSortChanged
-    // onSortChanged: (event: any) => {
-    //   this.onSortChanged(event);
-    // },
-    // onSortChanged: this.onSortChanged.bind(this),
+
     onGridReady: () => {
       console.log('Grid sudah siap!');
     },
   };
 
-  // Column Definitions
   colHeaderListDriver: ColDef<Driver>[] = [
     {
       headerName: 'No.',
@@ -208,11 +187,7 @@ export class SchoolAdminDriversComponent implements OnInit {
       maxWidth: 250,
       sortable: true,
     },
-    // { headerName: 'School',
-    //   field: 'details.school.school_name',
-    //   maxWidth: 250,
-    //   sortable: true,
-    // },
+
     {
       headerName: 'Gender',
       field: 'user_details.user_gender',
@@ -225,11 +200,7 @@ export class SchoolAdminDriversComponent implements OnInit {
       maxWidth: 250,
       sortable: true,
     },
-    // { headerName: 'License Number',
-    //   field: 'license_number',
-    //   maxWidth: 250,
-    //   sortable: true,
-    // },
+
     {
       headerName: 'Actions',
       headerClass: 'justify-center',
@@ -251,7 +222,7 @@ export class SchoolAdminDriversComponent implements OnInit {
         editButton.title = 'Click to Edit';
         editButton.classList.add('hover:bg-white', 'p-1', 'rounded-full');
         editButton.innerHTML = `
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http:
             <path d="m7 17.011 4.413-.015 9.632-9.54c.378-.378.586-.88.586-1.414 0-.534-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.581v4.43ZM18.045 4.456l1.589 1.583-1.597 1.582-1.586-1.585 1.594-1.58ZM9 13.416l6.03-5.974 1.586 1.586L10.587 15 9 15.004v-1.589Z"></path>
             <path d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2Z"></path>
           </svg>
@@ -266,7 +237,7 @@ export class SchoolAdminDriversComponent implements OnInit {
         viewButton.title = 'Click to View';
         viewButton.classList.add('hover:bg-white', 'p-1', 'rounded-full');
         viewButton.innerHTML = `
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http:
               <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2Zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8Z"></path>
               <path d="M11 11h2v6h-2v-6Zm0-4h2v2h-2V7Z"></path>
             </svg>
@@ -286,7 +257,7 @@ export class SchoolAdminDriversComponent implements OnInit {
           'rounded-full',
         );
         deleteButton.innerHTML = `
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http:
                 <path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2v12ZM9 4h6v2H9V4ZM8 8h9v12H7V8h1Z"></path>
                 <path d="M9 10h2v8H9v-8Zm4 0h2v8h-2v-8Z"></path>
               </svg>
@@ -306,7 +277,6 @@ export class SchoolAdminDriversComponent implements OnInit {
     },
   ];
 
-  // Default column definitions for consistency
   defaultColDef: ColDef = {
     flex: 1,
     width: 130,
@@ -402,35 +372,9 @@ export class SchoolAdminDriversComponent implements OnInit {
   }
 
   onSortChanged(event: any) {
-    console.log('onSortChanged event:', event);
-
     if (event && event.columns && event.columns.length > 0) {
       event.columns.forEach((column: any) => {
         const colId = column.colId;
-        console.log('Sorting column ID:', colId);
-
-        // if (!this.columnClickCount[colId]) {
-        //   this.columnClickCount[colId] = 0;
-        // }
-        // this.columnClickCount[colId] += 1;
-
-        // if (this.columnClickCount[colId] === 3) {
-        //   this.sortBy = 'user_id';
-        //   this.sortDirection = 'asc';
-        //   this.columnClickCount[colId] = 0;
-        // } else {
-        //   if (this.columnMapping[colId]) {
-        //     this.sortBy = this.columnMapping[colId];
-        //   } else {
-        //     this.sortBy = colId;
-        //   }
-
-        //   if (this.columnClickCount[colId] === 1) {
-        //     this.sortDirection = 'asc';
-        //   } else if (this.columnClickCount[colId] === 2) {
-        //     this.sortDirection = 'desc';
-        //   }
-        // }
       });
 
       this.getAllDriver();
@@ -439,8 +383,6 @@ export class SchoolAdminDriversComponent implements OnInit {
     }
   }
 
-  // Get all schools
-  // For fetching data school
   getAllSchool() {
     axios
       .get(`${this.apiUrl}/api/school/all`, {
@@ -456,7 +398,6 @@ export class SchoolAdminDriversComponent implements OnInit {
       });
   }
 
-  // Get all vehicles
   getAllVehicle() {
     this.isLoading = true;
     axios
@@ -467,7 +408,6 @@ export class SchoolAdminDriversComponent implements OnInit {
       })
       .then((response) => {
         this.rowListAllVehicle = response.data.data.data;
-        console.log('response', response);
         this.isLoading = false;
         this.cdRef.detectChanges();
       })
@@ -477,7 +417,6 @@ export class SchoolAdminDriversComponent implements OnInit {
       });
   }
 
-  // Get all vehicles
   getAllFreeVehicle() {
     this.isLoading = true;
     axios
@@ -487,9 +426,7 @@ export class SchoolAdminDriversComponent implements OnInit {
         },
       })
       .then((response) => {
-        console.log('response', response);
         this.rowListAllFreeVehicle = response.data.vehicles;
-        console.log('ini', this.rowListAllFreeVehicle);
 
         this.isLoading = false;
         this.cdRef.detectChanges();
@@ -500,7 +437,6 @@ export class SchoolAdminDriversComponent implements OnInit {
       });
   }
 
-  // Get all drivers
   getAllDriver() {
     this.isLoading = true;
     axios
@@ -511,12 +447,11 @@ export class SchoolAdminDriversComponent implements OnInit {
       })
       .then((response) => {
         this.rowListAllDriver = response.data.data.data;
-        console.log('response', response);
         this.paginationTotalPage = response.data.data.meta.total_pages;
         this.pages = Array.from(
           { length: this.paginationTotalPage },
           (_, i) => i + 1,
-        ); // Copy data
+        );
         this.showing = response.data.data.meta.showing;
 
         this.isLoading = false;
@@ -528,9 +463,7 @@ export class SchoolAdminDriversComponent implements OnInit {
       });
   }
 
-  // Add driver
   openAddModal() {
-    // For data drivers
     this.user_uuid = '';
     this.username = '';
     this.first_name = '';
@@ -545,11 +478,9 @@ export class SchoolAdminDriversComponent implements OnInit {
     this.status = '';
     this.license_number = '';
 
-    // For data school
     this.school_id = '';
     this.school_name = '';
 
-    // For data vehicle
     this.vehicle_uuid = '';
     this.vehicle_name = '';
     this.vehicle_number = '';
@@ -575,7 +506,6 @@ export class SchoolAdminDriversComponent implements OnInit {
         vehicle_uuid: this.vehicle_uuid,
       },
     };
-    console.log('requestData', requestData);
 
     axios
       .post(`${this.apiUrl}/api/school/user/driver/add`, requestData, {
@@ -603,7 +533,6 @@ export class SchoolAdminDriversComponent implements OnInit {
   }
 
   openEditModal(user_uuid: string) {
-    console.log('user_uuid', user_uuid);
     axios
       .get(`${this.apiUrl}/api/school/user/driver/${user_uuid}`, {
         headers: {
@@ -611,9 +540,7 @@ export class SchoolAdminDriversComponent implements OnInit {
         },
       })
       .then((response) => {
-        console.log('edit', response);
         const editData = response.data.data;
-        console.log('editData', editData);
 
         this.user_uuid = editData.user_uuid || '';
         this.username = editData.user_username || '';

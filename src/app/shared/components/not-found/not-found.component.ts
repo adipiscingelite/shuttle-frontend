@@ -27,7 +27,6 @@ export class NotFoundComponent implements OnInit {
     try {
       this.profileService.profileData$.subscribe((data) => {
         this.role_code = data.user_role_code;
-        console.log(this.role_code);
         
       });
     } catch (error) {

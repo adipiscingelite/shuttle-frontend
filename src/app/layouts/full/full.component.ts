@@ -16,7 +16,6 @@ import { FooterComponent } from '@layouts/footer/footer.component';
   styleUrl: './full.component.css',
 })
 export class FullComponent {
-  // private apiUrl: string;
   isSidebarVisible: boolean = false;
 
   handlerSidebarVisibility(newState: boolean) {

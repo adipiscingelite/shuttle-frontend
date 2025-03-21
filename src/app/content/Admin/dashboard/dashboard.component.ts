@@ -4,8 +4,6 @@ import { RouterLink } from '@angular/router';
 import { HelloAndDateComponent } from '../../../shared/components/hello-and-date/hello-and-date.component';
 import { CookieService } from 'ngx-cookie-service';
 import axios from 'axios';
-// import { TooltipDirective } from 'webed-team/ng2-tooltip-directive';
-// import {tooltipddir}
 
 @Component({
   selector: 'app-dashboard',
@@ -22,22 +20,18 @@ export class DashboardAdminComponent {
   totalVehicle: number = 0;
   totalRoute: number = 0;
 
-  // Student data
   currentMonthStudents: number = 0;
   previousMonthStudents: number = 0;
   studentChangePercentage: number = 0;
 
-  // Driver data
   currentMonthDrivers: number = 0;
   previousMonthDrivers: number = 0;
   driverChangePercentage: number = 0;
 
-  // Vehicle data
   currentMonthVehicles: number = 0;
   previousMonthVehicles: number = 0;
   vehicleChangePercentage: number = 0;
 
-  // Route data
   currentMonthRoutes: number = 0;
   previousMonthRoutes: number = 0;
   routeChangePercentage: number = 0;
@@ -194,12 +188,9 @@ export class DashboardAdminComponent {
         },
       })
       .then((response) => {
-        console.log(response,'pp');
-        
         this.totalRoute = response.data.data.data.length || 0;
 
         const routeData = response.data.data.data;
-        console.log('rispun', routeData);
         const currentMonth = new Date().getMonth();
         let currentMonthCount = 0;
         let previousMonthCount = 0;
@@ -225,10 +216,6 @@ export class DashboardAdminComponent {
           this.currentMonthRoutes,
           this.previousMonthRoutes,
         );
-
-        console.log('pp', this.routeChangePercentage);
-        console.log('cur', this.currentMonthRoutes);
-        console.log('pre', this.previousMonthRoutes);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -241,12 +228,10 @@ export class DashboardAdminComponent {
     previousCount: number,
   ): number {
     if (previousCount === 0) {
-      // Jika bulan sebelumnya tidak ada data
       return currentCount > 0 ? 100 : 0;
     }
-  
+
     const change = ((currentCount - previousCount) / previousCount) * 100;
     return parseFloat(change.toFixed(2));
   }
-  
 }

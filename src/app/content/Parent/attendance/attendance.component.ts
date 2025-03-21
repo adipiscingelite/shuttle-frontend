@@ -66,7 +66,7 @@ export class AttendanceComponent implements OnInit {
   gridOptions = {
     ensureDomOrder: true,
     pagination: true,
-    // paginationPageSize: 10,
+
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
     suppressMovable: true,
@@ -87,21 +87,20 @@ export class AttendanceComponent implements OnInit {
     },
     { headerName: 'First Name', field: 'student_first_name', maxWidth: 250 },
     { headerName: 'First Name', field: 'student_last_name', maxWidth: 250 },
-    // { headerName: 'Grade', field: 'student_grade' },
-    // { headerName: 'School Name', field: 'school_name' },
+
     {
       headerName: 'Date',
       field: 'created_at',
       valueGetter: (params) => {
         if (params.data && params.data.created_at) {
           const datePipe = new DatePipe('en-US');
-          // Format tanggal sesuai yang Anda inginkan
+
           return datePipe.transform(
             params.data.created_at,
             'dd/MM/yyyy HH:mm:ss',
           );
         }
-        return null; // Jika data tidak ada atau tidak valid, kembalikan null
+        return null;
       },
       maxWidth: 250,
     },
@@ -110,7 +109,6 @@ export class AttendanceComponent implements OnInit {
       field: 'status',
       valueGetter: (params) => {
         if (params.data && params.data.status) {
-          // Parsing status untuk membuatnya lebih rapi
           const statusMap: { [key: string]: string } = {
             home: 'At home',
             waiting_to_be_taken_to_school: 'Waiting for pickup',
@@ -127,15 +125,6 @@ export class AttendanceComponent implements OnInit {
     },
   ];
 
-  // shuttle_uuid: string;
-  // student_uuid: string;
-  // student_first_name: string;
-  // student_last_name: string;
-  // student_grade: string;
-  // student_gender: string;
-  // school_uuid: string;
-  // school_name: string;
-  // shuttle_status: string;
   defaultColDef: ColDef = {
     flex: 1,
     width: 130,
@@ -188,35 +177,9 @@ export class AttendanceComponent implements OnInit {
   }
 
   onSortChanged(event: any) {
-    console.log('onSortChanged event:', event);
-
     if (event && event.columns && event.columns.length > 0) {
       event.columns.forEach((column: any) => {
         const colId = column.colId;
-        console.log('Sorting column ID:', colId);
-
-        // if (!this.columnClickCount[colId]) {
-        //   this.columnClickCount[colId] = 0;
-        // }
-        // this.columnClickCount[colId] += 1;
-
-        // if (this.columnClickCount[colId] === 3) {
-        //   this.sortBy = 'user_id';
-        //   this.sortDirection = 'asc';
-        //   this.columnClickCount[colId] = 0;
-        // } else {
-        //   if (this.columnMapping[colId]) {
-        //     this.sortBy = this.columnMapping[colId];
-        //   } else {
-        //     this.sortBy = colId;
-        //   }
-
-        //   if (this.columnClickCount[colId] === 1) {
-        //     this.sortDirection = 'asc';
-        //   } else if (this.columnClickCount[colId] === 2) {
-        //     this.sortDirection = 'desc';
-        //   }
-        // }
       });
 
       this.getAllChildernRecap();
@@ -233,12 +196,7 @@ export class AttendanceComponent implements OnInit {
         },
       })
       .then((response) => {
-        console.log('rekap', response);
-
         this.rowListRecap = response.data;
-        console.log(this.rowListRecap);
-
-        // console.log(this.rowListAllSchool);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);

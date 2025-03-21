@@ -18,12 +18,8 @@ export class BreadcrumbComponent {
   constructor(private breadcrumbService: BreadcrumbService) {}
   ngOnInit(): void {
     this.breadcrumbService.verifyTokenAndSetRole().then(() => {
-      // Setelah role_code diambil, set baseURL dan breadcrumbs
       this.baseURL = this.breadcrumbService.getBaseURLForCurrentRole();
       this.breadcrumbs = this.breadcrumbService.breadcrumbs$;
     });
-
-    console.log('bread', this.breadcrumbs);
-    
   }
 }

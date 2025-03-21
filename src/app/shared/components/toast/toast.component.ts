@@ -10,8 +10,4 @@ import { ToastService } from '@core/services/toast/toast.service';
   styleUrl: './toast.component.css'
 })
 export class ToastComponent {
-  // @Input() toasts: { message: string; type: 'success' | 'error'; duration: number }[] = [];
-  // @Input() removeToast: (index: number) => void = () => {};
-
-  // constructor(public toastService: ToastService) {}
 }

@@ -39,7 +39,7 @@ export class ProfileService {
         throw new Error('Invalid profile data format');
       }
     } catch (error) {
-      this.resetProfileData(); // Reset data jika terjadi error
+      this.resetProfileData();
       throw error;
     }
   }
@@ -48,6 +48,6 @@ export class ProfileService {
     this.profileData.next(null);
     this.cookieService.delete('accessToken', '/');
     this.cookieService.delete('refreshToken', '/');
-    this.cookieService.deleteAll()
+    this.cookieService.deleteAll();
   }
 }

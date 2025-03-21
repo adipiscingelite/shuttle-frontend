@@ -32,7 +32,7 @@ interface Section {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule], // Add imports
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
 })
@@ -107,19 +107,14 @@ export class SidebarComponent implements OnInit {
 
     const token = this.cookieService.get('accessToken');
 
-    console.log(token);
-
     this.loadMenuByRole(this.role_code);
 
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    console.log('sidebar timezone', timezone);
   }
 
   async fetchProfileData(): Promise<void> {
     try {
       this.profileService.profileData$.subscribe((data) => {
-        console.log('sidebar', data.user_role_code);
-
         if (data) {
           this.user_id = data.user_uuid;
           this.email = data.user_email;
@@ -136,7 +131,6 @@ export class SidebarComponent implements OnInit {
             this.first_name.charAt(0).toUpperCase() +
             this.last_name.charAt(0).toUpperCase();
         }
-        console.log('sidebar fetch profile', this.email);
       });
     } catch (error) {
       console.error('Error fetching profile data in sidebar', error);
@@ -208,11 +202,6 @@ export class SidebarComponent implements OnInit {
               icon: 'driverList',
               path: '/superadmin/drivers',
             },
-            // {
-            //   name: 'Routes Active',
-            //   icon: 'routeList',
-            //   path: '/superadmin/routes',
-            // },
           ],
         },
       ];
@@ -252,11 +241,6 @@ export class SidebarComponent implements OnInit {
               icon: 'car',
               path: '/admin/drivers',
             },
-            // {
-            //   name: 'Driver Monitoring',
-            //   icon: 'studentList',
-            //   path: '/admin/driver-monitoring',
-            // },
           ],
         },
         {
@@ -330,11 +314,7 @@ export class SidebarComponent implements OnInit {
               icon: 'car',
               path: '/driver/shuttle',
             },
-            // {
-            //   name: 'Customize Route',
-            //   icon: 'routeList',
-            //   path: '/driver/p',
-            // },
+
             {
               name: 'Shuttle History',
               icon: 'shuttleHistory',
@@ -342,16 +322,6 @@ export class SidebarComponent implements OnInit {
             },
           ],
         },
-        // {
-        //   title: 'STUDENT MANAGEMENT',
-        //   items: [
-        //     {
-        //       name: 'Student Lists',
-        //       icon: 'studentList',
-        //       path: '/driver/not-found',
-        //     },
-        //   ],
-        // },
       ];
     }
   }
@@ -384,13 +354,12 @@ export class SidebarComponent implements OnInit {
 
       this.handleLogoutSuccess();
     } catch (error) {
-      // Even if logout API fails, we should still clear local data
       this.handleLogoutSuccess();
     }
   }
 
   private handleLogoutSuccess(): void {
-    this.profileService.resetProfileData(); // This will clear cookies and profile data
+    this.profileService.resetProfileData();
     this.router.navigate(['/login']);
 
     Swal.fire({

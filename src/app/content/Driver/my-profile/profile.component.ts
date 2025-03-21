@@ -6,11 +6,11 @@ import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-profile',
+  selector: 'app-driver-profile',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './profile.component.html',
-  styleUrl: './profile.component.css'
+  styleUrl: './profile.component.css',
 })
 export class ProfileDriverComponent {
   private apiUrl: string;
@@ -28,11 +28,11 @@ export class ProfileDriverComponent {
   user_phone: string = '';
   user_address: string = '';
   user_status: string = '';
-  user_picture: string = ''
+  user_picture: string = '';
 
   initialAvatar: string = '';
 
-    constructor(
+  constructor(
     private profileService: ProfileService,
     @Inject('apiUrl') apiUrl: string,
   ) {
@@ -50,8 +50,6 @@ export class ProfileDriverComponent {
   async fetchProfileData(): Promise<void> {
     try {
       this.profileService.profileData$.subscribe((data) => {
-        console.log('data profil dari subs service', data);
-        
         if (data) {
           this.user_uuid = data.user_user_id;
           this.user_username = data.user_username;
@@ -74,5 +72,4 @@ export class ProfileDriverComponent {
       console.error('Error fetching profile data in sidebar', error);
     }
   }
-
 }

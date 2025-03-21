@@ -1,21 +1,17 @@
-// ANGULAR
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-// THIRD PARTY
 import { AgGridAngular } from 'ag-grid-angular';
 import { CookieService } from 'ngx-cookie-service';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-// COMPONENTS
 import { HeaderComponent } from '@layouts/header/header.component';
 import { AsteriskComponent } from '@shared/components/asterisk/asterisk.component';
 import { RequiredCommonComponent } from '@shared/components/required-common/required-common.component';
 
-// SHARED
 import { Driver, Response, Vehicle } from '@core/interfaces';
 import { ToastService } from '@core/services/toast/toast.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
@@ -111,7 +107,6 @@ export class DriversComponent implements OnInit {
   gridOptions = {
     ensureDomOrder: true,
     pagination: true,
-    // paginationPageSize: 10,
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
     suppressMovable: true,
@@ -125,7 +120,6 @@ export class DriversComponent implements OnInit {
     {
       headerName: 'No.',
       valueGetter: (params: any) => {
-        // Hitung nomor urut berdasarkan posisi pagination
         return (
           (this.paginationPage - 1) * this.paginationItemsLimit +
           (params.node.rowIndex + 1)
@@ -149,10 +143,7 @@ export class DriversComponent implements OnInit {
     },
     { headerName: 'Email', field: 'user_email' },
     { headerName: 'Driver Phone', field: 'user_details.user_phone' },
-    // { field: 'user_address' },
-    // { field: 'details.vehicle_id' },
-    // { field: 'status' },
-    // { field: 'last_active' },
+
     {
       headerName: 'Actions',
       headerClass: 'justify-center',
@@ -313,12 +304,9 @@ export class DriversComponent implements OnInit {
   }
 
   onSortChanged(event: any) {
-    console.log('onSortChanged event:', event);
-
     if (event && event.columns && event.columns.length > 0) {
       event.columns.forEach((column: any) => {
         const colId = column.colId;
-        console.log('Sorting column ID:', colId);
 
         if (!this.columnClickCount[colId]) {
           this.columnClickCount[colId] = 0;
@@ -364,8 +352,6 @@ export class DriversComponent implements OnInit {
       .then((response) => {
         this.rowListAllVehicle = response.data.vehicles;
 
-        console.log('vehicle', this.rowListAllVehicle);
-
         this.cdRef.detectChanges();
       })
       .catch((error) => {
@@ -397,7 +383,6 @@ export class DriversComponent implements OnInit {
         );
         this.showing = response.data.data.meta.showing;
 
-        console.log('drivers', this.rowListAllDriver);
         this.isLoading = false;
 
         this.cdRef.detectChanges();
@@ -447,8 +432,6 @@ export class DriversComponent implements OnInit {
       },
     };
 
-    console.log('driver add', requestData);
-
     axios
       .post(`${this.apiUrl}/api/superadmin/user/add`, requestData, {
         headers: {
@@ -484,10 +467,7 @@ export class DriversComponent implements OnInit {
         },
       })
       .then((response) => {
-        console.log('Full Response:', response);
         const editData = response.data.data;
-
-        console.log('pppp', editData);
 
         this.user_uuid = editData.user_uuid;
         this.user_username = editData.user_username;
@@ -543,7 +523,6 @@ export class DriversComponent implements OnInit {
         data,
         {
           headers: {
-            // 'Content-Type': 'multipart/form-data',
             Authorization: `${this.token}`,
           },
         },

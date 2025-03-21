@@ -9,7 +9,7 @@ import {
 } from '@angular/router';
 import { WebSocketService } from './core/services/WebSocket/web-socket.service';
 import { CookieService } from 'ngx-cookie-service';
-import { environment } from '../environments/environment'; // Impor environment
+import { environment } from '../environments/environment';
 import { SpinnerComponent } from './shared/components/spinner/spinner.component';
 import { CommonModule } from '@angular/common';
 
@@ -28,22 +28,19 @@ export class AppComponent implements OnInit {
   ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
-        this.isSpinnerVisible = true; // Tampilkan spinner saat navigasi dimulai
+        this.isSpinnerVisible = true;
       } else if (
         event instanceof NavigationEnd ||
         event instanceof NavigationCancel ||
         event instanceof NavigationError
       ) {
-        this.isSpinnerVisible = false; // Sembunyikan spinner setelah navigasi selesai
+        this.isSpinnerVisible = false;
       }
     });
   }
 
   ngOnInit(): void {
-    // this.startWebSocket();
     this.getCurrentLocation();
-    console.log('inpoooo');
-    
   }
 
   private async startWebSocket() {
@@ -58,21 +55,21 @@ export class AppComponent implements OnInit {
   currLng: number = 0;
 
   getCurrentLocation() {
-    console.log('Fungsi getCurrentLocation dipanggil');
-  
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log('Lokasi berhasil diperoleh:', position.coords.latitude, position.coords.longitude);
+          console.log(
+            'Your location:',
+            position.coords.latitude,
+            position.coords.longitude,
+          );
         },
         (error) => {
-          console.error('Error Code:', error.code);
-          console.error('Error Message:', error.message);
-        }
+          console.error(error.message);
+        },
       );
     } else {
       console.error('Geolocation tidak didukung oleh browser ini');
     }
   }
-  
 }

@@ -108,11 +108,6 @@ export class DashboardDriverComponent {
           };
         }),
       );
-
-      console.log(
-        'Data siswa terurut berdasarkan jarak:',
-        this.rowContohLokasiAnak,
-      );
     } catch (error) {
       console.error('Error fetching shuttle students:', error);
     } finally {

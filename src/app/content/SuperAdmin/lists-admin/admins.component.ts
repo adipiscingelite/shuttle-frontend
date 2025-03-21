@@ -1,21 +1,17 @@
-// ANGULAR
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-// THIRD PARTY
 import { CookieService } from 'ngx-cookie-service';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-// COMPONENT
 import { HeaderComponent } from '@layouts/header/header.component';
 import { RequiredCommonComponent } from '@shared/components/required-common/required-common.component';
 import { AsteriskComponent } from '@shared/components/asterisk/asterisk.component';
 
-// SHARED
 import { School, SchoolAdmin, Response } from '@core/interfaces';
 import { ToastService } from '@core/services/toast/toast.service';
 
@@ -124,7 +120,6 @@ export class AdminsComponent implements OnInit {
   gridOptions = {
     ensureDomOrder: true,
     pagination: true,
-    // paginationPageSize: 10,
     paginationPageSizeSelector: [10, 20, 50, 100],
     suppressPaginationPanel: true,
     suppressMovable: true,
@@ -138,7 +133,6 @@ export class AdminsComponent implements OnInit {
     {
       headerName: 'No.',
       valueGetter: (params: any) => {
-        // Hitung nomor urut berdasarkan posisi pagination
         return (
           (this.paginationPage - 1) * this.paginationItemsLimit +
           (params.node.rowIndex + 1)
@@ -158,7 +152,7 @@ export class AdminsComponent implements OnInit {
     { headerName: 'Last Name', field: 'user_details.user_last_name' },
     { headerName: 'Email', field: 'user_email' },
     { headerName: 'Phone', field: 'user_details.user_phone' },
-    // { headerName: 'Address', field: 'user_details.user_address' },
+
     { headerName: 'School Name', field: 'user_details.school_name' },
     { field: 'user_status', maxWidth: undefined },
     {
@@ -330,12 +324,9 @@ export class AdminsComponent implements OnInit {
   }
 
   onSortChanged(event: any) {
-    console.log('onSortChanged event:', event);
-
     if (event && event.columns && event.columns.length > 0) {
       event.columns.forEach((column: any) => {
         const colId = column.colId;
-        console.log('Sorting column ID:', colId);
 
         if (!this.columnClickCount[colId]) {
           this.columnClickCount[colId] = 0;
@@ -376,8 +367,6 @@ export class AdminsComponent implements OnInit {
       })
       .then((response) => {
         this.rowListAllSchool = response.data.data.data;
-
-        console.log(this.rowListAllSchool);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -401,9 +390,8 @@ export class AdminsComponent implements OnInit {
       })
       .then((response) => {
         this.rowListAllSchoolAdmin = response.data.data.data;
-        console.log(this.rowListAllSchoolAdmin);
 
-        this.paginationTotalPage = response.data.data.meta.total_pages;        
+        this.paginationTotalPage = response.data.data.meta.total_pages;
         this.pages = Array.from(
           { length: this.paginationTotalPage },
           (_, i) => i + 1,
@@ -483,10 +471,7 @@ export class AdminsComponent implements OnInit {
         },
       })
       .then((response) => {
-        console.log(id);
-
         const editData = response.data.data;
-        console.log('res', editData);
 
         this.user_uuid = editData.user_uuid;
         this.user_username = editData.user_username;
@@ -534,10 +519,6 @@ export class AdminsComponent implements OnInit {
       },
     };
 
-    console.log('ditel', this.school_uuid);
-
-    console.log('wir', data);
-
     axios
       .put(
         `${this.apiUrl}/api/superadmin/user/update/${this.user_uuid}`,
@@ -573,8 +554,6 @@ export class AdminsComponent implements OnInit {
       })
       .then((response) => {
         const detailData = response.data.data;
-        console.log('detail', detailData);
-        
 
         this.user_uuid = detailData.user_uuid;
         this.user_username = detailData.user_username;
@@ -586,7 +565,6 @@ export class AdminsComponent implements OnInit {
         this.user_phone = detailData.user_details.user_phone;
         this.user_address = detailData.user_details.user_address;
         this.school_name = detailData.user_details.school_name;
-        // this.user_picture = detailData.user_details.user_picture;
 
         this.initialAvatar =
           this.user_first_name.charAt(0).toUpperCase() +
